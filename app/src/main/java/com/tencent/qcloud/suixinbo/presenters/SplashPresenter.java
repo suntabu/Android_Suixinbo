@@ -24,8 +24,9 @@ public class SplashPresenter extends Presenter {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (view.isUserLogin()) {
+                if (view.needLogin()) {
                     view.navToHome();
+                    view.navToLogin();
                 } else {
                     view.navToLogin();
                 }

@@ -4,4 +4,21 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
+
+    <string name="tencent_tls_ui_independentLoginTitle">用户名登录</string>
+    <string name="tencent_tls_ui_independentRegisterTitle">用户名注册</string>
+
+
+   <!-- live fragment-->
+    <string name="live_titile">最新直播</string>
+
+
+
+
+    <!-- profile fragment-->
+    <string name="btn_login_out">退出登录</string>
+
+
 </resources>

@@ -1,1 +1,1 @@
-include ':app', ':sdk', ':tlsmodule'
+include ':app'

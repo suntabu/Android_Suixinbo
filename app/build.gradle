@@ -8,8 +8,8 @@ android {
         applicationId "com.tencent.qcloud.suixinbo"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 1234567890
+        versionName "MagicVersionForReplace"
     }
     buildTypes {
         release {
@@ -17,11 +17,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.0'
-    compile project(':sdk')
-    compile project(':tlsmodule')
+    compile 'com.android.support:support-v4:23.0.0'
 }

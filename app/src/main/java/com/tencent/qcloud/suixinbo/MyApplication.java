@@ -6,8 +6,6 @@ import android.content.Context;
 import com.tencent.qcloud.suixinbo.presenters.InitBusinessHelper;
 
 
-
-
 /**
  * 全局Application
  */
@@ -21,7 +19,7 @@ public class MyApplication extends Application {
         context = getApplicationContext();
 
         //初始化APP
-        InitBusinessHelper.start(context);
+        InitBusinessHelper.initApp(context);
 
     }
 

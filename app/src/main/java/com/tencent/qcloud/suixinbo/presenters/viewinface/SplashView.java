@@ -19,6 +19,6 @@ public interface SplashView extends MvpView {
     /**
      * 是否已有用户登录
      */
-    boolean isUserLogin();
+    boolean needLogin();
 
 }
