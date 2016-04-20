@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
-import com.tencent.qcloud.suixinbo.presenters.LoginPresenter;
+import com.tencent.qcloud.suixinbo.presenters.LoginAoutPresenter;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 
 
@@ -21,7 +21,7 @@ import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 public class FragmentProfile extends Fragment implements View.OnClickListener,LogoutView{
     private static final String TAG = "FragmentLiveList";
     private TextView mID, mBtnLogout;
-    private LoginPresenter mLoginPresenter;
+    private LoginAoutPresenter mLoginAoutPresenter;
 
 
     public FragmentProfile() {}
@@ -36,7 +36,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener,Lo
         mID.setText(UserInfo.getInstance().getId());
         mBtnLogout = (TextView) view.findViewById(R.id.btn_logout);
         mBtnLogout.setOnClickListener(this);
-        mLoginPresenter = new LoginPresenter(getActivity().getApplicationContext(),this);
+        mLoginAoutPresenter = new LoginAoutPresenter(getActivity().getApplicationContext(),this);
         return view;
     }
 
@@ -53,7 +53,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener,Lo
     @Override
     public void onClick(View view) {
         if(view.getId()==R.id.btn_logout){
-            mLoginPresenter.imLogout();
+            mLoginAoutPresenter.imLogout();
         }
     }
 

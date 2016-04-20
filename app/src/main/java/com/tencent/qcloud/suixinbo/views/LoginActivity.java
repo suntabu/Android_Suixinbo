@@ -10,20 +10,20 @@ import android.widget.Toast;
 
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
-import com.tencent.qcloud.suixinbo.presenters.LoginPresenter;
+import com.tencent.qcloud.suixinbo.presenters.LoginAoutPresenter;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 
 public class LoginActivity extends Activity implements View.OnClickListener, LoginView {
     TextView mBtnLogin, mBtnRegister;
     EditText mPassWord, mUserName;
     private static final String TAG = LoginActivity.class.getSimpleName();
-    private LoginPresenter mLoginPresenter;
+    private LoginAoutPresenter mLoginAoutPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mLoginPresenter = new LoginPresenter(this, this);
+        mLoginAoutPresenter = new LoginAoutPresenter(this, this);
         if (needLogin() == true) {//本地没有账户需要登录
             setContentView(R.layout.activity_independent_login);
             mBtnLogin = (TextView) findViewById(R.id.btn_login);
@@ -34,7 +34,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
             mBtnLogin.setOnClickListener(this);
         } else {
             //有账户登录直接IM登录
-            mLoginPresenter.imLogin(UserInfo.getInstance().getId(), UserInfo.getInstance().getUserSig());
+            mLoginAoutPresenter.imLogin(UserInfo.getInstance().getId(), UserInfo.getInstance().getUserSig());
         }
 
 
@@ -64,7 +64,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
                 return;
             }
 //            tlsLogin(mUserName.getText().toString(),mPassWord.getText().toString());
-            mLoginPresenter.tlsLogin(mUserName.getText().toString(), mPassWord.getText().toString());
+            mLoginAoutPresenter.tlsLogin(mUserName.getText().toString(), mPassWord.getText().toString());
         }
     }
 

@@ -10,6 +10,8 @@
     <string name="tencent_tls_ui_independentLoginTitle">用户名登录</string>
     <string name="tencent_tls_ui_independentRegisterTitle">用户名注册</string>
 
+    <string name="error_code_prefix">错误码：</string>
+
 
    <!-- live fragment-->
     <string name="live_titile">最新直播</string>

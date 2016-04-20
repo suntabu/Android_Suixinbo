@@ -9,10 +9,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tencent.qcloud.suixinbo.MyApplication;
+import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.presenters.InitBusinessHelper;
-import com.tencent.qcloud.suixinbo.presenters.LoginPresenter;
+import com.tencent.qcloud.suixinbo.presenters.LoginAoutPresenter;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 
 import tencent.tls.platform.TLSErrInfo;
@@ -26,9 +26,9 @@ public class RegisterActivity extends Activity implements View.OnClickListener ,
     private EditText mUserName, mPassword, mRepassword;
     private TextView mBtnRegister;
     private ImageButton mBtnBack;
-    MyApplication mMyApplication;
+    QavsdkApplication mMyApplication;
     TLSStrAccRegListener mStrAccRegListener;
-    LoginPresenter mLoginPresenter;
+    LoginAoutPresenter mLoginAoutPresenter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,12 +37,12 @@ public class RegisterActivity extends Activity implements View.OnClickListener ,
         mPassword = (EditText) findViewById(R.id.password);
         mRepassword = (EditText) findViewById(R.id.repassword);
         mBtnRegister = (TextView) findViewById(R.id.btn_register);
-        mBtnBack = (ImageButton)findViewById(R.id.returnIndependentLoginActivity);
+        mBtnBack = (ImageButton)findViewById(R.id.back);
         mBtnBack.setOnClickListener(this);
         mBtnRegister.setOnClickListener(this);
-        mMyApplication =(MyApplication)getApplication();
+        mMyApplication =(QavsdkApplication)getApplication();
         mStrAccRegListener = new StrAccRegListener();
-        mLoginPresenter = new LoginPresenter(this,this);
+        mLoginAoutPresenter = new LoginAoutPresenter(this,this);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener ,
         if (view.getId() == R.id.btn_register) {
                 InitBusinessHelper.getmAccountHelper().TLSStrAccReg(mUserName.getText().toString(), mPassword.getText().toString(), mStrAccRegListener);
         }
-        if(view.getId() == R.id.returnIndependentLoginActivity){
+        if(view.getId() == R.id.back){
             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
@@ -72,8 +72,10 @@ public class RegisterActivity extends Activity implements View.OnClickListener ,
         public void OnStrAccRegSuccess(TLSUserInfo userInfo) {
             Toast.makeText(RegisterActivity.this,  userInfo.identifier+ " register a user succ !  " , Toast.LENGTH_SHORT).show();
             String id = userInfo.identifier;
+            //创建一个房间号
+            mLoginAoutPresenter.crearServerRoom();
             //继续登录流程
-            mLoginPresenter.tlsLogin(id,mRepassword.getText().toString());
+            mLoginAoutPresenter.tlsLogin(id,mRepassword.getText().toString());
         }
 
         @Override

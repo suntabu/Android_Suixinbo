@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.tencent.TIMCallBack;
 import com.tencent.TIMManager;
+import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.CrashHandler;
 
@@ -28,10 +29,14 @@ public class InitBusinessHelper {
         return mAccountHelper;
     }
 
-
     private static TLSLoginHelper mLoginHelper;
     private static TLSAccountHelper mAccountHelper;
     private static String appVer = "1.0";
+    private static QavsdkControl mQavsdkControl = null;
+
+
+
+
 
 
     /**
@@ -40,6 +45,7 @@ public class InitBusinessHelper {
     public static void initApp(Context context) {
         //初始化imsdk
 
+        QavsdkControl.initQavsdk(context);
         TIMManager.getInstance().init(context);
 
         //QAL初始化
@@ -67,34 +73,6 @@ public class InitBusinessHelper {
 //      UserInfo.getInstance().setUserSig(TLSService.getInstance().getUserSig(id));
     }
 
-
-//    /**
-//     * 登录imsdk
-//     *
-//     * @param identify 用户id
-//     * @param userSig  用户签名
-//     * @param callBack 登录后回调
-//     */
-//    public static void loginIm(String identify, String userSig, TIMCallBack callBack) {
-//        TIMUser user = new TIMUser();
-//        user.setAccountType(String.valueOf(Constants.ACCOUNT_TYPE));
-//        user.setAppIdAt3rd(String.valueOf(Constants.SDK_APPID));
-//        user.setIdentifier(identify);
-//        //发起登录请求
-//        TIMManager.getInstance().login(
-//                Constants.SDK_APPID,
-//                user,
-//                userSig,                    //用户帐号签名，由私钥加密获得，具体请参考文档
-//                callBack);
-//    }
-//
-//
-//    public static boolean tlsNeedLogin(String id) {
-//        if (mLoginHelper != null) {
-//            return mLoginHelper.needLogin(id);
-//        }
-//        return true;
-//    }
 
     /**
      * 登出imsdk

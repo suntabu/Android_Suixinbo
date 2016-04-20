@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.tencent.TIMCallBack;
 import com.tencent.TIMManager;
 import com.tencent.TIMUser;
+import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
@@ -19,17 +20,18 @@ import tencent.tls.platform.TLSUserInfo;
 /**
  * 登录的数据处理类
  */
-public class LoginPresenter {
+public class LoginAoutPresenter {
     private Context mContext;
-    private static final String TAG = LoginPresenter.class.getSimpleName();
+    private static final String TAG = LoginAoutPresenter.class.getSimpleName();
     private LoginView mLoginView;
     private LogoutView mLogoutView;
-    public LoginPresenter(Context context,LoginView loginView) {
+    private QavsdkControl mQavsdkControl;
+    public LoginAoutPresenter(Context context, LoginView loginView) {
         mContext = context;
         mLoginView = loginView;
     }
 
-    public LoginPresenter(Context context,LogoutView logoutView) {
+    public LoginAoutPresenter(Context context, LogoutView logoutView) {
         mContext = context;
         mLogoutView =  logoutView;
     }
@@ -56,7 +58,7 @@ public class LoginPresenter {
                 new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
-                        Log.e(TAG ,"IMLoginfail ："+ i+" msg " + s);
+                        Log.e(TAG ,"IMLogin fail ："+ i+" msg " + s);
                         Toast.makeText(mContext, "IMLogin fail ："+ i+" msg " + s, Toast.LENGTH_SHORT).show();
                     }
 
@@ -88,7 +90,7 @@ public class LoginPresenter {
                 //清除本地缓存
                 UserInfo.getInstance().clearCache(mContext);
                 //反向初始化avsdk
-                uninitAvsdk();
+                stopAVSDK();
             }
         });
 
@@ -141,23 +143,26 @@ public class LoginPresenter {
     private void getMyRoomNum(){
         UserInfo.getInstance().setMyRoomNum(12312312);
         UserInfo.getInstance().writeToCache(mContext.getApplicationContext(),UserInfo.getInstance().getId(),UserInfo.getInstance().getUserSig(),UserInfo.getInstance().getMyRoomNum());
-        initAvsdk();
+        startAVSDK();
     }
 
 
     /**
      * 初始化AVSDK
      */
-    private void initAvsdk(){
+    private void startAVSDK(){
+        QavsdkControl.getInstance().setAvConfig(Constants.SDK_APPID,""+Constants.ACCOUNT_TYPE,UserInfo.getInstance().getId(),UserInfo.getInstance().getUserSig());
+        QavsdkControl.getInstance().startContext();
         mLoginView.LoginSucc();
     }
 
 
 
     /**
-     * 初始化AVSDK
+     * 反初始化AVADK
      */
-    private void uninitAvsdk(){
+    private void stopAVSDK(){
+        QavsdkControl.getInstance().stopContext();
         mLogoutView.LogoutSucc();
     }
 
@@ -165,7 +170,7 @@ public class LoginPresenter {
     /**
      * 通知用户服务器创建自己房间号
      */
-    public void createRoom(){
+    public void crearServerRoom(){
          getMyRoomNum();
     }
 

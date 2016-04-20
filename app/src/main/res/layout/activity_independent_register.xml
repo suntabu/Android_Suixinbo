@@ -14,7 +14,7 @@
         android:background="@color/tencent_tls_ui_titleBackground">
 
         <ImageButton
-            android:id="@+id/returnIndependentLoginActivity"
+            android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

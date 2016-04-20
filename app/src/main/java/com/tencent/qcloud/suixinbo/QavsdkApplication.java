@@ -9,10 +9,9 @@ import com.tencent.qcloud.suixinbo.presenters.InitBusinessHelper;
 /**
  * 全局Application
  */
-public class MyApplication extends Application {
+public class QavsdkApplication extends Application {
 
     private static Context context;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -20,6 +19,9 @@ public class MyApplication extends Application {
 
         //初始化APP
         InitBusinessHelper.initApp(context);
+
+        //创建AVSDK 控制器类
+
 
     }
 
