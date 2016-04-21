@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorLightGray"
+    android:orientation="vertical"
+    tools:context="cn.plu.sixteen.ui.LivePublishActivity"
+    >
+    <RelativeLayout
+        android:id="@+id/toppanel1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/colorTextWhite"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="12dp"
+            android:onClick="onClick"
+            android:text="@string/btn_cancel"
+             />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/text_live_preview"
+            android:textColor="@color/colorTextG4"
+            android:textSize="@dimen/h7" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toppanel1"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/textview"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_gravity="center"
+                android:background="@color/colorLightGray"
+                android:gravity="center"
+                android:text="@string/text_live_add_title_tips"
+                android:textSize="16sp"
+                />
+
+            <ImageView
+                android:id="@+id/cover"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:background="@drawable/cover_background"
+                android:onClick="onClick" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/live_title"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:background="@color/colorPrimary"
+                android:gravity="top"
+                android:hint="@string/text_live_title_input"
+                android:lines="4"
+                android:maxLength="32"
+                android:textColor="@color/colorTextG4"
+                android:textColorHint="@color/colorTextG2"
+                android:textSize="@dimen/h11" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorGray2" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorTextWhite">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="onClick">
+
+                <ImageView
+                    android:id="@+id/img_lbs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="12dp"
+                    android:src="@drawable/icon_lbs_off" />
+
+                <TextView
+                    android:id="@+id/address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="@string/text_live_close_lbs"
+                    android:textSize="@dimen/h6" />
+            </LinearLayout>
+
+            <com.tencent.qcloud.suixinbo.views.customviews.CustomSwitch
+                android:id="@+id/btn_lbs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:src="@drawable/btn_switch_off" />
+        </RelativeLayout>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorGray2" />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/colorTextWhite">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="onClick">
+                <TextView
+                    android:id="@+id/record"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text="@string/text_start_record"
+                    android:textSize="@dimen/h6" />
+            </LinearLayout>
+
+            <com.tencent.qcloud.suixinbo.views.customviews.CustomSwitch
+                android:id="@+id/record_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:src="@drawable/btn_switch_off" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorGray2" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_record_info" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/publish_button"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="150dp"
+        android:background="@color/btn_red"
+        android:gravity="center"
+        android:text="@string/text_publish"
+        android:textColor="@color/colorTextWhite"
+        android:textSize="@dimen/h9"
+        android:textStyle="bold" />
+
+</RelativeLayout>

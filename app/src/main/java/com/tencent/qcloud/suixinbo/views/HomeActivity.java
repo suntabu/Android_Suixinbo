@@ -1,6 +1,7 @@
 package com.tencent.qcloud.suixinbo.views;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
@@ -39,14 +40,17 @@ public class HomeActivity extends FragmentActivity {
             mTabHost.getTabWidget().setDividerDrawable(null);
 
         }
-//        mTabHost.getTabWidget().getChildTabViewAt(1).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
+        mTabHost.getTabWidget().getChildTabViewAt(1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 //                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 //                DialogFragment newFragment = InputDialog.newInstance();
 //                newFragment.show(ft, "dialog");
-//            }
-//        });
+
+                startActivity(new Intent(HomeActivity.this,CreateLiveActivity.class));
+
+            }
+        });
 
     }
 

@@ -14,7 +14,6 @@
     <color name="tencent_tls_ui_transparent">#9000</color>
 
 
-    <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="transparent">#00000000</color>
@@ -42,4 +41,54 @@
     <color name="btn_text_hover">#CCFFFFFF</color>
     <!--蒙版-->
     <color name="colorMask">#66000000</color>
+
+
+
+    <!--app主色调，背景色-->
+    <color name="colorPrimary">#FFFFFF</color>
+    <!--背景色-->
+    <color name="colorBackground">#F0F0F0</color>
+    <!--app主题色，应用于导航，按钮-->
+    <color name="colorTheme">#80407A</color>
+    <!--主题色激活态，如按钮高亮-->
+    <color name="colorThemeActive">#A15C9A</color>
+    <!--红色标签/提示-->
+    <color name="colorLabelRed">#FF447D</color>
+    <!--红色标签/提示高亮-->
+    <color name="colorLabelRedActive">#FF89AB</color>
+    <!--黄色色标签/提示-->
+    <color name="colorLabelYellow">#FFAE20</color>
+    <!--黄色色标签/提示高亮-->
+    <color name="colorLabelYellowActive">#FFCD35</color>
+    <!--黄色蒙版-->
+    <color name="colorLabelYellowMask">#4DFFAE20</color>
+    <!--红色-->
+    <color name="colorRed">#FF3333</color>
+    <!--文字白色-->
+    <color name="colorTextWhite">#FFFFFF</color>
+    <!--文字G1-->
+    <color name="colorTextG1">#CCCCCC</color>
+    <!--文字G2-->
+    <color name="colorTextG2">#999999</color>
+    <!--文字G3-->
+    <color name="colorTextG3">#666666</color>
+    <!--文字G4-->
+    <color name="colorTextG4">#333333</color>
+    <!--文字black-->
+    <color name="colorTextBlack">#000000</color>
+    <!--gray1-->
+    <color name="colorGray1">#F0F0F0</color>
+    <!--light gray-->
+    <color name="colorLightGray">#E6E6E6</color>
+    <!--gray2-->
+    <color name="colorGray2">#DCDCDC</color>
+    <!--gray3-->
+    <color name="colorGray3">#C8C8C8</color>
+    <!--gray4-->
+    <color name="colorGray4">#787878</color>
+    <!--gray5-->
+    <color name="colorGray5">#505050</color>
+    <!--gray6-->
+    <color name="colorGray6">#141414</color>
+    <!--蒙版-->
 </resources>
