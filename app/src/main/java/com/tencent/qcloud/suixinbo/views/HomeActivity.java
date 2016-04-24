@@ -47,7 +47,7 @@ public class HomeActivity extends FragmentActivity {
 //                DialogFragment newFragment = InputDialog.newInstance();
 //                newFragment.show(ft, "dialog");
 
-                startActivity(new Intent(HomeActivity.this,CreateLiveActivity.class));
+                startActivity(new Intent(HomeActivity.this,PublishLiveActivity.class));
 
             }
         });

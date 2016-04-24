@@ -65,9 +65,9 @@ public class InitBusinessHelper {
      */
     public static void initTls(Context context) {
         mLoginHelper = TLSLoginHelper.getInstance().init(context, Constants.SDK_APPID, Constants.ACCOUNT_TYPE, appVer);
-        mLoginHelper.setTimeOut(3000);
+        mLoginHelper.setTimeOut(5000);
         mAccountHelper = TLSAccountHelper.getInstance().init(context, Constants.SDK_APPID, Constants.ACCOUNT_TYPE, appVer);
-        mAccountHelper.setTimeOut(3000);
+        mAccountHelper.setTimeOut(5000);
 //      UserInfo.getInstance().setId(id);
 //      UserInfo.getInstance().setUserSig(TLSService.getInstance().getUserSig(id));
     }

@@ -2,7 +2,7 @@ package com.tencent.qcloud.suixinbo.model;
 
 import android.graphics.Bitmap;
 
-public class MemberInfo {
+public class AvMemberInfo {
 	public String identifier = "";
 	public boolean hasAudio = false;
 	public boolean hasCameraVideo = false;
@@ -14,7 +14,7 @@ public class MemberInfo {
 
 	@Override
 	public String toString() {
-		return "MemberInfo identifier = " + identifier + ", hasAudio = " + hasAudio
+		return "AvMemberInfo identifier = " + identifier + ", hasAudio = " + hasAudio
 				+ ", hasCameraVideo = " + hasCameraVideo + ", hasScreenVideo = " + hasScreenVideo
 				+ ", isShareMovie = " + isShareMovie + ", hasGetInfo = "
 				+ hasGetInfo + ", name = " + name;

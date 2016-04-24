@@ -115,6 +115,8 @@ public class AvConstants {
 	public static final int INDEX_OUTPUT_NETSTREAM = 5;
 
 	public static final int DEMO_ERROR_BASE = -99999999;
+
+	public static final int AUDIO_VOICE_CHAT_MODE = 0;
 	/**
 	 * 空指针
 	 */

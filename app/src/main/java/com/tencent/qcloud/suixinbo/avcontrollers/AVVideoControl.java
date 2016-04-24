@@ -11,6 +11,7 @@ import java.io.IOException;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.tencent.av.sdk.AVError;
 import com.tencent.av.sdk.AVVideoCtrl;
@@ -58,7 +59,7 @@ public class AVVideoControl {
 			if (result == AVError.AV_OK) {
 				mIsEnableCamera = enable;
 			}
-
+			Toast.makeText(mContext, "Open CameraOk !", Toast.LENGTH_SHORT).show();
 			mContext.sendBroadcast(new Intent(AvConstants.ACTION_ENABLE_CAMERA_COMPLETE).putExtra(AvConstants.EXTRA_AV_ERROR_RESULT, result).putExtra(AvConstants.EXTRA_IS_ENABLE, enable));
 			AVVideoCtrl avVideoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
 			hasFileOpenIDList = new Vector<String>();
@@ -129,6 +130,7 @@ public class AVVideoControl {
 			if (!isOpenBackCameraFirst) {
 				mIsFrontCamera = true;
 				result = avVideoCtrl.enableCamera(FRONT_CAMERA, isEnable, mEnableCameraCompleteCallback);
+				Log.i(TAG, "enableCamera result "+result);
 			} else {
 				mIsFrontCamera = false;
 				result = avVideoCtrl.enableCamera(BACK_CAMERA, isEnable, mEnableCameraCompleteCallback);
@@ -138,7 +140,9 @@ public class AVVideoControl {
 		Log.d(TAG, "WL_DEBUG enableCamera result = " + result);
 		return result;
 	}
-	
+
+
+
 	int enableExternalCapture(boolean isEnable) {
 		int result = AVError.AV_OK;
 		

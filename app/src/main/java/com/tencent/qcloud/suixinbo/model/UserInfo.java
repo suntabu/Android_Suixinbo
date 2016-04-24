@@ -14,7 +14,9 @@ public class UserInfo {
     private String id;
     private String userSig;
 
-    private int myRoomNum;
+    private int id_status;
+
+    private int myRoomNum = 54321;
 
     private static UserInfo ourInstance = new UserInfo();
 
@@ -70,8 +72,17 @@ public class UserInfo {
         id = sharedata.getString(Constants.USER_ID, null);
         userSig = sharedata.getString(Constants.USER_SIG, null);
         myRoomNum = sharedata.getInt(Constants.USER_ROOM_NUM, -1);
-        Log.i(TAG, " getCache id: "+id);
+        Log.i(TAG, " getCache id: " + id);
     }
+
+    public int getIdStatus() {
+        return id_status;
+    }
+
+    public void setIdStatus(int id_status) {
+        this.id_status = id_status;
+    }
+
 
 
 }

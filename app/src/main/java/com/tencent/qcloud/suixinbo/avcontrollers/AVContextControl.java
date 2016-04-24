@@ -3,7 +3,6 @@ package com.tencent.qcloud.suixinbo.avcontrollers;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVError;
@@ -30,7 +29,8 @@ class AVContextControl {
     private AVContext.StartContextCompleteCallback mStartContextCompleteCallback = new AVContext.StartContextCompleteCallback() {
         public void OnComplete(int result) {
             mIsInStartContext = false;
-            Toast.makeText(mContext, "SDKLogin complete : " + result, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mContext, "SDKLogin complete : " + result, Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "keypath AVSDK startContext  result "+result);
 //            mContext.sendBroadcast(new Intent(
 //                    AvConstants.ACTION_START_CONTEXT_COMPLETE).putExtra(
 //                    AvConstants.EXTRA_AV_ERROR_RESULT, result));

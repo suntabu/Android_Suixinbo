@@ -24,6 +24,9 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <uses-feature android:name="android.hardware.camera" />
+
+
     <application
         android:name=".QavsdkApplication"
         android:allowBackup="true"
@@ -40,7 +43,8 @@
 
         <activity android:name=".views.RegisterActivity" />
         <activity android:name=".views.HomeActivity" />
-        <activity android:name=".views.CreateLiveActivity" />
+        <activity android:name=".views.PublishLiveActivity" />
+        <activity android:name=".views.LivePlayActivity" />
 
         <service
             android:name="com.tencent.qalsdk.service.QalService"

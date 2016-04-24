@@ -26,6 +26,7 @@ public class LoginAoutPresenter {
     private LoginView mLoginView;
     private LogoutView mLogoutView;
     private QavsdkControl mQavsdkControl;
+
     public LoginAoutPresenter(Context context, LoginView loginView) {
         mContext = context;
         mLoginView = loginView;
@@ -64,7 +65,7 @@ public class LoginAoutPresenter {
 
                     @Override
                     public void onSuccess() {
-                        Log.i(TAG, "IMLogin succ !");
+                        Log.i(TAG, "keypath IMLogin succ !");
 //                        Toast.makeText(mContext, "IMLogin succ !", Toast.LENGTH_SHORT).show();
                         getMyRoomNum();
                     }
@@ -141,7 +142,7 @@ public class LoginAoutPresenter {
      * 向用户服务器获取自己房间号
      */
     private void getMyRoomNum(){
-        UserInfo.getInstance().setMyRoomNum(12312312);
+        UserInfo.getInstance().setMyRoomNum(54321);
         UserInfo.getInstance().writeToCache(mContext.getApplicationContext(),UserInfo.getInstance().getId(),UserInfo.getInstance().getUserSig(),UserInfo.getInstance().getMyRoomNum());
         startAVSDK();
     }

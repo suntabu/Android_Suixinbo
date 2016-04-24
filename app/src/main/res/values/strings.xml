@@ -41,7 +41,7 @@
     <string name="publish_photo_success">发布图片成功</string>
     <string name="text_continue">继续</string>
     <string name="text_publish">开始直播</string>
-    <string name="text_live_preview">发布编辑</string>
+    <string name="text_live_preview">发布直播</string>
     <string name="text_photo_preview">发布照片</string>
     <string name="text_live_title_input">请输入直播标题</string>
     <string name="text_photo_title_input">你的照片你做主</string>

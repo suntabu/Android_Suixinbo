@@ -7,7 +7,7 @@ import android.view.View;
 import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVRoom;
 import com.tencent.av.sdk.AVRoomMulti;
-import com.tencent.qcloud.suixinbo.model.MemberInfo;
+import com.tencent.qcloud.suixinbo.model.AvMemberInfo;
 
 import java.util.ArrayList;
 
@@ -72,6 +72,7 @@ public class QavsdkControl {
     }
 
 
+
     /**
      * 关闭SDK系统
      */
@@ -124,7 +125,7 @@ public class QavsdkControl {
      *
      * @return 成员列表
      */
-    public ArrayList<MemberInfo> getMemberList() {
+    public ArrayList<AvMemberInfo> getMemberList() {
         if (mAVRoomControl == null) {
             return null;
         }
@@ -132,7 +133,7 @@ public class QavsdkControl {
     }
 
 
-    public ArrayList<MemberInfo> getScreenMemberList() {
+    public ArrayList<AvMemberInfo> getScreenMemberList() {
         if (mAVRoomControl == null) {
             return null;
         }
@@ -209,24 +210,22 @@ public class QavsdkControl {
      * 初始化UI层
      *
      * @param context
-     * @param contentView AVSDK UILayer层
+     * @param view AVSDK UILayer层
      */
-    public void initAvUILayer(Context context, View contentView) {
-        mAVUIControl = new AVUIControl(context, contentView);
+    public void initAvUILayer(Context context, View view) {
+        mAVUIControl = new AVUIControl(context, view);
         mAVVideoControl.initAVVideoSettings();
         mAVAudioControl.initAVAudioSettings();
 //		mAVEndpointControl.initMembersUI((MultiVideoMembersControlUI) contentView.findViewById(R.id.qav_gaudio_gridlayout));
     }
 
     public void onResume() {
-        mAVContextControl.getAVContext().onResume();
         if (mAVUIControl != null) {
             mAVUIControl.onResume();
         }
     }
 
     public void onPause() {
-        mAVContextControl.getAVContext().onPause();
         if (null != mAVUIControl) {
             mAVUIControl.onPause();
         }
@@ -238,6 +237,7 @@ public class QavsdkControl {
             mAVUIControl = null;
         }
     }
+
 
 
     public void setLocalHasVideo(boolean isLocalHasVideo, String selfIdentifier) {

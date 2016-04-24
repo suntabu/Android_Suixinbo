@@ -3,11 +3,12 @@ package com.tencent.qcloud.suixinbo.avcontrollers;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVRoom;
 import com.tencent.av.sdk.AVRoomMulti;
-import com.tencent.qcloud.suixinbo.model.MemberInfo;
+import com.tencent.qcloud.suixinbo.model.AvMemberInfo;
 
 import java.util.ArrayList;
 
@@ -24,8 +25,8 @@ class AVRoomControl {
 	private boolean mIsInCreateRoom = false;
 	private boolean mIsInCloseRoom = false;
 	private Context mContext;
-	private ArrayList<MemberInfo> mAudioAndCameraMemberList = new ArrayList<MemberInfo>();
-	private ArrayList<MemberInfo> mScreenMemberList = new ArrayList<MemberInfo>();
+	private ArrayList<AvMemberInfo> mAudioAndCameraMemberList = new ArrayList<AvMemberInfo>();
+	private ArrayList<AvMemberInfo> mScreenMemberList = new ArrayList<AvMemberInfo>();
 	private int audioCat = 0;
 	public void setAudioCat(int audioCat) {
 		this.audioCat = audioCat;
@@ -40,6 +41,7 @@ class AVRoomControl {
 		public void onEnterRoomComplete(int result) {
 			Log.d(TAG, "WL_DEBUG mRoomDelegate.onEnterRoomComplete result = " + result);
 			mIsInCreateRoom = false;
+			Toast.makeText(mContext, "enter AVroom " + result , Toast.LENGTH_SHORT).show();
 			mContext.sendBroadcast(new Intent(AvConstants.ACTION_ROOM_CREATE_COMPLETE).putExtra(AvConstants.EXTRA_AV_ERROR_RESULT, result));
 		}
 		
@@ -112,19 +114,19 @@ class AVRoomControl {
 	 * 
 	 * @return 成员列表
 	 */
-	ArrayList<MemberInfo> getMemberList() {
-		ArrayList<MemberInfo> memberList = (ArrayList<MemberInfo>)mAudioAndCameraMemberList.clone();
+	ArrayList<AvMemberInfo> getMemberList() {
+		ArrayList<AvMemberInfo> memberList = (ArrayList<AvMemberInfo>)mAudioAndCameraMemberList.clone();
 		for (int j = 0; j < mScreenMemberList.size(); j++) {
 			memberList.add(mScreenMemberList.get(j));
 		}
 		return memberList;
 	}
 
-	ArrayList<MemberInfo> getAudioAndCameraMemberList() {
+	ArrayList<AvMemberInfo> getAudioAndCameraMemberList() {
 		return mAudioAndCameraMemberList;
 	}
 
-	ArrayList<MemberInfo> getScreenMemberList() {
+	ArrayList<AvMemberInfo> getScreenMemberList() {
 		return mScreenMemberList;
 	}
 
