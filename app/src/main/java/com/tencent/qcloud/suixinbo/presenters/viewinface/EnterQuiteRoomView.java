@@ -9,7 +9,7 @@ public interface EnterQuiteRoomView extends MvpView{
 
     void EnterRoomComplete(int id_status, boolean succ);
 
-    void QuiteRoomCB(int id_status, boolean succ);
+    void QuiteRoomComplete(int id_status, boolean succ);
 
 
 }

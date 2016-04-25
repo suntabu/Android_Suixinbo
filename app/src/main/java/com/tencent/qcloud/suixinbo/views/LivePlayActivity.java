@@ -30,7 +30,6 @@ import com.tencent.qcloud.suixinbo.utils.Constants;
  * Live直播类
  */
 public class LivePlayActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener {
-    private static int IDStatus = -1;
     private EnterLiveHelper mEnterRoomProsscessHelper;
     private LiveControlHelper mLiveControlHelper;
     private static final String TAG = LivePlayActivity.class.getSimpleName();
@@ -52,10 +51,8 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
         initView();
         registerReceiver();
 
-        //获取进入身份
-        IDStatus = UserInfo.getInstance().getIdStatus();
         //进入房间流程
-        mEnterRoomProsscessHelper.startEnterRoom(IDStatus);
+        mEnterRoomProsscessHelper.startEnterRoom();
 
 
 //        QavsdkControl.getInstance().setCameraPreviewChangeCallback();
@@ -67,7 +64,6 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
 
             //AvSurfaceView 初始化成功
             if (action.equals(AvConstants.ACTION_SURFACE_CREATED)) {
@@ -140,14 +136,13 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
      */
     @Override
     public void EnterRoomComplete(int id_status, boolean isSucc) {
+        Toast.makeText(LivePlayActivity.this, "EnterRoomComplete " + id_status + " isSucc " + isSucc, Toast.LENGTH_SHORT).show();
         if (isSucc == true) {
             if (id_status == Constants.HOST) {//主播方式加入房间成功
                 //开启摄像头渲染画面
                 Log.i(TAG, "createlive EnterRoomComplete isSucc" + isSucc);
                 mEnterRoomProsscessHelper.initAvUILayer(avView);
-                Toast.makeText(LivePlayActivity.this, "Host Enter Live Room Succ ", Toast.LENGTH_SHORT).show();
             } else {//以成员方式加入房间成功
-                Toast.makeText(LivePlayActivity.this, "Member Enter Live Room Succ ", Toast.LENGTH_SHORT).show();
 
             }
         }
@@ -155,7 +150,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
 
 
     @Override
-    public void QuiteRoomCB(int id_status, boolean succ) {
+    public void QuiteRoomComplete(int id_status, boolean succ) {
         finish();
     }
 
@@ -182,7 +177,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_back:
-                mEnterRoomProsscessHelper.stepOutRoom();
+                mEnterRoomProsscessHelper.QuiteLive();
                 break;
         }
     }

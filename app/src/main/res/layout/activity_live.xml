@@ -12,26 +12,40 @@
         android:layout_height="fill_parent" />
 
 
-    <ViewFlipper
-        android:id="@+id/ViewFlipper"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"></ViewFlipper>
-
-
-
-
-
     <TextView
         android:id="@+id/btn_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
-        android:onClick="onClick"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
+        android:onClick="onClick"
         android:text="back"
         android:textColor="@color/btn_red"
-        android:textSize="20sp"
-        />
+        android:textSize="20sp" />
+
+    <ListView
+        android:id="@+id/im_msg_listview"
+        android:layout_width="250dp"
+        android:layout_height="220dp"
+        android:layout_marginBottom="50dp"
+        android:stackFromBottom="true"
+        android:layout_marginTop="50dp"
+        android:cacheColorHint="#00000000"
+        android:divider="#3c421b1b"
+        android:scrollbarStyle="outsideOverlay"
+        android:layout_gravity="left|bottom"
+        android:transcriptMode="normal" />
+
+
+    <include
+        android:id="@+id/member_bottom_layout"
+        layout="@layout/member_bottom_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="15dp" />
+
 
 </FrameLayout>
