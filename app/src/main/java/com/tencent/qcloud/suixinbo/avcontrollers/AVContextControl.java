@@ -59,24 +59,6 @@ class AVContextControl {
     /**
      * 启动AVSDK系统
      *
-     * @param identifier 用户身份的唯一标识
-     * @param usersig    用户身份的校验信息
-     */
-    int startContext(String identifier, String usersig) {
-        int result = AVError.AV_OK;
-        if (!hasAVContext()) {
-            onAVSDKCreate(true, IMSdkInt.get().getTinyId(), 0);
-        } else {
-//            Toast.makeText(mContext, "AVContext is empty !!! ", Toast.LENGTH_SHORT).show();
-        }
-
-        return result;
-    }
-
-
-    /**
-     * 启动AVSDK系统
-     *
      * @return 0 代表成功
      */
     int startContext() {
@@ -177,7 +159,6 @@ class AVContextControl {
         mAVContext.onDestroy();
         mAVContext = null;
         mIsInStopContext = false;
-//        Toast.makeText(mContext, "AVSDKLogin unI nit : " + result, Toast.LENGTH_SHORT).show();
         isStartContext = false;
         mContext.sendBroadcast(new Intent(
                 AvConstants.ACTION_CLOSE_CONTEXT_COMPLETE));

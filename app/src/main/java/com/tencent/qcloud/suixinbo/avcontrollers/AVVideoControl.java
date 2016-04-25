@@ -188,13 +188,6 @@ public class AVVideoControl {
 	RemoteVideoPreviewCallback remoteVideoPreviewCallback = new RemoteVideoPreviewCallback() {
 		public void onFrameReceive(VideoFrame videoFrame) {
 		
-//			Log.d(TAG, "real RemoteVideoPreviewCallback.onFrameReceive");
-//			Log.d(TAG, "len: " + videoFrame.dataLen);
-//			Log.d(TAG, "identifier: " + videoFrame.identifier);
-//			Log.d(TAG, "videoFormat: " + videoFrame.videoFormat);
-//			Log.d(TAG, "width: " + videoFrame.width);
-//			Log.d(TAG, "height: " + videoFrame.height);
-			
 			String printTxtPath =   AvConstants.outputYuvFilePath + "/" + videoFrame.height + "_" + videoFrame.width + "_" + videoFrame.identifier +".yuv" ;
 			Log.d("test", "printTxtPath: " + printTxtPath);
 			byte[] b = videoFrame.data;
@@ -227,12 +220,6 @@ public class AVVideoControl {
 	LocalVideoPreProcessCallback localVideoPreProcessCallback = new LocalVideoPreProcessCallback() {
 		public void onFrameReceive(VideoFrame videoFrame) {
 		
-//			Log.d(TAG, "len: " + videoFrame.dataLen);
-//			Log.d(TAG, "identifier: " + videoFrame.identifier);
-//			Log.d(TAG, "videoFormat: " + videoFrame.videoFormat);
-//			Log.d(TAG, "width: " + videoFrame.width);
-//			Log.d(TAG, "height: " + videoFrame.height);
-			
 			//简单的摄像头前处理函数
 			String printTxtPath =   AvConstants.outputYuvFilePath + "/" + videoFrame.height + "_" + videoFrame.width + "_" + videoFrame.identifier +".yuv" ;
 			Log.d("test", "printTxtPath: " + printTxtPath);

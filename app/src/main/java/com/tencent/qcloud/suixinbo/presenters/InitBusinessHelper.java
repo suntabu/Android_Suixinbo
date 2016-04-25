@@ -2,7 +2,6 @@ package com.tencent.qcloud.suixinbo.presenters;
 
 import android.content.Context;
 
-import com.tencent.TIMCallBack;
 import com.tencent.TIMManager;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -35,16 +34,11 @@ public class InitBusinessHelper {
     private static QavsdkControl mQavsdkControl = null;
 
 
-
-
-
-
     /**
      * 初始化App
      */
     public static void initApp(Context context) {
-        //初始化imsdk
-
+        //初始化avsdk imsdk
         QavsdkControl.initQavsdk(context);
         TIMManager.getInstance().init(context);
 
@@ -60,6 +54,7 @@ public class InitBusinessHelper {
 
 
     /**
+     * 初始化TLS登录模块
      *
      * @param context
      */
@@ -71,16 +66,5 @@ public class InitBusinessHelper {
 //      UserInfo.getInstance().setId(id);
 //      UserInfo.getInstance().setUserSig(TLSService.getInstance().getUserSig(id));
     }
-
-
-    /**
-     * 登出imsdk
-     *
-     * @param callBack 登出后回调
-     */
-    public static void logout(TIMCallBack callBack) {
-        TIMManager.getInstance().logout(callBack);
-    }
-
 
 }

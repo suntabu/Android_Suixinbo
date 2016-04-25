@@ -7,7 +7,7 @@ package com.tencent.qcloud.suixinbo.presenters.viewinface;
 public interface EnterQuiteRoomView extends MvpView{
 
 
-    void EnterRoomCB(int id_status, boolean succ);
+    void EnterRoomComplete(int id_status, boolean succ);
 
     void QuiteRoomCB(int id_status, boolean succ);
 

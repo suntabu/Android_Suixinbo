@@ -17,10 +17,10 @@ import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 /**
  * 直播的控制类
  */
-public class LiveControlPresenter extends Presenter  {
+public class LiveControlHelper extends Presenter  {
     public LiveView mLiveView;
     public Context mContext;
-    private static final String TAG = LiveControlPresenter.class.getSimpleName();
+    private static final String TAG = LiveControlHelper.class.getSimpleName();
     private static final int CAMERA_NONE = -1;
     private static final int FRONT_CAMERA = 0;
     private static final int BACK_CAMERA = 1;
@@ -28,7 +28,7 @@ public class LiveControlPresenter extends Presenter  {
     private static final boolean HOST = true;
     private static final boolean MEMBER =false;
 
-    public LiveControlPresenter(Context context, LiveView liveview) {
+    public LiveControlHelper(Context context, LiveView liveview) {
         mContext = context;
         mLiveView =  liveview;
     }

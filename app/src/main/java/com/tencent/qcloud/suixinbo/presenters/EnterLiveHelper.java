@@ -27,10 +27,10 @@ import java.util.ArrayList;
 /**
  * 进出房间Presenter
  */
-public class EnterRoomAndQuiteRoomPresenter extends Presenter {
+public class EnterLiveHelper extends Presenter {
     private EnterQuiteRoomView mStepInOutView;
     private Context mContext;
-    private static final String TAG = EnterRoomAndQuiteRoomPresenter.class.getSimpleName();
+    private static final String TAG = EnterLiveHelper.class.getSimpleName();
     private static boolean isInChatRoom = false;
 
     private static final int TYPE_MEMBER_CHANGE_IN = 1;//进入房间事件。
@@ -43,7 +43,7 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
     private static final int TYPE_MEMBER_CHANGE_NO_SCREEN_VIDEO = 8;//无发屏幕视频事件。
 
 
-    public EnterRoomAndQuiteRoomPresenter(Context context, EnterQuiteRoomView view) {
+    public EnterLiveHelper(Context context, EnterQuiteRoomView view) {
         mContext = context;
         mStepInOutView = view;
     }
@@ -75,9 +75,9 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
             if (result == 0) {
                 //只有进入房间后才能初始化AvView
                 initAudioService();
-                mStepInOutView.EnterRoomCB(UserInfo.getInstance().getIdStatus(), true);
+                mStepInOutView.EnterRoomComplete(UserInfo.getInstance().getIdStatus(), true);
             } else {
-                mStepInOutView.EnterRoomCB(UserInfo.getInstance().getIdStatus(), false);
+                mStepInOutView.EnterRoomComplete(UserInfo.getInstance().getIdStatus(), false);
             }
 
         }

@@ -9,21 +9,21 @@ import android.widget.TextView;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
-import com.tencent.qcloud.suixinbo.presenters.PublishLivePresenter;
+import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 
 /**
  * Created by admin on 16/4/21.
  */
 public class PublishLiveActivity extends Activity implements View.OnClickListener{
-    private PublishLivePresenter mPublishLivePresenter;
+    private PublishHelper mPublishLivePresenter;
     private TextView BtnBack,BtnPublish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_publish);
-        mPublishLivePresenter = new PublishLivePresenter(this);
+        mPublishLivePresenter = new PublishHelper(this);
         BtnBack = (TextView)findViewById(R.id.btn_cancel);
         BtnPublish = (TextView)findViewById(R.id.btn_publish);
         BtnBack.setOnClickListener(this);

@@ -7,17 +7,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.presenters.InitBusinessHelper;
-import com.tencent.qcloud.suixinbo.presenters.LoginAoutPresenter;
+import com.tencent.qcloud.suixinbo.presenters.LoginHeloper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
-
-import tencent.tls.platform.TLSErrInfo;
-import tencent.tls.platform.TLSStrAccRegListener;
-import tencent.tls.platform.TLSUserInfo;
 
 /**
  * 注册账号类
@@ -27,8 +21,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener ,
     private TextView mBtnRegister;
     private ImageButton mBtnBack;
     QavsdkApplication mMyApplication;
-    TLSStrAccRegListener mStrAccRegListener;
-    LoginAoutPresenter mLoginAoutPresenter;
+    LoginHeloper mLoginHeloper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,14 +34,14 @@ public class RegisterActivity extends Activity implements View.OnClickListener ,
         mBtnBack.setOnClickListener(this);
         mBtnRegister.setOnClickListener(this);
         mMyApplication =(QavsdkApplication)getApplication();
-        mStrAccRegListener = new StrAccRegListener();
-        mLoginAoutPresenter = new LoginAoutPresenter(this,this);
+        mLoginHeloper = new LoginHeloper(this,this);
     }
 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btn_register) {
-                InitBusinessHelper.getmAccountHelper().TLSStrAccReg(mUserName.getText().toString(), mPassword.getText().toString(), mStrAccRegListener);
+            //注册一个账号
+            mLoginHeloper.registerTLS(mUserName.getText().toString(),mPassword.getText().toString());
         }
         if(view.getId() == R.id.back){
             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
@@ -66,29 +59,6 @@ public class RegisterActivity extends Activity implements View.OnClickListener ,
     public void LoginFail() {
 
     }
-
-    class StrAccRegListener implements TLSStrAccRegListener {
-        @Override
-        public void OnStrAccRegSuccess(TLSUserInfo userInfo) {
-            Toast.makeText(RegisterActivity.this,  userInfo.identifier+ " register a user succ !  " , Toast.LENGTH_SHORT).show();
-            String id = userInfo.identifier;
-            //创建一个房间号
-            mLoginAoutPresenter.crearServerRoom();
-            //继续登录流程
-            mLoginAoutPresenter.tlsLogin(id,mRepassword.getText().toString());
-        }
-
-        @Override
-        public void OnStrAccRegFail(TLSErrInfo errInfo) {
-            Toast.makeText(RegisterActivity.this, ""+errInfo.Msg, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void OnStrAccRegTimeout(TLSErrInfo errInfo) {
-            Toast.makeText(RegisterActivity.this, ""+errInfo.Msg, Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
     /**
      * 直接跳转主界面

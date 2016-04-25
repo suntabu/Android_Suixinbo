@@ -15,28 +15,28 @@ import com.tencent.qcloud.suixinbo.utils.Constants;
 
 import tencent.tls.platform.TLSErrInfo;
 import tencent.tls.platform.TLSPwdLoginListener;
+import tencent.tls.platform.TLSStrAccRegListener;
 import tencent.tls.platform.TLSUserInfo;
 
 /**
  * 登录的数据处理类
  */
-public class LoginAoutPresenter {
+public class LoginHeloper {
     private Context mContext;
-    private static final String TAG = LoginAoutPresenter.class.getSimpleName();
+    private static final String TAG = LoginHeloper.class.getSimpleName();
     private LoginView mLoginView;
     private LogoutView mLogoutView;
     private QavsdkControl mQavsdkControl;
 
-    public LoginAoutPresenter(Context context, LoginView loginView) {
+    public LoginHeloper(Context context, LoginView loginView) {
         mContext = context;
         mLoginView = loginView;
     }
 
-    public LoginAoutPresenter(Context context, LogoutView logoutView) {
+    public LoginHeloper(Context context, LogoutView logoutView) {
         mContext = context;
-        mLogoutView =  logoutView;
+        mLogoutView = logoutView;
     }
-
 
 
     /**
@@ -44,7 +44,6 @@ public class LoginAoutPresenter {
      *
      * @param identify 用户id
      * @param userSig  用户签名
-     *
      */
     public void imLogin(String identify, String userSig) {
         TIMUser user = new TIMUser();
@@ -59,8 +58,8 @@ public class LoginAoutPresenter {
                 new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
-                        Log.e(TAG ,"IMLogin fail ："+ i+" msg " + s);
-                        Toast.makeText(mContext, "IMLogin fail ："+ i+" msg " + s, Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "IMLogin fail ：" + i + " msg " + s);
+                        Toast.makeText(mContext, "IMLogin fail ：" + i + " msg " + s, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -75,8 +74,8 @@ public class LoginAoutPresenter {
 
     /**
      * 退出imsdk
-     *
-     *  退出成功会调用退出AVSDK
+     * <p>
+     * 退出成功会调用退出AVSDK
      */
     public void imLogout() {
         TIMManager.getInstance().logout(new TIMCallBack() {
@@ -99,10 +98,11 @@ public class LoginAoutPresenter {
 
     /**
      * 登录TLS账号系统
+     *
      * @param id
      * @param password
      */
-    public void tlsLogin(String id ,String password){
+    public void tlsLogin(String id, String password) {
         InitBusinessHelper.getmLoginHelper().TLSPwdLogin(id, password.getBytes(), new TLSPwdLoginListener() {
             @Override
             public void OnPwdLoginSuccess(TLSUserInfo tlsUserInfo) {//获取用户信息
@@ -138,12 +138,43 @@ public class LoginAoutPresenter {
         });
     }
 
+
+    /**
+     * 在TLS模块注册一个账号
+     *
+     * @param id
+     * @param psw
+     */
+    public void registerTLS(final String id, final String psw) {
+        InitBusinessHelper.getmAccountHelper().TLSStrAccReg(id, psw, new TLSStrAccRegListener() {
+            @Override
+            public void OnStrAccRegSuccess(TLSUserInfo tlsUserInfo) {
+                Toast.makeText(mContext, tlsUserInfo.identifier + " register a user succ !  ", Toast.LENGTH_SHORT).show();
+                //创建一个房间号
+                crearServerRoom();
+                //继续登录流程
+                tlsLogin(id, psw);
+            }
+
+            @Override
+            public void OnStrAccRegFail(TLSErrInfo tlsErrInfo) {
+
+            }
+
+            @Override
+            public void OnStrAccRegTimeout(TLSErrInfo tlsErrInfo) {
+
+            }
+        });
+    }
+
+
     /**
      * 向用户服务器获取自己房间号
      */
-    private void getMyRoomNum(){
+    private void getMyRoomNum() {
         UserInfo.getInstance().setMyRoomNum(54321);
-        UserInfo.getInstance().writeToCache(mContext.getApplicationContext(),UserInfo.getInstance().getId(),UserInfo.getInstance().getUserSig(),UserInfo.getInstance().getMyRoomNum());
+        UserInfo.getInstance().writeToCache(mContext.getApplicationContext(), UserInfo.getInstance().getId(), UserInfo.getInstance().getUserSig(), UserInfo.getInstance().getMyRoomNum());
         startAVSDK();
     }
 
@@ -151,18 +182,17 @@ public class LoginAoutPresenter {
     /**
      * 初始化AVSDK
      */
-    private void startAVSDK(){
-        QavsdkControl.getInstance().setAvConfig(Constants.SDK_APPID,""+Constants.ACCOUNT_TYPE,UserInfo.getInstance().getId(),UserInfo.getInstance().getUserSig());
+    private void startAVSDK() {
+        QavsdkControl.getInstance().setAvConfig(Constants.SDK_APPID, "" + Constants.ACCOUNT_TYPE, UserInfo.getInstance().getId(), UserInfo.getInstance().getUserSig());
         QavsdkControl.getInstance().startContext();
         mLoginView.LoginSucc();
     }
 
 
-
     /**
      * 反初始化AVADK
      */
-    private void stopAVSDK(){
+    private void stopAVSDK() {
         QavsdkControl.getInstance().stopContext();
         mLogoutView.LogoutSucc();
     }
@@ -171,8 +201,8 @@ public class LoginAoutPresenter {
     /**
      * 通知用户服务器创建自己房间号
      */
-    public void crearServerRoom(){
-         getMyRoomNum();
+    public void crearServerRoom() {
+        getMyRoomNum();
     }
 
 }
