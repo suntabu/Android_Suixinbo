@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 
 import com.tencent.qcloud.suixinbo.R;
+import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 
 /**
  * 主界面
@@ -21,6 +22,8 @@ public class HomeActivity extends FragmentActivity {
     private final Class fragmentArray[] = {FragmentLiveList.class,FragmentPublish.class, FragmentProfile.class};
     private int mImageViewArray[] = {R.drawable.tab_live,R.drawable.icon_publish,R.drawable.tab_profile};
     private String mTextviewArray[] = {"live" ,"publish","profile"};
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,5 +64,13 @@ public class HomeActivity extends FragmentActivity {
         icon.setImageResource(mImageViewArray[index]);
         return view;
     }
+
+
+    @Override
+    protected void onDestroy() {
+        QavsdkControl.getInstance().stopContext();
+        super.onDestroy();
+    }
+
 
 }

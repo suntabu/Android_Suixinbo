@@ -34,7 +34,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener,Lo
         View view = inflater.inflate(R.layout.profileframent_layout, container, false);
         mID = (TextView) view.findViewById(R.id.name);
         mID.setText(UserInfo.getInstance().getId());
-        mBtnLogout = (TextView) view.findViewById(R.id.btn_logout);
+        mBtnLogout = (TextView) view.findViewById(R.id.JoinLive);
         mBtnLogout.setOnClickListener(this);
         mLoginAoutPresenter = new LoginAoutPresenter(getActivity().getApplicationContext(),this);
         return view;
@@ -52,7 +52,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener,Lo
 
     @Override
     public void onClick(View view) {
-        if(view.getId()==R.id.btn_logout){
+        if(view.getId()==R.id.JoinLive){
             mLoginAoutPresenter.imLogout();
         }
     }

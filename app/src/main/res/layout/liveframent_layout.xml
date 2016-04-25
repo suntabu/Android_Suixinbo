@@ -2,23 +2,43 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/livetitle"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:text="@string/live_titile"
-        android:gravity="center"
-        android:textSize="20sp"
         android:background="@color/btn_red_hover"
+        android:gravity="center"
+        android:text="@string/live_titile"
+        android:textSize="20sp" />
+
+
+    <!--<EditText-->
+        <!--android:id="@+id/testHostId"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="willguo"-->
+        <!--/>-->
+
+    <TextView
+        android:id="@+id/JoinLive"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="Join"
+        android:clickable="true"
+        android:focusable="true"
+        android:textSize="20sp"
+        android:background="@color/btn_red"
         />
 
-    <ListView
-        android:id="@android:id/tabhost"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <!--<ListView-->
+        <!--android:id="@android:id/tabhost"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
 
 </LinearLayout>

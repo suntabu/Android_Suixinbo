@@ -1,6 +1,7 @@
 package com.tencent.qcloud.suixinbo.presenters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import com.tencent.av.sdk.AVRoom;
 import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
+import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -31,6 +33,15 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
     private static final String TAG = EnterRoomAndQuiteRoomPresenter.class.getSimpleName();
     private static boolean isInChatRoom = false;
 
+    private static final int TYPE_MEMBER_CHANGE_IN = 1;//进入房间事件。
+    private static final int TYPE_MEMBER_CHANGE_OUT = 2;//退出房间事件。
+    private static final int TYPE_MEMBER_CHANGE_HAS_CAMERA_VIDEO = 3;//有发摄像头视频事件。
+    private static final int TYPE_MEMBER_CHANGE_NO_CAMERA_VIDEO = 4;//无发摄像头视频事件。
+    private static final int TYPE_MEMBER_CHANGE_HAS_AUDIO = 5;//有发语音事件。
+    private static final int TYPE_MEMBER_CHANGE_NO_AUDIO = 6;//无发语音事件。
+    private static final int TYPE_MEMBER_CHANGE_HAS_SCREEN_VIDEO = 7;//有发屏幕视频事件。
+    private static final int TYPE_MEMBER_CHANGE_NO_SCREEN_VIDEO = 8;//无发屏幕视频事件。
+
 
     public EnterRoomAndQuiteRoomPresenter(Context context, EnterQuiteRoomView view) {
         mContext = context;
@@ -38,17 +49,17 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
     }
 
 
-
     /**
      * 进入一个直播房间流程
      *
      * @param isHost true代表是直播
      */
-    public void startEnterRoomByHost(int isHost) {
+    public void startEnterRoom(int isHost) {
         if (isHost == Constants.HOST) {
             createLive();
         } else {
-            joinLive();
+            Log.i(TAG, "joinLiveRoom startEnterRoom ");
+            joinLive(LiveRoomInfo.getRoomNum());
         }
 
     }
@@ -60,9 +71,10 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
     private AVRoomMulti.Delegate mRoomDelegate = new AVRoomMulti.Delegate() {
         // 创建房间成功回调
         public void onEnterRoomComplete(int result) {
-            Log.i(TAG, "createlive createAVRoom callback " + result);
+            Log.i(TAG, "createlive joinLiveRoom createAVRoom callback " + result);
             if (result == 0) {
                 //只有进入房间后才能初始化AvView
+                initAudioService();
                 mStepInOutView.EnterRoomCB(UserInfo.getInstance().getIdStatus(), true);
             } else {
                 mStepInOutView.EnterRoomCB(UserInfo.getInstance().getIdStatus(), false);
@@ -74,11 +86,42 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
         public void onExitRoomComplete(int result) {
             Log.d(TAG, "WL_DEBUG mRoomDelegate.onExitRoomComplete result = " + result);
             mStepInOutView.QuiteRoomCB(UserInfo.getInstance().getIdStatus(), true);
+            uninitAudioService();
         }
 
         //房间成员变化回调
         public void onEndpointsUpdateInfo(int eventid, String[] updateList) {
             Log.d(TAG, "WL_DEBUG onEndpointsUpdateInfo. eventid = " + eventid);
+
+            switch(eventid){
+                case TYPE_MEMBER_CHANGE_IN:
+                    for(String id : updateList){
+                        String host = LiveRoomInfo.getHostID();
+                        if(id.equals(host)){
+//                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
+                        }
+                    }
+                    break;
+                case TYPE_MEMBER_CHANGE_HAS_CAMERA_VIDEO:
+                    for(String id : updateList){
+                        String host = LiveRoomInfo.getHostID();
+                        if(id.equals(host)){
+                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
+                        }
+                    }
+                    break;
+                case TYPE_MEMBER_CHANGE_HAS_AUDIO:
+                    break;
+            }
+
+            //用户
+            for (String member : updateList) {
+                Log.i(TAG, " onEndpoints id " + member);
+                if (member.equals(LiveRoomInfo.getHostID())){
+
+                }
+
+            }
         }
 
         public void OnPrivilegeDiffNotify(int privilege) {
@@ -132,18 +175,11 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
      * 1_3创建一个AV房间
      */
     private void createAVRoom(int roomNum) {
-        Log.i(TAG, "createlive createAVRoom " + roomNum);
-        AVContext avContext = QavsdkControl.getInstance().getAVContext();
-        byte[] authBuffer = null;//权限位加密串；TODO：请业务侧填上自己的加密串
-        AVRoom.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam(roomNum, AvConstants.auth_bits, authBuffer, "", AvConstants.AUDIO_VOICE_CHAT_MODE, true);
-        // create room
-        avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
-
+        EnterAVRoom(roomNum);
     }
 
     /**
      * 初始化Usr
-     *
      */
     public void initAvUILayer(View avView) {
         //初始化AVSurfaceView
@@ -153,7 +189,7 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
 
     }
 
-    public void OpenCameraAndMic(){
+    public void OpenCameraAndMic() {
 
     }
 
@@ -168,22 +204,46 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
     /**
      * 2_1加入一个房间
      */
-    private void joinLive() {
-        joinIMChatRoom();
+    private void joinLive(int roomNum) {
+        joinIMChatRoom(roomNum);
     }
 
     /**
      * 2_2加入一个聊天室
      */
-    private void joinIMChatRoom() {
-        joinAVRoom();
+    private void joinIMChatRoom(int chatRoomId) {
+        Log.i(TAG, "joinLiveRoom joinIMChatRoom "+chatRoomId);
+        TIMGroupManager.getInstance().applyJoinGroup("" + chatRoomId, Constants.APPLY_CHATROOM + chatRoomId, new TIMCallBack() {
+            @Override
+            public void onError(int i, String s) {
+                //已经在是成员了
+                if (i == Constants.IS_ALREADY_MEMBER) {
+                    Log.i(TAG, "joinLiveRoom joinIMChatRoom callback succ ");
+                    joinAVRoom(LiveRoomInfo.getRoomNum());
+                    isInChatRoom = true;
+                } else {
+                    Toast.makeText(mContext, "join IM room fail " + s + " " + i, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onSuccess() {
+                Log.i(TAG, "joinLiveRoom joinIMChatRoom callback succ ");
+                isInChatRoom = true;
+                joinAVRoom(LiveRoomInfo.getRoomNum());
+            }
+        });
+
     }
 
     /**
      * 2_2加入一个AV房间
      */
-    private void joinAVRoom() {
-
+    private void joinAVRoom(int avRoomNum) {
+//        if (!mQavsdkControl.getIsInEnterRoom()) {
+//            initAudioService();
+                 EnterAVRoom(avRoomNum);
+//        }
     }
 
 
@@ -248,6 +308,29 @@ public class EnterRoomAndQuiteRoomPresenter extends Presenter {
      */
     private void notifyServerQuit() {
 
+    }
+
+    private void EnterAVRoom(int roomNum){
+        Log.i(TAG, "createlive joinLiveRoom enterAVRoom " + roomNum);
+        AVContext avContext = QavsdkControl.getInstance().getAVContext();
+        byte[] authBuffer = null;//权限位加密串；TODO：请业务侧填上自己的加密串
+        AVRoom.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam(roomNum, AvConstants.auth_bits, authBuffer, "", AvConstants.AUDIO_VOICE_CHAT_MODE, true);
+        // create room
+        int ret = avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
+        Log.i(TAG, "EnterAVRoom "+ret);
+    }
+
+
+    private void initAudioService() {
+        if ((QavsdkControl.getInstance() != null) && (QavsdkControl.getInstance() .getAVContext() != null) && (QavsdkControl.getInstance() .getAVContext().getAudioCtrl() != null)) {
+            QavsdkControl.getInstance() .getAVContext().getAudioCtrl().startTRAEService();
+        }
+    }
+
+    private void uninitAudioService() {
+        if ((QavsdkControl.getInstance() != null) && (QavsdkControl.getInstance() .getAVContext() != null) && (QavsdkControl.getInstance() .getAVContext().getAudioCtrl() != null)) {
+            QavsdkControl.getInstance() .getAVContext().getAudioCtrl().startTRAEService();
+        }
     }
 
 }

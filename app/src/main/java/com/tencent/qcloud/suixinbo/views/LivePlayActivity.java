@@ -10,28 +10,33 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
+import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
 import com.tencent.qcloud.suixinbo.presenters.EnterRoomAndQuiteRoomPresenter;
 import com.tencent.qcloud.suixinbo.presenters.LiveControlPresenter;
-import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 
 
 /**
  * Live直播类
  */
-public class LivePlayActivity extends Activity implements EnterQuiteRoomView, LiveView ,View.OnClickListener {
+public class LivePlayActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener {
     private static int IDStatus = -1;
     private EnterRoomAndQuiteRoomPresenter mEnterRoomProsscessHelper;
     private LiveControlPresenter mLiveControlHelper;
     private static final String TAG = LivePlayActivity.class.getSimpleName();
     private View avView;
+    private TextView BtnBack;
+    private boolean SurfaceViewCreate = false;
+    private boolean HostEnter = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,21 +48,15 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
 
         mEnterRoomProsscessHelper = new EnterRoomAndQuiteRoomPresenter(this, this);
         mLiveControlHelper = new LiveControlPresenter(this, this);
-
+        SurfaceViewCreate = false;
+        HostEnter = false;
         initView();
         registerReceiver();
 
         //获取进入身份
-        IDStatus = getIntent().getIntExtra(Constants.ID_STATUS, -1);
-        if (IDStatus == Constants.HOST) {//走主播进入房间流程
-            Log.i(TAG, "keypath LivePlayActivity host StepinLive ");
-
-            //进入房间流程
-            mEnterRoomProsscessHelper.startEnterRoomByHost(UserInfo.getInstance().getIdStatus());
-
-        } else {//观众身份加入直播
-
-        }
+        IDStatus = UserInfo.getInstance().getIdStatus();
+        //进入房间流程
+        mEnterRoomProsscessHelper.startEnterRoom(IDStatus);
 
 
 //        QavsdkControl.getInstance().setCameraPreviewChangeCallback();
@@ -65,36 +64,71 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     }
 
 
-
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(AvConstants.ACTION_SURFACE_CREATED)) {//AvSurfaceView 初始化成功
+
+
+            //AvSurfaceView 初始化成功
+            if (action.equals(AvConstants.ACTION_SURFACE_CREATED)) {
+                SurfaceViewCreate = true;
                 //打开摄像头
-                mLiveControlHelper.OpenCameraAndMic();
+                if (UserInfo.getInstance().getIdStatus() == Constants.HOST) {
+                    mLiveControlHelper.OpenCameraAndMic();
+                } else {
+
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//
+                    String host = LiveRoomInfo.getHostID();
+//                    mLiveControlHelper.requestView(host);
+                    if (SurfaceViewCreate == true && HostEnter == true) {
+                        Log.i(TAG, "yes yes yes surface into ");
+                        mLiveControlHelper.requestView(host);
+                    }
+
+                }
+
+
             }
+            //主播数据OK
+            if (action.equals(AvConstants.ACTION_HOST_ENTER)) {
+                HostEnter = true;
+                String host = LiveRoomInfo.getHostID();
+                if (SurfaceViewCreate == true && HostEnter == true) {
+                    Log.i(TAG, "yes yes yes member into ");
+
+                    mLiveControlHelper.requestView(host);
+                }
+            }
+
         }
     };
 
-    private void registerReceiver(){
+    private void registerReceiver() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AvConstants.ACTION_SURFACE_CREATED);
+        intentFilter.addAction(AvConstants.ACTION_HOST_ENTER);
         registerReceiver(mBroadcastReceiver, intentFilter);
 
     }
 
-    private void unregisterReceiver(){
+    private void unregisterReceiver() {
         unregisterReceiver(mBroadcastReceiver);
     }
 
     /**
      * 初始化UI
      */
-    private void initView(){
+    private void initView() {
         avView = findViewById(R.id.av_video_layer_ui);
+        BtnBack = (TextView) findViewById(R.id.btn_back);
+        BtnBack.setOnClickListener(this);
     }
-
 
 
     @Override
@@ -110,8 +144,6 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     }
 
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -121,6 +153,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
 
     /**
      * 进入房间回调
+     *
      * @param id_status
      * @param isSucc
      */
@@ -132,6 +165,10 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
                 Log.i(TAG, "createlive EnterRoomCB isSucc" + isSucc);
                 mEnterRoomProsscessHelper.initAvUILayer(avView);
                 Toast.makeText(LivePlayActivity.this, "Host Enter Live Room Succ ", Toast.LENGTH_SHORT).show();
+            } else {//以成员方式加入房间成功
+                Toast.makeText(LivePlayActivity.this, "Member Enter Live Room Succ ", Toast.LENGTH_SHORT).show();
+                mEnterRoomProsscessHelper.initAvUILayer(avView);
+                //等待zhuzhi
 
             }
         }
@@ -147,12 +184,19 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
      * 开启本地渲染
      */
     @Override
-    public void showVideoView() {
+    public void showVideoView(boolean isHost) {
         //渲染本地界面
-        QavsdkControl.getInstance().setSelfId(UserInfo.getInstance().getId());
-        QavsdkControl.getInstance().setLocalHasVideo(true, UserInfo.getInstance().getId());
-        //通知用户服务器
-        mEnterRoomProsscessHelper.notifyServerCreateRoom();
+        if (isHost == true) {
+
+            Log.i(TAG, "showVideoView host :" + UserInfo.getInstance().getId());
+            QavsdkControl.getInstance().setSelfId(UserInfo.getInstance().getId());
+            QavsdkControl.getInstance().setLocalHasVideo(true, UserInfo.getInstance().getId());
+            //通知用户服务器
+            mEnterRoomProsscessHelper.notifyServerCreateRoom();
+        } else {
+            String host = LiveRoomInfo.getHostID();
+            QavsdkControl.getInstance().setRemoteHasVideo(true, LiveRoomInfo.getHostID(), Constants.BackGroundViewIndex);
+        }
 
     }
 

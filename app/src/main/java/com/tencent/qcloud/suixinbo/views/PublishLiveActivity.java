@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.tencent.qcloud.suixinbo.R;
+import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
 import com.tencent.qcloud.suixinbo.presenters.PublishLivePresenter;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -15,13 +17,18 @@ import com.tencent.qcloud.suixinbo.utils.Constants;
  */
 public class PublishLiveActivity extends Activity implements View.OnClickListener{
     private PublishLivePresenter mPublishLivePresenter;
-
+    private TextView BtnBack,BtnPublish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_publish);
         mPublishLivePresenter = new PublishLivePresenter(this);
+        BtnBack = (TextView)findViewById(R.id.btn_cancel);
+        BtnPublish = (TextView)findViewById(R.id.btn_publish);
+        BtnBack.setOnClickListener(this);
+        BtnPublish.setOnClickListener(this);
+
     }
 
 
@@ -37,6 +44,9 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 Intent intent= new Intent(this,LivePlayActivity.class);
                 intent.putExtra(Constants.ID_STATUS,Constants.HOST);
                 UserInfo.getInstance().setIdStatus(Constants.HOST);
+
+                LiveRoomInfo.getInstance().setHostID(UserInfo.getInstance().getId());
+                LiveRoomInfo.getInstance().setRoomNum(UserInfo.getInstance().getMyRoomNum());
                 startActivity(intent);
                 break;
         }

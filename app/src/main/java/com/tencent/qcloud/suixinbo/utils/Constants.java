@@ -5,9 +5,6 @@ package com.tencent.qcloud.suixinbo.utils;
  * 静态函数
  */
 public class Constants {
-//    public static final int ACCOUNT_TYPE = 884;
-//    //sdk appid 由腾讯分配
-//    public static final int SDK_APPID = 1400001692;
 
     public static final String USER_INFO = "user_info";
 
@@ -37,5 +34,12 @@ public class Constants {
     private static final int FRONT_CAMERA = 0;
 
     private static final int BACK_CAMERA = 1;
+
+    public static final String APPLY_CHATROOM = "申请加入";
+
+    public static final int IS_ALREADY_MEMBER = 10013;
+
+    public static final int BackGroundViewIndex = 0;
+
 
 }
