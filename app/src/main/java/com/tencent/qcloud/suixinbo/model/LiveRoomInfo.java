@@ -37,4 +37,7 @@ public class LiveRoomInfo {
     }
 
 
+    public static String getChatRoomId() {
+        return ""+RoomNum;
+    }
 }

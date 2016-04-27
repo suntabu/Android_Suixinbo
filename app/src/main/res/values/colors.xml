@@ -90,5 +90,15 @@
     <color name="colorGray5">#505050</color>
     <!--gray6-->
     <color name="colorGray6">#141414</color>
+
+
+    <color name="colorSendName">#9966cc</color>
+    <color name="colorSendName1">#FF3163</color>
+    <color name="colorSendName2">#973365</color>
+    <color name="colorSendName3">#006599</color>
+    <color name="colorSendName4">#D07E44</color>
+    <color name="colorSendName5">#97BC87</color>
+    <color name="colorSendName6">#FFAE1F</color>
+    <color name="colorSendName7">#FF437D</color>
     <!--蒙版-->
 </resources>

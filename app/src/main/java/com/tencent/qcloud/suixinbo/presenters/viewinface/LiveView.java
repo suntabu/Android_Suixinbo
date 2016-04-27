@@ -6,4 +6,7 @@ package com.tencent.qcloud.suixinbo.presenters.viewinface;
 public interface LiveView extends MvpView {
 
     void showVideoView(boolean isHost);
+
+    void refreshText(String text, String name);
+
 }

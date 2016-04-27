@@ -5,6 +5,17 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.tencent.TIMConversation;
+import com.tencent.TIMConversationType;
+import com.tencent.TIMElem;
+import com.tencent.TIMElemType;
+import com.tencent.TIMGroupSystemElem;
+import com.tencent.TIMGroupSystemElemType;
+import com.tencent.TIMManager;
+import com.tencent.TIMMessage;
+import com.tencent.TIMMessageListener;
+import com.tencent.TIMTextElem;
+import com.tencent.TIMValueCallBack;
 import com.tencent.av.sdk.AVAudioCtrl;
 import com.tencent.av.sdk.AVEndpoint;
 import com.tencent.av.sdk.AVError;
@@ -12,12 +23,15 @@ import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
+import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
+
+import java.util.List;
 
 /**
  * 直播的控制类
  */
-public class LiveControlHelper extends Presenter  {
+public class LiveControlHelper extends Presenter {
     public LiveView mLiveView;
     public Context mContext;
     private static final String TAG = LiveControlHelper.class.getSimpleName();
@@ -26,15 +40,14 @@ public class LiveControlHelper extends Presenter  {
     private static final int BACK_CAMERA = 1;
     private static final int MAX_REQUEST_VIEW_COUNT = 3;//当前最大支持请求画面个数
     private static final boolean HOST = true;
-    private static final boolean MEMBER =false;
+    private static final boolean MEMBER = false;
+    private TIMConversation mConversation;
+    private TIMConversation mC2CConversation;
 
     public LiveControlHelper(Context context, LiveView liveview) {
         mContext = context;
-        mLiveView =  liveview;
+        mLiveView = liveview;
     }
-
-
-
 
 
     private AVVideoCtrl.CameraPreviewChangeCallback mCameraPreviewChangeCallback = new AVVideoCtrl.CameraPreviewChangeCallback() {
@@ -54,9 +67,9 @@ public class LiveControlHelper extends Presenter  {
     /**
      * 开启摄像头和MIC
      */
-    public void OpenCameraAndMic(){
+    public void OpenCameraAndMic() {
         enableCamera(FRONT_CAMERA, true);
-        AVAudioCtrl avAudioCtrl =  QavsdkControl.getInstance().getAVContext().getAudioCtrl();//开启Mic
+        AVAudioCtrl avAudioCtrl = QavsdkControl.getInstance().getAVContext().getAudioCtrl();//开启Mic
         avAudioCtrl.enableMic(true);
 
     }
@@ -64,6 +77,7 @@ public class LiveControlHelper extends Presenter  {
 
     /**
      * 开启摄像头
+     *
      * @param camera
      * @param isEnable
      */
@@ -95,7 +109,7 @@ public class LiveControlHelper extends Presenter  {
      * @param identifier
      */
     public void requestView(String identifier) {
-        Log.i(TAG, "requestView "+identifier);
+        Log.i(TAG, "requestView " + identifier);
         AVView mRequestViewList[] = new AVView[MAX_REQUEST_VIEW_COUNT];
         String mRequestIdentifierList[] = new String[MAX_REQUEST_VIEW_COUNT];
         AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifier);
@@ -111,7 +125,7 @@ public class LiveControlHelper extends Presenter  {
             mRequestViewList[0] = view;
             mRequestIdentifierList[0] = identifier;
             mRequestViewList[0].viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
-            AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, 1,mRequestViewListCompleteCallback);
+            AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, 1, mRequestViewListCompleteCallback);
             mLiveView.showVideoView(MEMBER);
 
         } else {
@@ -126,6 +140,138 @@ public class LiveControlHelper extends Presenter  {
         }
     };
 
+    public void sendText(TIMMessage Nmsg) {
+        if (mConversation != null)
+            mConversation.sendMessage(Nmsg, new TIMValueCallBack<TIMMessage>() {
+                @Override
+                public void onError(int i, String s) {
+                    if (i == 85) { //消息体太长
+                        Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                    } else if (i == 6011) {//群主不存在
+                        Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                    }
+                    Log.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
+                }
+
+                @Override
+                public void onSuccess(TIMMessage timMessage) {
+                    //发送成回显示消息内容
+                    for (int j = 0; j < timMessage.getElementCount(); j++) {
+                        TIMElem elem = (TIMElem) timMessage.getElement(0);
+                        String sendId = timMessage.getSender();
+                        handleTextMessage(elem, sendId);
+                    }
+                    Log.i(TAG, "Send text Msg ok");
+
+                }
+            });
+    }
+
+    /**
+     * 初始化聊天室  设置监听器
+     */
+    public void initTIMGroup(String chatRoomId) {
+        Log.v(TAG, "initTIMGroup->current room id: " + chatRoomId);
+        mConversation = TIMManager.getInstance().getConversation(TIMConversationType.Group, chatRoomId);
+        TIMManager.getInstance().addMessageListener(msgListener);
+        mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, chatRoomId);
+    }
+
+
+    /**
+     * 群消息回调
+     */
+    private TIMMessageListener msgListener = new TIMMessageListener() {
+        @Override
+        public boolean onNewMessages(List<TIMMessage> list) {
+            //Log.d(TAG, "onNewMessages readMessage " + list.size());
+            //解析TIM推送消息
+            parseIMMessage(list);
+            return false;
+        }
+    };
+
+    /**
+     * 解析消息回调
+     *
+     * @param list 消息列表
+     */
+    private void parseIMMessage(List<TIMMessage> list) {
+        List<TIMMessage> tlist = list;
+
+
+        if (tlist.size() > 0) {
+            if (mConversation != null)
+                mConversation.setReadMessage(tlist.get(0));
+            Log.d(TAG, "parseIMMessage readMessage " + tlist.get(0).timestamp());
+        }
+//        if (!bNeverLoadMore && (tlist.size() < mLoadMsgNum))
+//            bMore = false;
+
+        for (int i = tlist.size() - 1; i >= 0; i--) {
+            TIMMessage currMsg = tlist.get(i);
+//
+
+
+            for (int j = 0; j < currMsg.getElementCount(); j++) {
+                if (currMsg.getElement(j) == null)
+                    continue;
+                TIMElem elem = currMsg.getElement(j);
+                TIMElemType type = elem.getType();
+
+                //系统消息
+                if (type == TIMElemType.GroupSystem) {
+                    if (TIMGroupSystemElemType.TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE == ((TIMGroupSystemElem) elem).getSubtype()) {
+//                        mUIhandler.sendEmptyMessage(IM_HOST_LEAVE);
+//                        LEVAE_MODE = true;
+                    }
+
+                }
+                //定制消息
+                if (type == TIMElemType.Custom) {
+                    handleCustomMsg(elem);
+                    continue;
+                }
+
+                //其他群消息过滤
+                if (!LiveRoomInfo.getChatRoomId().equals(currMsg.getConversation().getPeer())) {
+                    continue;
+                }
+
+                //最后处理文本消息
+                if (type == TIMElemType.Text) {
+                    String sendid = currMsg.getSender();
+                    handleTextMessage(elem, sendid);
+                }
+
+
+            }
+        }
+
+    }
+
+    /**
+     * 处理文本消息解析
+     * @param elem
+     * @param sendId
+     */
+    private void handleTextMessage(TIMElem elem, String sendId) {
+        TIMTextElem textElem = (TIMTextElem) elem;
+//        Toast.makeText(mContext, "" + textElem.getText(), Toast.LENGTH_SHORT).show();
+
+        mLiveView.refreshText(textElem.getText(),sendId);
+//        sendToUIThread(REFRESH_TEXT, textElem.getText(), sendId);
+    }
+
+
+    /**
+     * 处理定制消息 赞 关注 取消关注
+     *
+     * @param elem
+     */
+    private void handleCustomMsg(TIMElem elem) {
+
+    }
 
 
 }

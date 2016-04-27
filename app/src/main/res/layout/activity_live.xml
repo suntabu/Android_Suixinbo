@@ -4,12 +4,18 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-
     <include
         android:id="@+id/av_video_layer_ui"
         layout="@layout/qav_video_layer_ui"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
+
+
+    <include
+        android:id="@+id/head_up_layout"
+        layout="@layout/head_up_layout"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content" />
 
 
     <TextView
@@ -28,7 +34,7 @@
         android:id="@+id/im_msg_listview"
         android:layout_width="250dp"
         android:layout_height="220dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="60dp"
         android:stackFromBottom="true"
         android:layout_marginTop="50dp"
         android:cacheColorHint="#00000000"
@@ -39,8 +45,15 @@
 
 
     <include
-        android:id="@+id/member_bottom_layout"
         layout="@layout/member_bottom_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="15dp" />
+
+    <include
+        layout="@layout/host_bottom_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"

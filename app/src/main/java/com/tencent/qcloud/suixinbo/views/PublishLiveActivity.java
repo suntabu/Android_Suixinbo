@@ -44,7 +44,6 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 Intent intent= new Intent(this,LivePlayActivity.class);
                 intent.putExtra(Constants.ID_STATUS,Constants.HOST);
                 UserInfo.getInstance().setIdStatus(Constants.HOST);
-
                 LiveRoomInfo.getInstance().setHostID(UserInfo.getInstance().getId());
                 LiveRoomInfo.getInstance().setRoomNum(UserInfo.getInstance().getMyRoomNum());
                 startActivity(intent);

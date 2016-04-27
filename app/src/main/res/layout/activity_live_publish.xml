@@ -20,7 +20,7 @@
             android:layout_centerInParent="true"
             android:text="@string/text_live_preview"
             android:textColor="@color/colorTextG4"
-            android:textSize="@dimen/h7" />
+            android:textSize="@dimen/h10" />
 
         <TextView
             android:id="@+id/btn_cancel"

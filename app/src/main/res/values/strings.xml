@@ -21,6 +21,14 @@
     <string name="live_titile">最新直播</string>
 
 
+    <!-- live play -->
+    <string name="send">发送</string>
+
+    <!-- msgadapter -->
+    <item type="id" name="tag_first"></item>
+    <item type="id" name="tag_second"></item>
+
+
 
 
     <!-- profile fragment-->

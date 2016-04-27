@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/background_gray3"
+    android:background="@color/transparent"
     android:orientation="vertical">
 
     <FrameLayout
@@ -17,19 +17,19 @@
         android:background="@color/transparent"
         >
 
-        <TextView
-            android:id="@+id/textview"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom"
-            android:background="@color/white" />
+        <!--<TextView-->
+            <!--android:id="@+id/textview"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:layout_gravity="bottom"-->
+            <!--android:background="@color/white" />-->
 
         <android.support.v4.app.FragmentTabHost
             android:id="@android:id/tabhost"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@color/transparent">
+            android:background="@drawable/tabhost_bg">
 
             <FrameLayout
                 android:id="@android:id/tabcontent"

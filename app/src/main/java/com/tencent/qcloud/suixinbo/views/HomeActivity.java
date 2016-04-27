@@ -31,7 +31,6 @@ public class HomeActivity extends FragmentActivity {
 
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         layoutInflater = LayoutInflater.from(this);
-        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.contentPanel);
 
         int fragmentCount = fragmentArray.length;

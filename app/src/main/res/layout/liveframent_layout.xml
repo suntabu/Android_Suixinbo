@@ -15,30 +15,30 @@
         android:textSize="20sp" />
 
 
-    <EditText
-        android:id="@+id/testHostId"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="willguo"
-        />
+    <!--<EditText-->
+        <!--android:id="@+id/testHostId"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="willguo" />-->
 
-    <TextView
-        android:id="@+id/JoinLive"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:text="Join"
+    <!--<TextView-->
+        <!--android:id="@+id/JoinLive"-->
+        <!--android:layout_width="200dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_gravity="bottom|center_horizontal"-->
+        <!--android:layout_marginBottom="20dp"-->
+        <!--android:background="@color/btn_red"-->
+        <!--android:clickable="true"-->
+        <!--android:focusable="true"-->
+        <!--android:gravity="center"-->
+        <!--android:text="Join"-->
+        <!--android:textSize="20sp" />-->
+
+    <ListView
+        android:id="@+id/live_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:clickable="true"
-        android:focusable="true"
-        android:textSize="20sp"
-        android:background="@color/btn_red"
-        />
-
-    <!--<ListView-->
-        <!--android:id="@android:id/tabhost"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent" />-->
+        android:divider="@null" />
 
 </LinearLayout>

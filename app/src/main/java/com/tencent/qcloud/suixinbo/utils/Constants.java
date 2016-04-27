@@ -41,5 +41,9 @@ public class Constants {
 
     public static final int BackGroundViewIndex = 0;
 
+    public static final int TEXT_TYPE = 0;
+    public static final int MEMBER_ENTER = 1;
+    public static final int MEMBER_EXIT = 2;
+
 
 }
