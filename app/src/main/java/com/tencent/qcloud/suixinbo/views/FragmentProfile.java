@@ -18,13 +18,14 @@ import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 /**
  * 视频和照片输入页面
  */
-public class FragmentProfile extends Fragment implements View.OnClickListener,LogoutView{
+public class FragmentProfile extends Fragment implements View.OnClickListener, LogoutView {
     private static final String TAG = "FragmentLiveList";
-    private TextView mID, mBtnLogout;
+    private TextView mID, mBtnLogout, mTestHttp;
     private LoginHeloper mLoginHeloper;
 
 
-    public FragmentProfile() {}
+    public FragmentProfile() {
+    }
 
 
     @Override
@@ -36,7 +37,11 @@ public class FragmentProfile extends Fragment implements View.OnClickListener,Lo
         mID.setText(UserInfo.getInstance().getId());
         mBtnLogout = (TextView) view.findViewById(R.id.JoinLive);
         mBtnLogout.setOnClickListener(this);
-        mLoginHeloper = new LoginHeloper(getActivity().getApplicationContext(),this);
+        mTestHttp = (TextView) view.findViewById(R.id.testHttp);
+        mTestHttp.setOnClickListener(this);
+
+
+        mLoginHeloper = new LoginHeloper(getActivity().getApplicationContext(), this);
         return view;
     }
 
@@ -52,8 +57,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener,Lo
 
     @Override
     public void onClick(View view) {
-        if(view.getId()==R.id.JoinLive){
+        if (view.getId() == R.id.JoinLive) {
             mLoginHeloper.imLogout();
+        }
+
+        if (view.getId() == R.id.testHttp) {
+            mLoginHeloper.testServerRoom();
         }
     }
 
@@ -68,4 +77,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener,Lo
     public void LogoutFail() {
 
     }
+
+
 }

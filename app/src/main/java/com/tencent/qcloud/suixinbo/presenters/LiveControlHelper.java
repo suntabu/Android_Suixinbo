@@ -2,6 +2,8 @@ package com.tencent.qcloud.suixinbo.presenters;
 
 
 import android.content.Context;
+import android.hardware.Camera;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -43,6 +45,7 @@ public class LiveControlHelper extends Presenter {
     private static final boolean MEMBER = false;
     private TIMConversation mConversation;
     private TIMConversation mC2CConversation;
+    private boolean isMicOpen = true;
 
     public LiveControlHelper(Context context, LiveView liveview) {
         mContext = context;
@@ -71,6 +74,7 @@ public class LiveControlHelper extends Presenter {
         enableCamera(FRONT_CAMERA, true);
         AVAudioCtrl avAudioCtrl = QavsdkControl.getInstance().getAVContext().getAudioCtrl();//开启Mic
         avAudioCtrl.enableMic(true);
+        isMicOpen = true;
 
     }
 
@@ -81,7 +85,7 @@ public class LiveControlHelper extends Presenter {
      * @param camera
      * @param isEnable
      */
-    private void enableCamera(int camera, boolean isEnable) {
+    private void enableCamera(final int camera, boolean isEnable) {
         Log.i(TAG, "createlive enableCamera camera " + camera + "  isEnable " + isEnable);
         AVVideoCtrl avVideoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
         //打开摄像头
@@ -91,6 +95,12 @@ public class LiveControlHelper extends Presenter {
                 Log.i(TAG, "createlive enableCamera result " + result);
                 if (result == AVError.AV_OK) {//开启成功
 //                    mIsEnableCamera = enable;
+                    if (camera == FRONT_CAMERA) {
+                        mIsFrontCamera = true;
+                    } else {
+                        mIsFrontCamera = false;
+                    }
+
                     Log.i(TAG, "createlive enableCamera result " + result);
                     mLiveView.showVideoView(HOST);
 
@@ -252,6 +262,7 @@ public class LiveControlHelper extends Presenter {
 
     /**
      * 处理文本消息解析
+     *
      * @param elem
      * @param sendId
      */
@@ -259,7 +270,7 @@ public class LiveControlHelper extends Presenter {
         TIMTextElem textElem = (TIMTextElem) elem;
 //        Toast.makeText(mContext, "" + textElem.getText(), Toast.LENGTH_SHORT).show();
 
-        mLiveView.refreshText(textElem.getText(),sendId);
+        mLiveView.refreshText(textElem.getText(), sendId);
 //        sendToUIThread(REFRESH_TEXT, textElem.getText(), sendId);
     }
 
@@ -271,6 +282,115 @@ public class LiveControlHelper extends Presenter {
      */
     private void handleCustomMsg(TIMElem elem) {
 
+    }
+
+
+    public boolean isFrontCamera() {
+        return mIsFrontCamera;
+    }
+
+    private boolean mIsFrontCamera = true;
+
+    /**
+     * 转换前后摄像头
+     *
+     * @return
+     */
+    public int switchCamera() {
+        AVVideoCtrl avVideoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
+        int result = avVideoCtrl.switchCamera(mIsFrontCamera ? BACK_CAMERA : FRONT_CAMERA, mSwitchCameraCompleteCallback);
+        return result;
+    }
+
+
+    /**
+     * 装换摄像头回调
+     */
+    private AVVideoCtrl.SwitchCameraCompleteCallback mSwitchCameraCompleteCallback = new AVVideoCtrl.SwitchCameraCompleteCallback() {
+        protected void onComplete(int cameraId, int result) {
+            super.onComplete(cameraId, result);
+
+            if (result == AVError.AV_OK) {
+                mIsFrontCamera = !mIsFrontCamera;
+            }
+
+        }
+    };
+
+    public boolean isMicOpen() {
+        return isMicOpen;
+    }
+
+    /**
+     * 开启Mic
+     */
+    public void openMic() {
+        AVAudioCtrl avAudioCtrl = QavsdkControl.getInstance().getAVContext().getAudioCtrl();//开启Mic
+        avAudioCtrl.enableMic(true);
+        isMicOpen = true;
+    }
+
+    /**
+     * 关闭Mic
+     */
+    public void muteMic() {
+        AVAudioCtrl avAudioCtrl = QavsdkControl.getInstance().getAVContext().getAudioCtrl();//关闭Mic
+        avAudioCtrl.enableMic(false);
+        isMicOpen = false;
+    }
+
+
+    /**
+     * 开关闪光灯
+     */
+    private boolean flashLgihtStatus = false;
+    public void toggleFlashLight() {
+        AVVideoCtrl videoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
+        if (null == videoCtrl) {
+            return;
+        }
+
+        final Object cam = videoCtrl.getCamera();
+        if ((cam == null) || (!(cam instanceof Camera))) {
+            return;
+        }
+        final Camera.Parameters camParam = ((Camera) cam).getParameters();
+        if (null == camParam) {
+            return;
+        }
+
+        Object camHandler = videoCtrl.getCameraHandler();
+        if ((camHandler == null) || (!(camHandler instanceof Handler))) {
+            return;
+        }
+
+        //对摄像头的操作放在摄像头线程
+        if (flashLgihtStatus == false) {
+            ((Handler) camHandler).post(new Runnable() {
+                public void run() {
+                    try {
+                        camParam.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        ((Camera) cam).setParameters(camParam);
+                        flashLgihtStatus = true;
+                    } catch (RuntimeException e) {
+                        Log.d("setParameters", "RuntimeException");
+                    }
+                }
+            });
+        } else {
+            ((Handler) camHandler).post(new Runnable() {
+                public void run() {
+                    try {
+                        camParam.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        ((Camera) cam).setParameters(camParam);
+                        flashLgihtStatus = false;
+                    } catch (RuntimeException e) {
+                        Log.d("setParameters", "RuntimeException");
+                    }
+
+                }
+            });
+        }
     }
 
 

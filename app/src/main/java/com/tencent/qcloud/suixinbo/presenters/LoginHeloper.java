@@ -13,6 +13,8 @@ import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 
+import java.io.IOException;
+
 import tencent.tls.platform.TLSErrInfo;
 import tencent.tls.platform.TLSPwdLoginListener;
 import tencent.tls.platform.TLSStrAccRegListener;
@@ -27,6 +29,7 @@ public class LoginHeloper {
     private LoginView mLoginView;
     private LogoutView mLogoutView;
     private QavsdkControl mQavsdkControl;
+
 
     public LoginHeloper(Context context, LoginView loginView) {
         mContext = context;
@@ -151,7 +154,7 @@ public class LoginHeloper {
             public void OnStrAccRegSuccess(TLSUserInfo tlsUserInfo) {
                 Toast.makeText(mContext, tlsUserInfo.identifier + " register a user succ !  ", Toast.LENGTH_SHORT).show();
                 //创建一个房间号
-                crearServerRoom();
+                createMyRoomID();
                 //继续登录流程
                 tlsLogin(id, psw);
             }
@@ -201,8 +204,30 @@ public class LoginHeloper {
     /**
      * 通知用户服务器创建自己房间号
      */
-    public void crearServerRoom() {
+    public void createMyRoomID() {
         getMyRoomNum();
     }
+
+    public void testServerRoom(){
+        final String url1 = "http://203.195.167.34/index.php?svc=live&cmd=reg";
+        final String json = "{'uid':'willguo'}";
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String response = OKhttpHelper.getInstance().post(url1,json);
+
+                    Log.i(TAG, "createRoom response: "+response);
+                } catch (IOException e) {
+                    Log.i(TAG, "createRoom IOException : "+e.toString());
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start();
+
+    }
+
 
 }

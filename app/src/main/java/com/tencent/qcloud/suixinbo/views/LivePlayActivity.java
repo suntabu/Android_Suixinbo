@@ -13,6 +13,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,17 +47,14 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     private EnterLiveHelper mEnterRoomProsscessHelper;
     private LiveControlHelper mLiveControlHelper;
     private static final String TAG = LivePlayActivity.class.getSimpleName();
-    private View avView;
-    private TextView BtnBack,BtnInput;
-    private ListView mListViewMsgItems;
+
     private ArrayList<ChatEntity> mArrayListChatEntity;
     private ChatMsgListAdapter mChatMsgListAdapter;
-    private LinearLayout mHostbottomLy,mMemberbottomLy;
     private static final int MINFRESHINTERVAL = 500;
     private boolean mBoolRefreshLock = false;
     private boolean mBoolNeedRefresh = false;
     private final Timer mTimer = new Timer();
-    private ArrayList<ChatEntity> mTmpChatList= new ArrayList<ChatEntity>();//缓冲队列
+    private ArrayList<ChatEntity> mTmpChatList = new ArrayList<ChatEntity>();//缓冲队列
     private TimerTask mTimerTask = null;
     private static final int REFRESH_LISTVIEW = 5;
 
@@ -109,7 +107,6 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     }
 
 
-
     private final MyHandler mHandler = new MyHandler(this);
 
 
@@ -153,24 +150,46 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     /**
      * 初始化UI
      */
+    private View avView;
+    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal;
+    private ListView mListViewMsgItems;
+    private LinearLayout mHostbottomLy, mMemberbottomLy;
+    private FrameLayout mFullControllerUi;
+
     private void initView() {
-        mHostbottomLy = (LinearLayout)findViewById(R.id.host_bottom_layout);
-        mMemberbottomLy = (LinearLayout)findViewById(R.id.member_bottom_layout);
-        if(UserInfo.getInstance().getIdStatus()==Constants.HOST){
+        mHostbottomLy = (LinearLayout) findViewById(R.id.host_bottom_layout);
+        mMemberbottomLy = (LinearLayout) findViewById(R.id.member_bottom_layout);
+        if (UserInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostbottomLy.setVisibility(View.VISIBLE);
             mMemberbottomLy.setVisibility(View.GONE);
-        }else{
+            Btnflash = (TextView) findViewById(R.id.flash_btn);
+            BtnSwitch = (TextView) findViewById(R.id.switch_cam);
+            BtnBeauty = (TextView) findViewById(R.id.beauty_btn);
+            BtnMic = (TextView) findViewById(R.id.mic_btn);
+            BtnScreen = (TextView) findViewById(R.id.fullscreen_btn);
+
+            Btnflash.setOnClickListener(this);
+            BtnSwitch.setOnClickListener(this);
+            BtnBeauty.setOnClickListener(this);
+            BtnMic.setOnClickListener(this);
+            BtnScreen.setOnClickListener(this);
+
+
+        } else {
             mMemberbottomLy.setVisibility(View.VISIBLE);
             mHostbottomLy.setVisibility(View.GONE);
+            BtnInput = (TextView) findViewById(R.id.message_input);
+            BtnInput.setOnClickListener(this);
         }
-
+        BtnNormal = (TextView) findViewById(R.id.normal_btn);
+        BtnNormal.setOnClickListener(this);
+        mFullControllerUi = (FrameLayout) findViewById(R.id.controll_ui);
 
         avView = findViewById(R.id.av_video_layer_ui);
         BtnBack = (TextView) findViewById(R.id.btn_back);
         BtnBack.setOnClickListener(this);
-        BtnInput = (TextView) findViewById(R.id.message_input);
-        BtnInput.setOnClickListener(this);
-        mListViewMsgItems = (ListView)findViewById(R.id.im_msg_listview);
+
+        mListViewMsgItems = (ListView) findViewById(R.id.im_msg_listview);
         mArrayListChatEntity = new ArrayList<ChatEntity>();
         mChatMsgListAdapter = new ChatMsgListAdapter(this, mListViewMsgItems, mArrayListChatEntity);
         mListViewMsgItems.setAdapter(mChatMsgListAdapter);
@@ -198,7 +217,6 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     }
 
 
-
     /**
      * 点击Back键
      */
@@ -206,7 +224,6 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     public void onBackPressed() {
         mEnterRoomProsscessHelper.QuiteLive();
 
-//        super.onBackPressed();
     }
 
     /**
@@ -221,7 +238,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
         if (isSucc == true) {
 
             //IM初始化
-            mLiveControlHelper.initTIMGroup(""+LiveRoomInfo.getRoomNum());
+            mLiveControlHelper.initTIMGroup("" + LiveRoomInfo.getRoomNum());
 
             if (id_status == Constants.HOST) {//主播方式加入房间成功
                 //开启摄像头渲染画面
@@ -275,9 +292,40 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
             case R.id.message_input:
                 inputMsgDialog();
                 break;
+            case R.id.flash_btn:
+
+                if(mLiveControlHelper.isFrontCamera()==true){
+                    Toast.makeText(LivePlayActivity.this, "this is front cam", Toast.LENGTH_SHORT).show();
+                }else{
+                    mLiveControlHelper.toggleFlashLight();
+                }
+                break;
+            case R.id.switch_cam:
+                mLiveControlHelper.switchCamera();
+                break;
+            case R.id.beauty_btn:
+
+                break;
+            case R.id.mic_btn:
+                if(mLiveControlHelper.isMicOpen()==true){
+                    BtnMic.setBackgroundResource(R.drawable.icon_mic_close);
+                    mLiveControlHelper.muteMic();
+                }else{
+                    BtnMic.setBackgroundResource(R.drawable.icon_mic_open);
+                    mLiveControlHelper.openMic();
+                }
+
+                break;
+            case R.id.fullscreen_btn:
+                mFullControllerUi.setVisibility(View.INVISIBLE);
+                BtnNormal.setVisibility(View.VISIBLE);
+                break;
+            case R.id.normal_btn:
+                mFullControllerUi.setVisibility(View.VISIBLE);
+                BtnNormal.setVisibility(View.GONE);
+                break;
         }
     }
-
 
 
     /**
@@ -294,8 +342,6 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
         inputMsgDialog.setCancelable(true);
         inputMsgDialog.show();
     }
-
-
 
 
     /**
