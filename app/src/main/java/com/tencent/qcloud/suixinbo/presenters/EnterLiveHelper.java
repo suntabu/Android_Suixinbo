@@ -2,6 +2,7 @@ package com.tencent.qcloud.suixinbo.presenters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -16,10 +17,14 @@ import com.tencent.av.sdk.AVRoom;
 import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
+import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -189,15 +194,42 @@ public class EnterLiveHelper extends Presenter {
 
     }
 
-    public void OpenCameraAndMic() {
-
-    }
-
 
     /**
-     * 1_5上传直播封面
+     * 1_5上传房间信息
      */
     public void notifyServerCreateRoom() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject liveInfo = null;
+                try {
+                    liveInfo = new JSONObject();
+                    liveInfo.put("title", "This is a test ");
+                    liveInfo.put("cover", "");
+                    liveInfo.put("chatRoomId", LiveRoomInfo.getChatRoomId());
+                    liveInfo.put("avRoomId", LiveRoomInfo.getRoomNum());
+                    JSONObject hostinfo = new JSONObject();
+                    hostinfo.put("uid", UserInfo.getInstance().getId());
+                    hostinfo.put("avatar", "");
+                    hostinfo.put("username", "");
+                    liveInfo.put("host", hostinfo);
+                    JSONObject lbs = new JSONObject();
+                    lbs.put("longitude", 0);
+                    lbs.put("latitude", 0);
+                    lbs.put("address", "深圳");
+                    liveInfo.put("lbs", lbs);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if (liveInfo != null)
+                    OKhttpHelper.getInstance().notifyServerNewLiveInfo(liveInfo);
+            }
+        }).start();
+
+
     }
 
 
@@ -256,9 +288,33 @@ public class EnterLiveHelper extends Presenter {
         //退出AV房间
         quiteAVRoom();
 
-        mStepInOutView.QuiteRoomComplete(UserInfo.getInstance().getIdStatus(), true);
+
+//        mStepInOutView.QuiteRoomComplete(UserInfo.getInstance().getIdStatus(), true);
         uninitAudioService();
+        //通知结束
+        notifyServerLiveEnd();
     }
+
+    private NotifyServerLiveEnd liveEndTask;
+
+    private void notifyServerLiveEnd() {
+        liveEndTask = new NotifyServerLiveEnd();
+        liveEndTask.execute(UserInfo.getInstance().getId());
+    }
+
+    class NotifyServerLiveEnd extends AsyncTask<String, Integer, LiveInfoJson> {
+
+        @Override
+        protected LiveInfoJson doInBackground(String... strings) {
+            return OKhttpHelper.getInstance().notifyServerLiveStop(strings[0]);
+        }
+
+        @Override
+        protected void onPostExecute(LiveInfoJson result) {
+            mStepInOutView.QuiteRoomComplete(UserInfo.getInstance().getIdStatus(), true, result);
+        }
+    }
+
 
     /**
      * 退出一个AV房间
@@ -307,8 +363,6 @@ public class EnterLiveHelper extends Presenter {
             //
         }
     }
-
-
 
 
     /**

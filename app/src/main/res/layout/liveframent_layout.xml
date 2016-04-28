@@ -16,29 +16,37 @@
 
 
     <!--<EditText-->
-        <!--android:id="@+id/testHostId"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="willguo" />-->
+    <!--android:id="@+id/testHostId"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="willguo" />-->
 
     <!--<TextView-->
-        <!--android:id="@+id/JoinLive"-->
-        <!--android:layout_width="200dp"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:layout_gravity="bottom|center_horizontal"-->
-        <!--android:layout_marginBottom="20dp"-->
-        <!--android:background="@color/btn_red"-->
-        <!--android:clickable="true"-->
-        <!--android:focusable="true"-->
-        <!--android:gravity="center"-->
-        <!--android:text="Join"-->
-        <!--android:textSize="20sp" />-->
+    <!--android:id="@+id/JoinLive"-->
+    <!--android:layout_width="200dp"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:layout_gravity="bottom|center_horizontal"-->
+    <!--android:layout_marginBottom="20dp"-->
+    <!--android:background="@color/btn_red"-->
+    <!--android:clickable="true"-->
+    <!--android:focusable="true"-->
+    <!--android:gravity="center"-->
+    <!--android:text="Join"-->
+    <!--android:textSize="20sp" />-->
 
-    <ListView
-        android:id="@+id/live_list"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:divider="@null" />
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/live_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:divider="@null" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </LinearLayout>

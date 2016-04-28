@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
 import com.tencent.qcloud.suixinbo.presenters.LoginHeloper;
+import com.tencent.qcloud.suixinbo.presenters.OKhttpHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 
 
@@ -20,7 +21,7 @@ import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
  */
 public class FragmentProfile extends Fragment implements View.OnClickListener, LogoutView {
     private static final String TAG = "FragmentLiveList";
-    private TextView mID, mBtnLogout, mTestHttp;
+    private TextView mID, mBtnLogout, mTestHttp,mTestHttp2;
     private LoginHeloper mLoginHeloper;
 
 
@@ -35,11 +36,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         View view = inflater.inflate(R.layout.profileframent_layout, container, false);
         mID = (TextView) view.findViewById(R.id.name);
         mID.setText(UserInfo.getInstance().getId());
-        mBtnLogout = (TextView) view.findViewById(R.id.JoinLive);
+        mBtnLogout = (TextView) view.findViewById(R.id.logout);
         mBtnLogout.setOnClickListener(this);
-        mTestHttp = (TextView) view.findViewById(R.id.testHttp);
+        mTestHttp = (TextView) view.findViewById(R.id.startlive);
         mTestHttp.setOnClickListener(this);
-
+        mTestHttp2 = (TextView) view.findViewById(R.id.stoplive);
+        mTestHttp2.setOnClickListener(this);
 
         mLoginHeloper = new LoginHeloper(getActivity().getApplicationContext(), this);
         return view;
@@ -57,12 +59,26 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.JoinLive) {
+        if (view.getId() == R.id.logout) {
             mLoginHeloper.imLogout();
         }
 
-        if (view.getId() == R.id.testHttp) {
-            mLoginHeloper.testServerRoom();
+        if (view.getId() == R.id.startlive) {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+////                    OKhttpHelper.getInstance().notifyServerNewLiveInfo();
+//                }
+//            }).start();
+        }
+
+        if (view.getId() == R.id.stoplive) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    OKhttpHelper.getInstance().getLiveList(0,10);
+                }
+            }).start();
         }
     }
 

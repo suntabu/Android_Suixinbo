@@ -29,21 +29,13 @@ public class Constants {
 
     public static final int MEMBER = 0;
 
-    private static final int CAMERA_NONE = -1;
-
-    private static final int FRONT_CAMERA = 0;
-
-    private static final int BACK_CAMERA = 1;
 
     public static final String APPLY_CHATROOM = "申请加入";
 
     public static final int IS_ALREADY_MEMBER = 10013;
 
-    public static final int BackGroundViewIndex = 0;
-
     public static final int TEXT_TYPE = 0;
-    public static final int MEMBER_ENTER = 1;
-    public static final int MEMBER_EXIT = 2;
 
+    public static final String GET_MYROOMID = "http://203.195.167.34/sxb/index.php?svc=user_av_room&cmd=get";
 
 }

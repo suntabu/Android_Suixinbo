@@ -25,6 +25,7 @@ import com.tencent.qcloud.suixinbo.adapters.ChatMsgListAdapter;
 import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.ChatEntity;
+import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
 import com.tencent.qcloud.suixinbo.model.UserInfo;
 import com.tencent.qcloud.suixinbo.presenters.EnterLiveHelper;
@@ -252,7 +253,8 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
 
 
     @Override
-    public void QuiteRoomComplete(int id_status, boolean succ) {
+    public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
+//        Toast.makeText(LivePlayActivity.this, "" + liveinfo.getTitle()+"end", Toast.LENGTH_SHORT).show();
         finish();
     }
 
@@ -294,9 +296,9 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
                 break;
             case R.id.flash_btn:
 
-                if(mLiveControlHelper.isFrontCamera()==true){
+                if (mLiveControlHelper.isFrontCamera() == true) {
                     Toast.makeText(LivePlayActivity.this, "this is front cam", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     mLiveControlHelper.toggleFlashLight();
                 }
                 break;
@@ -307,10 +309,10 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
 
                 break;
             case R.id.mic_btn:
-                if(mLiveControlHelper.isMicOpen()==true){
+                if (mLiveControlHelper.isMicOpen() == true) {
                     BtnMic.setBackgroundResource(R.drawable.icon_mic_close);
                     mLiveControlHelper.muteMic();
-                }else{
+                } else {
                     BtnMic.setBackgroundResource(R.drawable.icon_mic_open);
                     mLiveControlHelper.openMic();
                 }

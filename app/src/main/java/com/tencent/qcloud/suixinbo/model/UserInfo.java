@@ -16,7 +16,7 @@ public class UserInfo {
 
     private int id_status;
 
-    private int myRoomNum = 54321;
+    private int myRoomNum = -1;
 
     private static UserInfo ourInstance = new UserInfo();
 

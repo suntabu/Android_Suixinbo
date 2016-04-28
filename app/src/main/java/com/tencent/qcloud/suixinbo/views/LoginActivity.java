@@ -24,6 +24,8 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
         super.onCreate(savedInstanceState);
 
         mLoginHeloper = new LoginHeloper(this, this);
+        //获取个人数据本地缓存
+        UserInfo.getInstance().getCache(getApplicationContext());
         if (needLogin() == true) {//本地没有账户需要登录
             setContentView(R.layout.activity_independent_login);
             mBtnLogin = (TextView) findViewById(R.id.btn_login);
@@ -76,7 +78,6 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
      * @return true 代表需要重新登录
      */
     public boolean needLogin() {
-        UserInfo.getInstance().getCache(getApplicationContext());
         if (UserInfo.getInstance().getId() != null) {
             return false;//有账号不需要登录
         } else {

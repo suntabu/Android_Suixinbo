@@ -13,8 +13,6 @@ import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 
-import java.io.IOException;
-
 import tencent.tls.platform.TLSErrInfo;
 import tencent.tls.platform.TLSPwdLoginListener;
 import tencent.tls.platform.TLSStrAccRegListener;
@@ -28,8 +26,7 @@ public class LoginHeloper {
     private static final String TAG = LoginHeloper.class.getSimpleName();
     private LoginView mLoginView;
     private LogoutView mLogoutView;
-    private QavsdkControl mQavsdkControl;
-
+    private int RoomId = -1;
 
     public LoginHeloper(Context context, LoginView loginView) {
         mContext = context;
@@ -70,6 +67,7 @@ public class LoginHeloper {
                         Log.i(TAG, "keypath IMLogin succ !");
 //                        Toast.makeText(mContext, "IMLogin succ !", Toast.LENGTH_SHORT).show();
                         getMyRoomNum();
+                        startAVSDK();
                     }
                 });
     }
@@ -153,8 +151,6 @@ public class LoginHeloper {
             @Override
             public void OnStrAccRegSuccess(TLSUserInfo tlsUserInfo) {
                 Toast.makeText(mContext, tlsUserInfo.identifier + " register a user succ !  ", Toast.LENGTH_SHORT).show();
-                //创建一个房间号
-                createMyRoomID();
                 //继续登录流程
                 tlsLogin(id, psw);
             }
@@ -176,9 +172,14 @@ public class LoginHeloper {
      * 向用户服务器获取自己房间号
      */
     private void getMyRoomNum() {
-        UserInfo.getInstance().setMyRoomNum(54321);
-        UserInfo.getInstance().writeToCache(mContext.getApplicationContext(), UserInfo.getInstance().getId(), UserInfo.getInstance().getUserSig(), UserInfo.getInstance().getMyRoomNum());
-        startAVSDK();
+        if (UserInfo.getInstance().getMyRoomNum() == -1) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    OKhttpHelper.getInstance().getMyRoomId(mContext);
+                }
+            }).start();
+        }
     }
 
 
@@ -198,35 +199,6 @@ public class LoginHeloper {
     private void stopAVSDK() {
         QavsdkControl.getInstance().stopContext();
         mLogoutView.LogoutSucc();
-    }
-
-
-    /**
-     * 通知用户服务器创建自己房间号
-     */
-    public void createMyRoomID() {
-        getMyRoomNum();
-    }
-
-    public void testServerRoom(){
-        final String url1 = "http://203.195.167.34/index.php?svc=live&cmd=reg";
-        final String json = "{'uid':'willguo'}";
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String response = OKhttpHelper.getInstance().post(url1,json);
-
-                    Log.i(TAG, "createRoom response: "+response);
-                } catch (IOException e) {
-                    Log.i(TAG, "createRoom IOException : "+e.toString());
-                    e.printStackTrace();
-                }
-
-
-            }
-        }).start();
-
     }
 
 
