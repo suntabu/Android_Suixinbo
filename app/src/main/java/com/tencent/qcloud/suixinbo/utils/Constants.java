@@ -36,6 +36,6 @@ public class Constants {
 
     public static final int TEXT_TYPE = 0;
 
-    public static final String GET_MYROOMID = "http://203.195.167.34/sxb/index.php?svc=user_av_room&cmd=get";
+    public static final String ROOT_DIR = "/sdcard/Suixinbo/";
 
 }
