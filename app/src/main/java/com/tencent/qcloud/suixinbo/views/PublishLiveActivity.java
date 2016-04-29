@@ -3,13 +3,10 @@ package com.tencent.qcloud.suixinbo.views;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,7 +18,6 @@ import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -33,10 +29,11 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     private Dialog mPicChsDialog;
     private ImageView cover;
     private Uri fileUri;
-    private static String IMAGE_FILE_LOCATION = "file:///sdcard/temp.jpg";
     private static final int CAPTURE_IMAGE_CAMERA = 100;
     private static final int IMAGE_STORE = 200;
     private static final String TAG = PublishLiveActivity.class.getSimpleName();
+
+    private static final int CROP_CHOOSE = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +46,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         cover.setOnClickListener(this);
         BtnBack.setOnClickListener(this);
         BtnPublish.setOnClickListener(this);
-        IMAGE_FILE_LOCATION = "file:///sdcard/" + UserInfo.getInstance().getId() + "_cover.jpg";
-        fileUri = Uri.parse(IMAGE_FILE_LOCATION);
+
         initExitDialog();
 
     }
@@ -111,75 +107,66 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     private void getPicFrom(int type) {
         switch (type) {
             case CAPTURE_IMAGE_CAMERA:
-                File outputImage = new File(Environment.getExternalStorageDirectory(), "willguo.jpg");
-                String ss = outputImage.getAbsolutePath();
-                Log.i(TAG, "getPicFrom:  "+ss);
-                File destDir = new File(Constants.ROOT_DIR);
-                if (!destDir.exists()) {
-                    destDir.mkdirs();
-                }
-                try {
-                    if (outputImage.exists()) {
-                        outputImage.delete();
-                    }
-                    outputImage.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                //create new Intent
-                fileUri = Uri.fromFile(outputImage);
                 Intent intent_photo = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent_photo.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-
+                intent_photo.putExtra(MediaStore.EXTRA_OUTPUT, createCoverUri());
                 startActivityForResult(intent_photo, CAPTURE_IMAGE_CAMERA);
                 break;
             case IMAGE_STORE:
                 Intent intent_album = new Intent("android.intent.action.GET_CONTENT");
                 intent_album.setType("image/*");
-                intent_album.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 startActivityForResult(intent_album, IMAGE_STORE);
                 break;
+
         }
+    }
+
+    private Uri createCoverUri() {
+        String filename = UserInfo.getInstance().getId() + ".jpg";
+        File outputImage = new File(Environment.getExternalStorageDirectory(), filename);
+        try {
+            if (outputImage.exists()) {
+                outputImage.delete();
+            }
+            outputImage.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        fileUri = Uri.fromFile(outputImage);
+        return fileUri;
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAPTURE_IMAGE_CAMERA) {
-            if (resultCode == RESULT_OK) {
-//                data.getData()
-                cover.setImageURI(fileUri);
-            }
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case CAPTURE_IMAGE_CAMERA:
+                    startPhotoZoom(fileUri);
+                    break;
+                case IMAGE_STORE:
+                    startPhotoZoom(fileUri);
+                    break;
+                case CROP_CHOOSE:
+                    cover.setImageURI(fileUri);
+                    break;
 
-        } else if (requestCode == IMAGE_STORE) {
-            if (resultCode == RESULT_OK) {
-                Uri selectedImage = data.getData();
-                cover.setImageURI(selectedImage);
             }
         }
 
     }
 
-    /**
-     * 把Uri 转换成bitmap
-     *
-     * @param uri
-     * @return
-     */
-    private Bitmap decodeUriAsBitmap(Uri uri) {
-        Bitmap bitmap = null;
-        try {
-            // 先通过getContentResolver方法获得一个ContentResolver实例，
-            // 调用openInputStream(Uri)方法获得uri关联的数据流stream
-            // 把上一步获得的数据流解析成为bitmap
-            bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return bitmap;
+    public void startPhotoZoom(Uri uri) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", "true");
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        intent.putExtra("outputX", 300);
+        intent.putExtra("outputY", 300);
+        intent.putExtra("return-data", true);
+        intent.putExtra("output", fileUri);
+        startActivityForResult(intent, CROP_CHOOSE);
     }
-
 
 
 }
