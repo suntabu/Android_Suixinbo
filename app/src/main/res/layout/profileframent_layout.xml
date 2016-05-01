@@ -1,61 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="@color/colorRed">
+
+        <com.tencent.qcloud.suixinbo.views.customviews.CircularImageButton
+            android:id="@+id/profile_avatar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/userlogo" />
+
+        <TextView
+            android:id="@+id/profile_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profile_avatar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="美空Girls团"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/profile_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profile_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="把我的世界直播给你们"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/profile_hearts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profile_info"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/icon_hearts"
+            android:drawablePadding="5dp"
+            android:text="12333" />
+
+        <TextView
+            android:id="@+id/edit_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:text="编辑" />
+    </RelativeLayout>
+
+
+    <com.tencent.qcloud.suixinbo.views.customviews.LineControllerView
+        android:id="@+id/friendConfirm"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="20dp"
-        android:text="proflie"
-        android:textSize="20sp"
+        app:name="我的直播"
+        app:content="100"
+        app:isBottom="true"
+        app:canNav="true"/>
+
+    <com.tencent.qcloud.suixinbo.views.customviews.LineControllerView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        app:name="设置"
+        app:isBottom="true"
+        app:canNav="true"
         />
 
-
-    <TextView
-        android:id="@+id/stoplive"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:gravity="center"
-        android:text="StopLive"
-        android:layout_gravity="center"
-        android:clickable="true"
-        android:focusable="true"
-        android:textSize="20sp"
-        android:background="@color/btn_red"
-        />
+    <com.tencent.qcloud.suixinbo.views.customviews.LineControllerView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        app:name="关于随心播"
+        app:isBottom="true"
+        app:canNav="true"/>
 
 
-    <TextView
-        android:id="@+id/startlive"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="100dp"
-        android:gravity="center"
-        android:text="StartLive"
-        android:layout_gravity="top|center_horizontal"
-        android:onClick="onClick"
-        android:clickable="true"
-        android:focusable="true"
-        android:textSize="20sp"
-        android:background="@color/btn_red"
-        />
-
-    <TextView
+    <com.tencent.qcloud.suixinbo.views.customviews.LineControllerView
         android:id="@+id/logout"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:text="@string/btn_login_out"
-        android:clickable="true"
-        android:focusable="true"
-        android:textSize="20sp"
-        android:background="@color/btn_red"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="40dp"
+        app:name="退出"
+        app:isBottom="true"
         />
 
 
-</FrameLayout>
+    <!--<TextView-->
+        <!--android:id="@+id/logout"-->
+        <!--android:layout_width="200dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_gravity="bottom|center_horizontal"-->
+        <!--android:layout_marginBottom="20dp"-->
+        <!--android:background="@color/btn_red"-->
+        <!--android:clickable="true"-->
+        <!--android:focusable="true"-->
+        <!--android:gravity="center"-->
+        <!--android:text="@string/btn_login_out"-->
+        <!--android:textSize="20sp" />-->
+
+
+</LinearLayout>

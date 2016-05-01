@@ -144,10 +144,10 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                     startPhotoZoom(fileUri);
                     break;
                 case IMAGE_STORE:
-                    startPhotoZoom(fileUri);
+                    startPhotoZoom(data.getData());
                     break;
                 case CROP_CHOOSE:
-                    cover.setImageURI(fileUri);
+                    cover.setImageURI(data.getData());
                     break;
 
             }
@@ -163,8 +163,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         intent.putExtra("aspectY", 1);
         intent.putExtra("outputX", 300);
         intent.putExtra("outputY", 300);
-        intent.putExtra("return-data", true);
-        intent.putExtra("output", fileUri);
+//        intent.putExtra("return-data", true);
+//        intent.putExtra("output", fileUri);
         startActivityForResult(intent, CROP_CHOOSE);
     }
 

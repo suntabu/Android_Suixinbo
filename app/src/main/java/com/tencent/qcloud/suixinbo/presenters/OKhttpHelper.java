@@ -139,9 +139,9 @@ public class OKhttpHelper {
             int ret = reg_response.getInt("errorCode");
             if (ret == 0) {
                 JSONObject data = reg_response.getJSONObject("data");
-                String id = data.getString("chatRoomId");
+                int id = data.getInt("avRoomId");
                 Log.i(TAG, "getMyRoomId " + id);
-                UserInfo.getInstance().setMyRoomNum(Integer.parseInt(id));
+                UserInfo.getInstance().setMyRoomNum(id);
                 UserInfo.getInstance().writeToCache(context.getApplicationContext(), UserInfo.getInstance().getId(), UserInfo.getInstance().getUserSig(), UserInfo.getInstance().getMyRoomNum());
             }
         } catch (IOException e) {
