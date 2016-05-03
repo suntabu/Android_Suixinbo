@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 
 /**
- * 视频和照片输入页面
+ * 直播列表页面
  */
 public class FragmentLiveList extends Fragment implements View.OnClickListener, LiveListView, SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "FragmentLiveList";
@@ -59,7 +59,7 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
                 intent.putExtra(Constants.ID_STATUS, Constants.MEMBER);
                 MySelfInfo.getInstance().setIdStatus(Constants.MEMBER);
                 LiveRoomInfo.getInstance().setHostID(item.getHost().getUid());
-                LiveRoomInfo.getInstance().setRoomNum(Integer.parseInt(item.getChatRoomId()));
+                LiveRoomInfo.getInstance().setRoomNum(item.getAvRoomId());
                 startActivity(intent);
             }
         });

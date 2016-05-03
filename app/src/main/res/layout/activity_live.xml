@@ -22,13 +22,6 @@
             android:layout_width="180dp"
             android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="text" />
-
 
         <TextView
             android:id="@+id/video_interact"
