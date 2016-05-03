@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.model.UserInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LoginHeloper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
@@ -35,7 +35,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.profileframent_layout, container, false);
         mID = (TextView) view.findViewById(R.id.name);
-        mID.setText(UserInfo.getInstance().getId());
+        mID.setText(MySelfInfo.getInstance().getId());
         mBtnLogout = (LineControllerView) view.findViewById(R.id.logout);
         mBtnLogout.setOnClickListener(this);
 

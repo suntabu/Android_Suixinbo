@@ -19,6 +19,7 @@
 
    <!-- live fragment-->
     <string name="live_titile">最新直播</string>
+    <string name="dialog_members_tips">邀请互动连线（最多可与三个成员进行互动直播）</string>
 
 
     <!-- live play -->

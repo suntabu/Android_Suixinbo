@@ -63,8 +63,8 @@ public class InitBusinessHelper {
         mLoginHelper.setTimeOut(5000);
         mAccountHelper = TLSAccountHelper.getInstance().init(context, Constants.SDK_APPID, Constants.ACCOUNT_TYPE, appVer);
         mAccountHelper.setTimeOut(5000);
-//      UserInfo.getInstance().setId(id);
-//      UserInfo.getInstance().setUserSig(TLSService.getInstance().getUserSig(id));
+//      MySelfInfo.getInstance().setId(id);
+//      MySelfInfo.getInstance().setUserSig(TLSService.getInstance().getUserSig(id));
     }
 
 }

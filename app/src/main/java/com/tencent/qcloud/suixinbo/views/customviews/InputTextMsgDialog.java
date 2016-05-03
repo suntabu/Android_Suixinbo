@@ -14,8 +14,8 @@ import android.widget.Toast;
 import com.tencent.TIMMessage;
 import com.tencent.TIMTextElem;
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.presenters.LiveControlHelper;
-import com.tencent.qcloud.suixinbo.views.LivePlayActivity;
+import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
+import com.tencent.qcloud.suixinbo.views.LiveActivity;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Timer;
@@ -31,14 +31,14 @@ public class InputTextMsgDialog extends Dialog {
     private EditText messageTextView;
     private static final String TAG = InputTextMsgDialog.class.getSimpleName();
     private Context mContext;
-    private LiveControlHelper mLiveControlHelper;
+    private LiveHelper mLiveControlHelper;
     private Activity mVideoPlayActivity;
     private InputMethodManager imm;
     private int mViewPositionY = 0;
     private final String reg ="[`~@#$%^&*()-_+=|{}':;,/.<>￥…（）—【】‘；：”“’。，、]";
     private Pattern pattern = Pattern.compile(reg);
 
-    public InputTextMsgDialog(Context context, int theme, LiveControlHelper presenter, LivePlayActivity activity) {
+    public InputTextMsgDialog(Context context, int theme, LiveHelper presenter, LiveActivity activity) {
         super(context, theme);
         mContext = context;
         mLiveControlHelper = presenter;

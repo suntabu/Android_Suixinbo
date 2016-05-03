@@ -15,7 +15,7 @@ import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.LiveShowAdapter;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
-import com.tencent.qcloud.suixinbo.model.UserInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LiveListViewHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveListView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 
 /**
- * 视频和照片输入页面
+ * 直播列表页面
  */
 public class FragmentLiveList extends Fragment implements View.OnClickListener, LiveListView, SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "FragmentLiveList";
@@ -55,11 +55,11 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 LiveInfoJson item = liveList.get(i);
-                Intent intent = new Intent(getActivity(), LivePlayActivity.class);
+                Intent intent = new Intent(getActivity(), LiveActivity.class);
                 intent.putExtra(Constants.ID_STATUS, Constants.MEMBER);
-                UserInfo.getInstance().setIdStatus(Constants.MEMBER);
+                MySelfInfo.getInstance().setIdStatus(Constants.MEMBER);
                 LiveRoomInfo.getInstance().setHostID(item.getHost().getUid());
-                LiveRoomInfo.getInstance().setRoomNum(Integer.parseInt(item.getChatRoomId()));
+                LiveRoomInfo.getInstance().setRoomNum(item.getAvRoomId());
                 startActivity(intent);
             }
         });
@@ -85,6 +85,7 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
 
     @Override
     public void showFirstPage(ArrayList<LiveInfoJson> result) {
+        if (result == null) return;
         mSwipeRefreshLayout.setRefreshing(false);
         liveList.clear();
         for (LiveInfoJson item : result) {

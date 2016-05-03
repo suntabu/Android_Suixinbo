@@ -3,29 +3,9 @@ package com.tencent.qcloud.suixinbo.model;
 public class MemberInfo {
 
     private String userId = "";
-    private String userName;
-    private String headImagePath = "";
-    public String identifier = "";
-    public String name;
-    public boolean isSpeaking = false;
-    public boolean isVideoIn = false;
-    public boolean isShareSrc = false;
-    public boolean isShareMovie = false;
-    public boolean hasGetInfo = false;
-    public boolean isHost = false;
-
-    public MemberInfo() {
-    }
-
-    public MemberInfo(String Id) {
-        userId = Id;
-    }
-
-    public MemberInfo(String Id, String name, String path) {
-        userId = Id;
-        userName = name;
-        headImagePath = path;
-    }
+    private String userName = "";
+    private String avatar = "";
+    private boolean isOnVideoChat = false;
 
     public String getUserId() {
         return userId;
@@ -35,37 +15,27 @@ public class MemberInfo {
         this.userId = userId;
     }
 
-
-    public void setUserName(String name) {
-        userName = name;
-    }
-
     public String getUserName() {
         return userName;
     }
 
-    public void setHeadImagePath(String path) {
-        headImagePath = path;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getHeadImagePath() {
-        return headImagePath;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public boolean isHost() {
-        return isHost;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
-    public void setIsHost(boolean isHost) {
-        this.isHost = isHost;
+    public boolean isOnVideoChat() {
+        return isOnVideoChat;
     }
 
-
-    @Override
-    public String toString() {
-        return "MemberInfo identifier = " + identifier + ", isSpeaking = " + isSpeaking
-                + ", isVideoIn = " + isVideoIn + ", isShareSrc = " + isShareSrc
-                + ", isShareMovie = " + isShareMovie + ", hasGetInfo = "
-                + hasGetInfo + ", name = " + name;
+    public void setIsOnVideoChat(boolean isOnVideoChat) {
+        this.isOnVideoChat = isOnVideoChat;
     }
 }

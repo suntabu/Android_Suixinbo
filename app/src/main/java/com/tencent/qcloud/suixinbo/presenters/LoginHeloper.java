@@ -8,7 +8,7 @@ import com.tencent.TIMCallBack;
 import com.tencent.TIMManager;
 import com.tencent.TIMUser;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
-import com.tencent.qcloud.suixinbo.model.UserInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -89,7 +89,7 @@ public class LoginHeloper {
             public void onSuccess() {
                 Log.i(TAG, "IMLogout succ !");
                 //清除本地缓存
-                UserInfo.getInstance().clearCache(mContext);
+                MySelfInfo.getInstance().clearCache(mContext);
                 //反向初始化avsdk
                 stopAVSDK();
             }
@@ -110,8 +110,8 @@ public class LoginHeloper {
 //                Toast.makeText(mContext, "TLS login succ ! " + tlsUserInfo.identifier, Toast.LENGTH_SHORT).show();
                 Log.i(TAG, "TLS OnPwdLoginSuccess " + tlsUserInfo.identifier);
                 String userSig = InitBusinessHelper.getmLoginHelper().getUserSig(tlsUserInfo.identifier);
-                UserInfo.getInstance().setId(tlsUserInfo.identifier);
-                UserInfo.getInstance().setUserSig(userSig);
+                MySelfInfo.getInstance().setId(tlsUserInfo.identifier);
+                MySelfInfo.getInstance().setUserSig(userSig);
                 imLogin(tlsUserInfo.identifier, userSig);
             }
 
@@ -172,7 +172,7 @@ public class LoginHeloper {
      * 向用户服务器获取自己房间号
      */
     private void getMyRoomNum() {
-        if (UserInfo.getInstance().getMyRoomNum() == -1) {
+        if (MySelfInfo.getInstance().getMyRoomNum() == -1) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -187,7 +187,7 @@ public class LoginHeloper {
      * 初始化AVSDK
      */
     private void startAVSDK() {
-        QavsdkControl.getInstance().setAvConfig(Constants.SDK_APPID, "" + Constants.ACCOUNT_TYPE, UserInfo.getInstance().getId(), UserInfo.getInstance().getUserSig());
+        QavsdkControl.getInstance().setAvConfig(Constants.SDK_APPID, "" + Constants.ACCOUNT_TYPE, MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
         QavsdkControl.getInstance().startContext();
         mLoginView.LoginSucc();
     }

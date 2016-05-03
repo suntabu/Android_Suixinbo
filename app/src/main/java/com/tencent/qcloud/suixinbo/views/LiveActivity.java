@@ -1,6 +1,7 @@
 package com.tencent.qcloud.suixinbo.views;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,13 +28,14 @@ import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.ChatEntity;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
-import com.tencent.qcloud.suixinbo.model.UserInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.EnterLiveHelper;
-import com.tencent.qcloud.suixinbo.presenters.LiveControlHelper;
+import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.views.customviews.InputTextMsgDialog;
+import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -44,10 +46,10 @@ import java.util.TimerTask;
 /**
  * Live直播类
  */
-public class LivePlayActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener {
+public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener {
     private EnterLiveHelper mEnterRoomProsscessHelper;
-    private LiveControlHelper mLiveControlHelper;
-    private static final String TAG = LivePlayActivity.class.getSimpleName();
+    private LiveHelper mLiveControlHelper;
+    private static final String TAG = LiveActivity.class.getSimpleName();
 
     private ArrayList<ChatEntity> mArrayListChatEntity;
     private ChatMsgListAdapter mChatMsgListAdapter;
@@ -58,6 +60,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     private ArrayList<ChatEntity> mTmpChatList = new ArrayList<ChatEntity>();//缓冲队列
     private TimerTask mTimerTask = null;
     private static final int REFRESH_LISTVIEW = 5;
+    private Dialog mMemberDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
         //进出房间的协助类
         mEnterRoomProsscessHelper = new EnterLiveHelper(this, this);
         //房间内的交互协助类
-        mLiveControlHelper = new LiveControlHelper(this, this);
+        mLiveControlHelper = new LiveHelper(this, this);
 
         initView();
         registerReceiver();
@@ -82,10 +85,10 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     }
 
     private static class MyHandler extends Handler {
-        private final WeakReference<LivePlayActivity> mActivity;
+        private final WeakReference<LiveActivity> mActivity;
 
-        public MyHandler(LivePlayActivity activity) {
-            mActivity = new WeakReference<LivePlayActivity>(activity);
+        public MyHandler(LiveActivity activity) {
+            mActivity = new WeakReference<LiveActivity>(activity);
         }
 
         @Override
@@ -118,7 +121,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
             //AvSurfaceView 初始化成功
             if (action.equals(AvConstants.ACTION_SURFACE_CREATED)) {
                 //打开摄像头
-                if (UserInfo.getInstance().getIdStatus() == Constants.HOST) {
+                if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
                     mLiveControlHelper.OpenCameraAndMic();
                 } else {
                     //成员请求主播画面
@@ -152,7 +155,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
      * 初始化UI
      */
     private View avView;
-    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal;
+    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat;
     private ListView mListViewMsgItems;
     private LinearLayout mHostbottomLy, mMemberbottomLy;
     private FrameLayout mFullControllerUi;
@@ -160,7 +163,8 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     private void initView() {
         mHostbottomLy = (LinearLayout) findViewById(R.id.host_bottom_layout);
         mMemberbottomLy = (LinearLayout) findViewById(R.id.member_bottom_layout);
-        if (UserInfo.getInstance().getIdStatus() == Constants.HOST) {
+        mVideoChat = (TextView) findViewById(R.id.video_interact);
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostbottomLy.setVisibility(View.VISIBLE);
             mMemberbottomLy.setVisibility(View.GONE);
             Btnflash = (TextView) findViewById(R.id.flash_btn);
@@ -168,19 +172,22 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
             BtnBeauty = (TextView) findViewById(R.id.beauty_btn);
             BtnMic = (TextView) findViewById(R.id.mic_btn);
             BtnScreen = (TextView) findViewById(R.id.fullscreen_btn);
-
+            mVideoChat.setVisibility(View.VISIBLE);
             Btnflash.setOnClickListener(this);
             BtnSwitch.setOnClickListener(this);
             BtnBeauty.setOnClickListener(this);
             BtnMic.setOnClickListener(this);
             BtnScreen.setOnClickListener(this);
+            mVideoChat.setOnClickListener(this);
 
+            mMemberDialog = new MembersDialog(this,R.style.dialog);
 
         } else {
             mMemberbottomLy.setVisibility(View.VISIBLE);
             mHostbottomLy.setVisibility(View.GONE);
             BtnInput = (TextView) findViewById(R.id.message_input);
             BtnInput.setOnClickListener(this);
+            mVideoChat.setVisibility(View.GONE);
         }
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
         BtnNormal.setOnClickListener(this);
@@ -235,7 +242,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
      */
     @Override
     public void EnterRoomComplete(int id_status, boolean isSucc) {
-        Toast.makeText(LivePlayActivity.this, "EnterRoomComplete " + id_status + " isSucc " + isSucc, Toast.LENGTH_SHORT).show();
+        Toast.makeText(LiveActivity.this, "EnterRoomComplete " + id_status + " isSucc " + isSucc, Toast.LENGTH_SHORT).show();
         if (isSucc == true) {
 
             //IM初始化
@@ -254,7 +261,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
 
     @Override
     public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
-//        Toast.makeText(LivePlayActivity.this, "" + liveinfo.getTitle()+"end", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(LiveActivity.this, "" + liveinfo.getTitle()+"end", Toast.LENGTH_SHORT).show();
         finish();
     }
 
@@ -265,9 +272,9 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
     public void showVideoView(boolean isHost) {
         //渲染本地界面
         if (isHost == true) {
-            Log.i(TAG, "showVideoView host :" + UserInfo.getInstance().getId());
-            QavsdkControl.getInstance().setSelfId(UserInfo.getInstance().getId());
-            QavsdkControl.getInstance().setLocalHasVideo(true, UserInfo.getInstance().getId());
+            Log.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
+            QavsdkControl.getInstance().setSelfId(MySelfInfo.getInstance().getId());
+            QavsdkControl.getInstance().setLocalHasVideo(true, MySelfInfo.getInstance().getId());
             //通知用户服务器
             mEnterRoomProsscessHelper.notifyServerCreateRoom();
 
@@ -297,7 +304,7 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
             case R.id.flash_btn:
 
                 if (mLiveControlHelper.isFrontCamera() == true) {
-                    Toast.makeText(LivePlayActivity.this, "this is front cam", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LiveActivity.this, "this is front cam", Toast.LENGTH_SHORT).show();
                 } else {
                     mLiveControlHelper.toggleFlashLight();
                 }
@@ -325,6 +332,9 @@ public class LivePlayActivity extends Activity implements EnterQuiteRoomView, Li
             case R.id.normal_btn:
                 mFullControllerUi.setVisibility(View.VISIBLE);
                 BtnNormal.setVisibility(View.GONE);
+                break;
+            case R.id.video_interact:
+                mMemberDialog.show();
                 break;
         }
     }

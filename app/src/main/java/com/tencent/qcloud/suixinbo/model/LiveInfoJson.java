@@ -11,8 +11,19 @@ public class LiveInfoJson {
     private HOST host;
     private int admireCount;
     private String chatRoomId;
+    private int avRoomId;
     private int timeSpan;
     private int watchCount;
+
+
+
+    public int getAvRoomId() {
+        return avRoomId;
+    }
+
+    public void setAvRoomId(int avRoomId) {
+        this.avRoomId = avRoomId;
+    }
 
 
     public String getCover() {
