@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
-import com.tencent.qcloud.suixinbo.model.UserInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 
@@ -60,11 +60,11 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 break;
             case R.id.btn_publish:
                 mPublishLivePresenter.uploadCover();
-                Intent intent = new Intent(this, LivePlayActivity.class);
+                Intent intent = new Intent(this, LiveActivity.class);
                 intent.putExtra(Constants.ID_STATUS, Constants.HOST);
-                UserInfo.getInstance().setIdStatus(Constants.HOST);
-                LiveRoomInfo.getInstance().setHostID(UserInfo.getInstance().getId());
-                LiveRoomInfo.getInstance().setRoomNum(UserInfo.getInstance().getMyRoomNum());
+                MySelfInfo.getInstance().setIdStatus(Constants.HOST);
+                LiveRoomInfo.getInstance().setHostID(MySelfInfo.getInstance().getId());
+                LiveRoomInfo.getInstance().setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
                 startActivity(intent);
                 break;
             case R.id.cover:
@@ -121,7 +121,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     }
 
     private Uri createCoverUri() {
-        String filename = UserInfo.getInstance().getId() + ".jpg";
+        String filename = MySelfInfo.getInstance().getId() + ".jpg";
         File outputImage = new File(Environment.getExternalStorageDirectory(), filename);
         try {
             if (outputImage.exists()) {

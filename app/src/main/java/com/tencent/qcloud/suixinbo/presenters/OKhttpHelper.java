@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
-import com.tencent.qcloud.suixinbo.model.UserInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -132,7 +132,7 @@ public class OKhttpHelper {
     public void getMyRoomId(final Context context) {
         try {
             JSONObject myId = new JSONObject();
-            myId.put("uid", UserInfo.getInstance().getId());
+            myId.put("uid", MySelfInfo.getInstance().getId());
             String response = OKhttpHelper.getInstance().post(GET_MYROOMID, myId.toString());
             JSONTokener jsonParser = new JSONTokener(response);
             JSONObject reg_response = (JSONObject) jsonParser.nextValue();
@@ -141,8 +141,8 @@ public class OKhttpHelper {
                 JSONObject data = reg_response.getJSONObject("data");
                 int id = data.getInt("avRoomId");
                 Log.i(TAG, "getMyRoomId " + id);
-                UserInfo.getInstance().setMyRoomNum(id);
-                UserInfo.getInstance().writeToCache(context.getApplicationContext(), UserInfo.getInstance().getId(), UserInfo.getInstance().getUserSig(), UserInfo.getInstance().getMyRoomNum());
+                MySelfInfo.getInstance().setMyRoomNum(id);
+                MySelfInfo.getInstance().writeToCache(context.getApplicationContext(), MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig(), MySelfInfo.getInstance().getMyRoomNum());
             }
         } catch (IOException e) {
             e.printStackTrace();

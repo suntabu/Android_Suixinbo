@@ -81,7 +81,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         mListView.setOnScrollListener(this);
 
         //间歇
-//        mNeedAnimator = !UserInfo.instance().getIsHost();
+//        mNeedAnimator = !MySelfInfo.instance().getIsHost();
         mNeedAnimator = false;
     }
 

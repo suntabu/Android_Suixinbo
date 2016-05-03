@@ -9,8 +9,8 @@ import com.tencent.qcloud.suixinbo.utils.Constants;
 /**
  * 用户数据
  */
-public class UserInfo {
-    private static final String TAG = UserInfo.class.getSimpleName();
+public class MySelfInfo {
+    private static final String TAG = MySelfInfo.class.getSimpleName();
     private String id;
     private String userSig;
 
@@ -18,9 +18,9 @@ public class UserInfo {
 
     private int myRoomNum = -1;
 
-    private static UserInfo ourInstance = new UserInfo();
+    private static MySelfInfo ourInstance = new MySelfInfo();
 
-    public static UserInfo getInstance() {
+    public static MySelfInfo getInstance() {
 
         return ourInstance;
     }

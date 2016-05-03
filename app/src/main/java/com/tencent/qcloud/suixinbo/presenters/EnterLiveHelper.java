@@ -19,7 +19,7 @@ import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
-import com.tencent.qcloud.suixinbo.model.UserInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 
@@ -59,7 +59,7 @@ public class EnterLiveHelper extends Presenter {
      * 进入一个直播房间流程
      */
     public void startEnterRoom() {
-        if (UserInfo.getInstance().getIdStatus() == Constants.HOST) {
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             createLive();
         } else {
             Log.i(TAG, "joinLiveRoom startEnterRoom ");
@@ -80,9 +80,9 @@ public class EnterLiveHelper extends Presenter {
                 //只有进入房间后才能初始化AvView
                 isInAVRoom = true;
                 initAudioService();
-                mStepInOutView.EnterRoomComplete(UserInfo.getInstance().getIdStatus(), true);
+                mStepInOutView.EnterRoomComplete(MySelfInfo.getInstance().getIdStatus(), true);
             } else {
-                mStepInOutView.EnterRoomComplete(UserInfo.getInstance().getIdStatus(), false);
+                mStepInOutView.EnterRoomComplete(MySelfInfo.getInstance().getIdStatus(), false);
             }
 
         }
@@ -149,15 +149,15 @@ public class EnterLiveHelper extends Presenter {
     private void createIMChatRoom() {
         final ArrayList<String> list = new ArrayList<String>();
         final String roomName = "this is a  test";
-        Log.i(TAG, "createlive createIMChatRoom " + UserInfo.getInstance().getMyRoomNum());
-        TIMGroupManager.getInstance().createGroup("ChatRoom", list, roomName, "" + UserInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<String>() {
+        Log.i(TAG, "createlive createIMChatRoom " + MySelfInfo.getInstance().getMyRoomNum());
+        TIMGroupManager.getInstance().createGroup("ChatRoom", list, roomName, "" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<String>() {
             @Override
             public void onError(int i, String s) {
                 Log.i(TAG, "onError " + i + "   " + s);
                 //已在房间中,重复进入房间
                 if (i == 10025) {
                     isInChatRoom = true;
-                    createAVRoom(UserInfo.getInstance().getMyRoomNum());
+                    createAVRoom(MySelfInfo.getInstance().getMyRoomNum());
                 }
                 // 创建IM房间失败，提示失败原因，并关闭等待对话框
                 Toast.makeText(mContext, " chatroom  error " + s + "i " + i, Toast.LENGTH_SHORT).show();
@@ -168,7 +168,7 @@ public class EnterLiveHelper extends Presenter {
             public void onSuccess(String s) {
                 isInChatRoom = true;
                 //创建AV房间
-                createAVRoom(UserInfo.getInstance().getMyRoomNum());
+                createAVRoom(MySelfInfo.getInstance().getMyRoomNum());
 
             }
         });
@@ -210,7 +210,7 @@ public class EnterLiveHelper extends Presenter {
                     liveInfo.put("chatRoomId", LiveRoomInfo.getChatRoomId());
                     liveInfo.put("avRoomId", LiveRoomInfo.getRoomNum());
                     JSONObject hostinfo = new JSONObject();
-                    hostinfo.put("uid", UserInfo.getInstance().getId());
+                    hostinfo.put("uid", MySelfInfo.getInstance().getId());
                     hostinfo.put("avatar", "");
                     hostinfo.put("username", "");
                     liveInfo.put("host", hostinfo);
@@ -288,18 +288,17 @@ public class EnterLiveHelper extends Presenter {
         //退出AV房间
         quiteAVRoom();
 
-
-//        mStepInOutView.QuiteRoomComplete(UserInfo.getInstance().getIdStatus(), true);
         uninitAudioService();
         //通知结束
         notifyServerLiveEnd();
+
     }
 
     private NotifyServerLiveEnd liveEndTask;
 
     private void notifyServerLiveEnd() {
         liveEndTask = new NotifyServerLiveEnd();
-        liveEndTask.execute(UserInfo.getInstance().getId());
+        liveEndTask.execute(MySelfInfo.getInstance().getId());
     }
 
     class NotifyServerLiveEnd extends AsyncTask<String, Integer, LiveInfoJson> {
@@ -311,7 +310,7 @@ public class EnterLiveHelper extends Presenter {
 
         @Override
         protected void onPostExecute(LiveInfoJson result) {
-            mStepInOutView.QuiteRoomComplete(UserInfo.getInstance().getIdStatus(), true, result);
+            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, result);
         }
     }
 
@@ -333,8 +332,8 @@ public class EnterLiveHelper extends Presenter {
     private void quiteIMChatRoom() {
         if ((isInChatRoom == true)) {
             //主播解散群
-            if (UserInfo.getInstance().getIdStatus() == Constants.HOST) {
-                TIMGroupManager.getInstance().deleteGroup("" + UserInfo.getInstance().getMyRoomNum(), new TIMCallBack() {
+            if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+                TIMGroupManager.getInstance().deleteGroup("" + MySelfInfo.getInstance().getMyRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
                     }
@@ -344,10 +343,10 @@ public class EnterLiveHelper extends Presenter {
                         isInChatRoom = false;
                     }
                 });
-                TIMManager.getInstance().deleteConversation(TIMConversationType.Group, "" + UserInfo.getInstance().getMyRoomNum());
+                TIMManager.getInstance().deleteConversation(TIMConversationType.Group, "" + MySelfInfo.getInstance().getMyRoomNum());
             } else {
                 //成员退出群
-                TIMGroupManager.getInstance().quitGroup("" + UserInfo.getInstance().getMyRoomNum(), new TIMCallBack() {
+                TIMGroupManager.getInstance().quitGroup("" + MySelfInfo.getInstance().getMyRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
 

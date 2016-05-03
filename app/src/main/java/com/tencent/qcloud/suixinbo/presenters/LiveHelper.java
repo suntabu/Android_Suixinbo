@@ -11,6 +11,8 @@ import com.tencent.TIMConversation;
 import com.tencent.TIMConversationType;
 import com.tencent.TIMElem;
 import com.tencent.TIMElemType;
+import com.tencent.TIMGroupManager;
+import com.tencent.TIMGroupMemberInfo;
 import com.tencent.TIMGroupSystemElem;
 import com.tencent.TIMGroupSystemElemType;
 import com.tencent.TIMManager;
@@ -26,17 +28,22 @@ import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
+import com.tencent.qcloud.suixinbo.model.MemberInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.MembersDialogView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 直播的控制类
  */
-public class LiveControlHelper extends Presenter {
-    public LiveView mLiveView;
+public class LiveHelper extends Presenter {
+    private LiveView mLiveView;
+    private MembersDialogView mMembersDialogView;
     public Context mContext;
-    private static final String TAG = LiveControlHelper.class.getSimpleName();
+    private static final String TAG = LiveHelper.class.getSimpleName();
     private static final int CAMERA_NONE = -1;
     private static final int FRONT_CAMERA = 0;
     private static final int BACK_CAMERA = 1;
@@ -46,10 +53,22 @@ public class LiveControlHelper extends Presenter {
     private TIMConversation mConversation;
     private TIMConversation mC2CConversation;
     private boolean isMicOpen = true;
+    private ArrayList<String> mCurrentVideoMembers;
+    private ArrayList<MemberInfo> mDialogMembers = new ArrayList<MemberInfo>();
 
-    public LiveControlHelper(Context context, LiveView liveview) {
+
+    public LiveHelper(Context context, LiveView liveview) {
         mContext = context;
         mLiveView = liveview;
+    }
+
+    public LiveHelper(Context context) {
+        mContext = context;
+    }
+
+    public LiveHelper(Context context, MembersDialogView dialogView) {
+        mContext = context;
+        mMembersDialogView = dialogView;
     }
 
 
@@ -344,6 +363,7 @@ public class LiveControlHelper extends Presenter {
      * 开关闪光灯
      */
     private boolean flashLgihtStatus = false;
+
     public void toggleFlashLight() {
         AVVideoCtrl videoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
         if (null == videoCtrl) {
@@ -391,6 +411,56 @@ public class LiveControlHelper extends Presenter {
                 }
             });
         }
+    }
+
+    /**
+     * 拉取成员列表 成功返回ID列表
+     */
+    public void getMemberList() {
+        TIMGroupManager.getInstance().getGroupMembers("" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<List<TIMGroupMemberInfo>>() {
+            @Override
+            public void onError(int i, String s) {
+                Log.i(TAG, "get MemberList ");
+            }
+
+            @Override
+            public void onSuccess(List<TIMGroupMemberInfo> timGroupMemberInfos) {
+                Log.i(TAG, "get MemberList ");
+                getMemberListInfo(timGroupMemberInfos);
+
+            }
+        });
+    }
+
+
+    /**
+     * 拉取成员列表信息
+     *
+     * @param timGroupMemberInfos
+     */
+    private void getMemberListInfo(List<TIMGroupMemberInfo> timGroupMemberInfos) {
+        mDialogMembers.clear();
+        for (TIMGroupMemberInfo item : timGroupMemberInfos) {
+            if (item.getUser().equals(MySelfInfo.getInstance().getId())) {
+                continue;
+            }
+            MemberInfo member = new MemberInfo();
+            member.setUserId(item.getUser());
+
+            mDialogMembers.add(member);
+            //判断是否在视频中
+//            for (String id : videoMembers) {
+//                if (id.equals(item.getUser())) ;
+//                member.setIsOnVideoChat(true);
+//            }
+        }
+
+        mMembersDialogView.showMembersList(mDialogMembers);
+    }
+
+
+    public void inviteVideoChat(String id) {
+        Toast.makeText(mContext, "send a invite to " + id, Toast.LENGTH_SHORT).show();
     }
 
 

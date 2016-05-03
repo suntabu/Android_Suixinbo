@@ -9,7 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.model.UserInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LoginHeloper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 
@@ -25,7 +25,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
 
         mLoginHeloper = new LoginHeloper(this, this);
         //获取个人数据本地缓存
-        UserInfo.getInstance().getCache(getApplicationContext());
+        MySelfInfo.getInstance().getCache(getApplicationContext());
         if (needLogin() == true) {//本地没有账户需要登录
             setContentView(R.layout.activity_independent_login);
             mBtnLogin = (TextView) findViewById(R.id.btn_login);
@@ -36,7 +36,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
             mBtnLogin.setOnClickListener(this);
         } else {
             //有账户登录直接IM登录
-            mLoginHeloper.imLogin(UserInfo.getInstance().getId(), UserInfo.getInstance().getUserSig());
+            mLoginHeloper.imLogin(MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
         }
 
 
@@ -78,7 +78,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
      * @return true 代表需要重新登录
      */
     public boolean needLogin() {
-        if (UserInfo.getInstance().getId() != null) {
+        if (MySelfInfo.getInstance().getId() != null) {
             return false;//有账号不需要登录
         } else {
             return true;//需要登录
@@ -99,7 +99,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
 
     @Override
     public void LoginSucc() {
-        Toast.makeText(LoginActivity.this, "" + UserInfo.getInstance().getId() + " login ", Toast.LENGTH_SHORT).show();
+        Toast.makeText(LoginActivity.this, "" + MySelfInfo.getInstance().getId() + " login ", Toast.LENGTH_SHORT).show();
         jumpIntoHomeActivity();
     }
 

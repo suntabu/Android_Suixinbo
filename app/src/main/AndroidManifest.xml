@@ -44,7 +44,7 @@
         <activity android:name=".views.RegisterActivity" />
         <activity android:name=".views.HomeActivity" />
         <activity android:name=".views.PublishLiveActivity" />
-        <activity android:name=".views.LivePlayActivity" />
+        <activity android:name=".views.LiveActivity" />
 
         <service
             android:name="com.tencent.qalsdk.service.QalService"
