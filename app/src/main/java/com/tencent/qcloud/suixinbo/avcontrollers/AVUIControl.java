@@ -460,7 +460,119 @@ public class AVUIControl extends GLViewGroup {
         }
         return index;
     }
+//
+//    void layoutVideoView(boolean virtical) {
+//        if (QLog.isColorLevel()) {
+//            QLog.d(TAG, QLog.CLR, "layoutVideoView virtical: " + virtical);
+//        }
+//        if (mContext == null)
+//            return;
+//
+//        int width = getWidth();
+//        int height = getHeight();
+//
+//        Log.d(TAG, "width: " + getWidth() + "height: " + getHeight());
+//
+//        mGlVideoView[0].layout(0, 0, width, height);
+//        mGlVideoView[0].setBackgroundColor(Color.BLACK);
+//        //
+//        int edgeX = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetX);
+//        int edgeY = edgeX;
+//        if (mBottomOffset != 0) {
+//            edgeY = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetY);
+//        }
+//        final int w = (width - edgeX * 2) / 4;
+//        final int h = w;
+//        //
+//        int left = 0;
+//        int right = 0;
+//        int top = height - h - edgeY - mBottomOffset;
+//        int bottom = height - edgeY - mBottomOffset;
+//
+//        if (isSupportMultiVideo) {
+//            if (QLog.isColorLevel()) {
+//                QLog.d(TAG, QLog.CLR, "SupportMultiVideo");
+//            }
+//
+//            //多人画面的位置为了不与下面的关闭免提，打开麦克风等按钮重复，需要重新设计其位置，暂时置于视图中间
+//            top = (height - h) / 2;
+//            bottom = (height + h) / 2;
+//
+//            if (virtical) {
+//                left = mGlVideoView[1].getBounds().left;
+//                right = mGlVideoView[1].getBounds().right;
+//            } else {
+//                left = width - w - edgeX;
+//                right = width - edgeX;
+//            }
+//            mGlVideoView[1].layout(left, top, right, bottom);
+//            if (virtical) {
+//                left = mGlVideoView[2].getBounds().left;
+//                right = mGlVideoView[2].getBounds().right;
+//            } else {
+//                right = left;
+//                left = right - w;
+//            }
+//            mGlVideoView[2].layout(left, top, right, bottom);
+//            if (virtical) {
+//                left = mGlVideoView[3].getBounds().left;
+//                right = mGlVideoView[3].getBounds().right;
+//            } else {
+//                right = left;
+//                left = right - w;
+//            }
+//            mGlVideoView[3].layout(left, top, right, bottom);
+//            if (virtical) {
+//                left = mGlVideoView[4].getBounds().left;
+//                right = mGlVideoView[4].getBounds().right;
+//            } else {
+//                right = left;
+//                left = right - w;
+//            }
+//            mGlVideoView[4].layout(left, top, right, bottom);
+//            //
+//            mGlVideoView[1].setBackgroundColor(Color.WHITE);
+//            mGlVideoView[2].setBackgroundColor(Color.WHITE);
+//            mGlVideoView[3].setBackgroundColor(Color.WHITE);
+//            mGlVideoView[4].setBackgroundColor(Color.WHITE);
+//            //
+//            mGlVideoView[1].setPaddings(2, 3, 3, 3);
+//            mGlVideoView[2].setPaddings(2, 3, 2, 3);
+//            mGlVideoView[3].setPaddings(2, 3, 2, 3);
+//            mGlVideoView[4].setPaddings(3, 3, 2, 3);
+//        } else {
+//            int wRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_width);
+//            int hRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_height);
+//            int edgeXRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetX);
+//            int edgeYRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetY);
+//            left = edgeXRemote;
+//            right = left + wRemote;
+//            top = edgeYRemote + mTopOffset;
+//            bottom = top + hRemote;
+//
+//            mGlVideoView[1].layout(left, top, right, bottom);
+//
+//            //
+//            mGlVideoView[1].setBackgroundColor(Color.WHITE);
+//            //		mGlVideoView[2].setBackgroundColor(Color.WHITE);
+//            //		mGlVideoView[3].setBackgroundColor(Color.WHITE);
+//            //		mGlVideoView[4].setBackgroundColor(Color.WHITE);
+//            //
+//            //		mGlVideoView[1].setPaddings(2, 3, 3, 3);
+//            //		mGlVideoView[2].setPaddings(2, 3, 2, 3);
+//            //		mGlVideoView[3].setPaddings(2, 3, 2, 3);
+//            //		mGlVideoView[4].setPaddings(3, 3, 2, 3);
+//        }
+//
+//        invalidate();
+//    }
 
+
+    /**
+     * 小窗口布局
+     *
+     * @param virtical
+     */
     void layoutVideoView(boolean virtical) {
         if (QLog.isColorLevel()) {
             QLog.d(TAG, QLog.CLR, "layoutVideoView virtical: " + virtical);
@@ -477,16 +589,18 @@ public class AVUIControl extends GLViewGroup {
         mGlVideoView[0].setBackgroundColor(Color.BLACK);
         //
         int edgeX = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetX);
-        int edgeY = edgeX;
-        if (mBottomOffset != 0) {
-            edgeY = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetY);
-        }
-        final int w = (width - edgeX * 2) / 4;
-        final int h = w;
+        int edgeY = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetY);
+
+        final int margintop = mContext.getResources().getDimensionPixelSize(R.dimen.small_area_margin_top);
+        final int marginbottom = mContext.getResources().getDimensionPixelSize(R.dimen.small_area_margin_bottom);
+        final int areaW = mContext.getResources().getDimensionPixelSize(R.dimen.small_area_width);
+        final int areaH = mContext.getResources().getDimensionPixelSize(R.dimen.small_area_height);
+        final int marginWight = mContext.getResources().getDimensionPixelSize(R.dimen.small_area_marginright);
+        final int marginbetween = mContext.getResources().getDimensionPixelSize(R.dimen.small_area_marginbetween);
         //
         int left = 0;
         int right = 0;
-        int top = height - h - edgeY - mBottomOffset;
+        int top = edgeY;
         int bottom = height - edgeY - mBottomOffset;
 
         if (isSupportMultiVideo) {
@@ -495,41 +609,43 @@ public class AVUIControl extends GLViewGroup {
             }
 
             //多人画面的位置为了不与下面的关闭免提，打开麦克风等按钮重复，需要重新设计其位置，暂时置于视图中间
-            top = (height - h) / 2;
-            bottom = (height + h) / 2;
+
+            left = width - marginWight - areaW;
+            right = width - marginWight;
 
             if (virtical) {
                 left = mGlVideoView[1].getBounds().left;
                 right = mGlVideoView[1].getBounds().right;
             } else {
-                left = width - w - edgeX;
-                right = width - edgeX;
+                top = margintop;
+                bottom = margintop + areaH;
             }
             mGlVideoView[1].layout(left, top, right, bottom);
             if (virtical) {
                 left = mGlVideoView[2].getBounds().left;
                 right = mGlVideoView[2].getBounds().right;
             } else {
-                right = left;
-                left = right - w;
+                top = bottom + marginbetween;
+                bottom = top + areaH;
+
             }
             mGlVideoView[2].layout(left, top, right, bottom);
             if (virtical) {
                 left = mGlVideoView[3].getBounds().left;
                 right = mGlVideoView[3].getBounds().right;
             } else {
-                right = left;
-                left = right - w;
+                top = bottom + marginbetween;
+                bottom = top + areaH;
             }
             mGlVideoView[3].layout(left, top, right, bottom);
-            if (virtical) {
-                left = mGlVideoView[4].getBounds().left;
-                right = mGlVideoView[4].getBounds().right;
-            } else {
-                right = left;
-                left = right - w;
-            }
-            mGlVideoView[4].layout(left, top, right, bottom);
+//            if (virtical) {
+//                left = mGlVideoView[4].getBounds().left;
+//                right = mGlVideoView[4].getBounds().right;
+//            } else {
+//                top = bottom;
+//                bottom =top+areaH;
+//            }
+            mGlVideoView[4].layout(0, 0, 0, 0);
             //
             mGlVideoView[1].setBackgroundColor(Color.WHITE);
             mGlVideoView[2].setBackgroundColor(Color.WHITE);
@@ -566,6 +682,7 @@ public class AVUIControl extends GLViewGroup {
 
         invalidate();
     }
+
 
     void closeVideoView(int index) {
         if (QLog.isColorLevel()) {

@@ -75,13 +75,11 @@ public class OKhttpHelper {
     public int notifyServerNewLiveInfo(JSONObject reg) {
         try {
 
-
-            Log.i(TAG, "notifyServer live start  liveinfo: " + reg);
-
             String res = post(NEW_ROOM_INFO, reg.toString());
             Log.i(TAG, "notifyServer live start  liveinfo: " + res);
             JSONTokener jsonParser = new JSONTokener(res);
             JSONObject response = (JSONObject) jsonParser.nextValue();
+            Log.i(TAG, "notifyServerNewLiveInfo: " + response);
             int code = response.getInt("errorCode");
             if (code == 0) {
                 return code;
@@ -103,9 +101,9 @@ public class OKhttpHelper {
         try {
             JSONObject stopLive = new JSONObject();
             stopLive.put("uid", id);
-            stopLive.put("watchCount",1000);
-            stopLive.put("admireCount",10);
-            stopLive.put("timeSpan",200);
+            stopLive.put("watchCount", 1000);
+            stopLive.put("admireCount", 10);
+            stopLive.put("timeSpan", 200);
             String json = stopLive.toString();
             String res = post(STOP_ROOM, json);
             Log.i(TAG, "notifyServer live stop  liveinfo: " + res);
@@ -203,7 +201,7 @@ public class OKhttpHelper {
             req.put("timeSpan", timeSpan);
             String response = OKhttpHelper.getInstance().post(SEND_HEARTBEAT, req.toString());
 
-            Log.i(TAG, "getLiveList " + response.toString());
+            Log.i(TAG, "sendHeartBeat " + response.toString());
             JSONTokener jsonParser = new JSONTokener(response);
             JSONObject reg_response = (JSONObject) jsonParser.nextValue();
             int ret = reg_response.getInt("errorCode");

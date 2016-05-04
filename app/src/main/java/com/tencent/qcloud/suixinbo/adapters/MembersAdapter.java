@@ -20,9 +20,7 @@ import java.util.ArrayList;
  * 成员列表适配器
  */
 public class MembersAdapter extends ArrayAdapter<MemberInfo> {
-    private View view;
     private Context mContext;
-    private String selectId;
     private LiveHelper liveHelper;
     private static final String TAG = MembersAdapter.class.getSimpleName();
 
@@ -52,7 +50,6 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "select item:  " + selectId);
-//                Toast.makeText(mContext, "select item:" + selectId, Toast.LENGTH_SHORT).show();
                 liveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, selectId);
             }
         });
