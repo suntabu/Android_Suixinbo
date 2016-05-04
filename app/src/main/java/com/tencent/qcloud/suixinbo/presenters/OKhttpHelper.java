@@ -97,9 +97,11 @@ public class OKhttpHelper {
     public LiveInfoJson notifyServerLiveStop(String id) {
         try {
             JSONObject stopLive = new JSONObject();
-            stopLive.put("hostUid", id);
+            stopLive.put("uid", id);
+            stopLive.put("watchCount",1000);
+            stopLive.put("admireCount",10);
+            stopLive.put("timeSpan",200);
             String json = stopLive.toString();
-
             String res = post(STOP_ROOM, json);
             Log.i(TAG, "notifyServer live stop  liveinfo: " + res);
             JSONTokener jsonParser = new JSONTokener(res);
@@ -112,7 +114,6 @@ public class OKhttpHelper {
                 String recordS = record.toString();
                 Gson gson = new GsonBuilder().create();
                 LiveInfoJson result = gson.fromJson(recordS, LiveInfoJson.class);
-                Log.i(TAG, "notifyServer live stop  Object p : " + result.toString());
                 return result;
             }
 

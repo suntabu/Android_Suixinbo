@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
+import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -63,8 +63,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 Intent intent = new Intent(this, LiveActivity.class);
                 intent.putExtra(Constants.ID_STATUS, Constants.HOST);
                 MySelfInfo.getInstance().setIdStatus(Constants.HOST);
-                LiveRoomInfo.getInstance().setHostID(MySelfInfo.getInstance().getId());
-                LiveRoomInfo.getInstance().setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
+                MyCurrentLiveInfo.setHostID(MySelfInfo.getInstance().getId());
+                MyCurrentLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
                 startActivity(intent);
                 break;
             case R.id.cover:

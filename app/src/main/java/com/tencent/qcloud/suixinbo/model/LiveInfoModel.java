@@ -3,7 +3,7 @@ package com.tencent.qcloud.suixinbo.model;
 /**
  *  直播item
  */
-public class LiveShowModel {
+public class LiveInfoModel {
     private String title;
     private String cover;
     private int watchcount;
@@ -83,7 +83,7 @@ public class LiveShowModel {
 
 
 
-//    public LiveShowModel(PLULiveListProto.LiveItem item){
+//    public LiveInfoModel(PLULiveListProto.LiveItem item){
 //        title = item.getTitle();
 //        cover = item.getCover();
 //        timespan = item.getTimeSpan();
