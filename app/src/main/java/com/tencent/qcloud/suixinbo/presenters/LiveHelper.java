@@ -55,8 +55,8 @@ public class LiveHelper extends Presenter {
     private static final int FRONT_CAMERA = 0;
     private static final int BACK_CAMERA = 1;
     private static final int MAX_REQUEST_VIEW_COUNT = 3;//当前最大支持请求画面个数
-    private static final boolean HOST = true;
-    private static final boolean MEMBER = false;
+    private static final boolean LOCAL = true;
+    private static final boolean REMOTE = false;
     private TIMConversation mConversation;
     private TIMConversation mC2CConversation;
     private boolean isMicOpen = true;
@@ -133,7 +133,7 @@ public class LiveHelper extends Presenter {
 
                     //如果是主播直接本地渲染
                     if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
-                        mLiveView.showVideoView(HOST, MyCurrentLiveInfo.getHostID());
+                        mLiveView.showVideoView(LOCAL, MyCurrentLiveInfo.getHostID());
 
                 }
             }
@@ -172,42 +172,13 @@ public class LiveHelper extends Presenter {
 
 
 
-            mLiveView.showVideoView(MEMBER, identifier);
+            mLiveView.showVideoView(REMOTE, identifier);
 
         } else {
             Toast.makeText(mContext, "request remoteView empty !!!!! endpoint = null", Toast.LENGTH_SHORT).show();
         }
     }
 
-
-//    public void hostRequestView(String identifier, int viewindex, int requestCount, int type, int size) {
-//        Log.i(TAG, "RequestView " + identifier);
-//        AVView mRequestViewList[] = new AVView[MAX_REQUEST_VIEW_COUNT];
-//        String mRequestIdentifierList[] = new String[MAX_REQUEST_VIEW_COUNT];
-//        AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifier);
-//        Log.d(TAG, "RequestView hostIdentifier " + identifier + " endpoint " + endpoint);
-//        if (endpoint != null) {
-//
-////
-////            AVView view = new AVView();
-////            view.videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
-////            view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
-//
-//            AVView view = new AVView();
-//            view.videoSrcType = type;
-//            view.viewSizeType = size;
-//
-//            //界面数
-//            mRequestViewList[viewindex] = view;
-//            mRequestIdentifierList[viewindex] = identifier;
-//            mRequestViewList[viewindex].viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
-//            AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, requestCount, mRequestViewListCompleteCallback);
-//            mLiveView.showVideoView(MEMBER);
-//
-//        } else {
-//            Toast.makeText(mContext, "request remoteView empty !!!!! endpoint = null", Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
 
     private AVEndpoint.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVEndpoint.RequestViewListCompleteCallback() {

@@ -298,10 +298,12 @@ public class EnterLiveHelper extends Presenter {
         quiteIMChatRoom();
         //退出AV房间
         quiteAVRoom();
-
+        MyCurrentLiveInfo.setCurrentRequestCount(0);
         uninitAudioService();
         //通知结束
         notifyServerLiveEnd();
+
+        mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
 
     }
 

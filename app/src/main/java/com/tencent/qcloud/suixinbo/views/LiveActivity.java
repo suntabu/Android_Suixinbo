@@ -127,9 +127,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 } else {
                     //成员请求主播画面
                     String host = MyCurrentLiveInfo.getHostID();
-                    mLiveHelper.RequestView(host, 0, 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
-                    MyCurrentLiveInfo.setCurrentRequestCount(1);
-                    MyCurrentLiveInfo.setIndexView(0);
+                    int requestCount = MyCurrentLiveInfo.getCurrentRequestCount();
+                    mLiveHelper.RequestView(host, requestCount, requestCount + 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
+                    requestCount = requestCount + 1;
+                    MyCurrentLiveInfo.setCurrentRequestCount(requestCount);
                 }
 
             }
@@ -144,16 +145,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 //                        mLiveHelper.RequestView(host, 0, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
                 }
             }
-            if (action.equals(AvConstants.ACTION_MEMBER_CAMERA_OPEN)) {
+            if (action.equals(AvConstants.ACTION_MEMBER_CAMERA_OPEN)) {//成员有人打开摄像头
                 String id = intent.getStringExtra("id");
                 Log.i(TAG, "member open camera " + id);
                 if (id.equals(MySelfInfo.getInstance().getId())) {//自己直接渲染
-                    showVideoView(true,id);
-                }else{//
-//                    int viewIndex = MyCurrentLiveInfo.getIndexView();
-//                    int requestCount = MyCurrentLiveInfo.getCurrentRequestCount();
-
-                    mLiveHelper.RequestView(id, 0, 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
+                    showVideoView(true, id);
+                } else {//
+                    int requestCount = MyCurrentLiveInfo.getCurrentRequestCount();
+                    mLiveHelper.RequestView(id, requestCount, requestCount + 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
+                    requestCount = requestCount + 1;
+                    MyCurrentLiveInfo.setCurrentRequestCount(requestCount);
                 }
             }
 
@@ -246,6 +247,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        MyCurrentLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
         QavsdkControl.getInstance().onDestroy();
     }
@@ -256,6 +258,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void onBackPressed() {
+
         mEnterRoomProsscessHelper.QuiteLive();
 
     }
@@ -300,7 +303,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             QavsdkControl.getInstance().setSelfId(MySelfInfo.getInstance().getId());
             QavsdkControl.getInstance().setLocalHasVideo(true, MySelfInfo.getInstance().getId());
             //通知用户服务器
-            mEnterRoomProsscessHelper.notifyServerCreateRoom();
+            if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
+                mEnterRoomProsscessHelper.notifyServerCreateRoom();
 
         } else {
             QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_CAMERA);
