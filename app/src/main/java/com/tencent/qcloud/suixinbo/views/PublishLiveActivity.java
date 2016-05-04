@@ -3,6 +3,7 @@ package com.tencent.qcloud.suixinbo.views;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,9 +14,12 @@ import android.widget.TextView;
 
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
+import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.LocationView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.views.customviews.CustomSwitch;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,12 +27,15 @@ import java.io.IOException;
 /**
  * Created by admin on 16/4/21.
  */
-public class PublishLiveActivity extends Activity implements View.OnClickListener {
+public class PublishLiveActivity extends Activity implements View.OnClickListener, LocationView {
     private PublishHelper mPublishLivePresenter;
+    private LocationHelper mLocationHelper;
     private TextView BtnBack, BtnPublish;
     private Dialog mPicChsDialog;
     private ImageView cover;
     private Uri fileUri;
+    private TextView tvLBS;
+    private CustomSwitch btnLBS;
     private static final int CAPTURE_IMAGE_CAMERA = 100;
     private static final int IMAGE_STORE = 200;
     private static final String TAG = PublishLiveActivity.class.getSimpleName();
@@ -40,12 +47,16 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_publish);
         mPublishLivePresenter = new PublishHelper(this);
+        mLocationHelper = new LocationHelper(this);
         BtnBack = (TextView) findViewById(R.id.btn_cancel);
         BtnPublish = (TextView) findViewById(R.id.btn_publish);
         cover = (ImageView) findViewById(R.id.cover);
+        tvLBS = (TextView)findViewById(R.id.address);
+        btnLBS = (CustomSwitch)findViewById(R.id.btn_lbs);
         cover.setOnClickListener(this);
         BtnBack.setOnClickListener(this);
         BtnPublish.setOnClickListener(this);
+        btnLBS.setOnClickListener(this);
 
         initExitDialog();
 
@@ -69,6 +80,21 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 break;
             case R.id.cover:
                 mPicChsDialog.show();
+                break;
+            case R.id.btn_lbs:
+                if (btnLBS.getChecked()){
+                    btnLBS.setChecked(false, true);
+                    tvLBS.setText(R.string.text_live_close_lbs);
+                }else{
+                    btnLBS.setChecked(true, true);
+                    tvLBS.setText(R.string.text_live_location);
+                    if (mLocationHelper.checkPermission()){
+                        if (!mLocationHelper.getMyLocation(getApplicationContext(), this)){
+                            tvLBS.setText(getString(R.string.text_live_lbs_fail));
+                            btnLBS.setChecked(false, false);
+                        }
+                    }
+                }
                 break;
         }
     }
@@ -168,5 +194,31 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         startActivityForResult(intent, CROP_CHOOSE);
     }
 
+    @Override
+    public void onLocationChanged(int code, String location) {
+        if (btnLBS.getChecked()) {
+            if (0 == code) {
+                tvLBS.setText(location);
+            } else {
+                tvLBS.setText(getString(R.string.text_live_lbs_fail));
+            }
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+        case Constants.LOCATION_PERMISSION_REQ_CODE:
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (!mLocationHelper.getMyLocation(getApplicationContext(), this)){
+                    tvLBS.setText(getString(R.string.text_live_lbs_fail));
+                    btnLBS.setChecked(false, false);
+                }
+            }
+            break;
+        default:
+            break;
+        }
+    }
 }

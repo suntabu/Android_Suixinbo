@@ -29,6 +29,8 @@ public class Constants {
 
     public static final int MEMBER = 0;
 
+    public static final int LOCATION_PERMISSION_REQ_CODE = 1;
+
 
     public static final String APPLY_CHATROOM = "申请加入";
 
