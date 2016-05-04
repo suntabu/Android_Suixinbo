@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.tencent.TIMConversation;
 import com.tencent.TIMConversationType;
+import com.tencent.TIMCustomElem;
 import com.tencent.TIMElem;
 import com.tencent.TIMElemType;
 import com.tencent.TIMGroupManager;
@@ -27,12 +28,18 @@ import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
-import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
+import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.MembersDialogView;
+import com.tencent.qcloud.suixinbo.utils.Constants;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,8 +60,12 @@ public class LiveHelper extends Presenter {
     private TIMConversation mConversation;
     private TIMConversation mC2CConversation;
     private boolean isMicOpen = true;
+    private static final String UNREAD = "0";
     private ArrayList<String> mCurrentVideoMembers;
     private ArrayList<MemberInfo> mDialogMembers = new ArrayList<MemberInfo>();
+    private int requestCount = 1;
+    private AVView mRequestViewList[] = new AVView[MAX_REQUEST_VIEW_COUNT];
+    private String mRequestIdentifierList[] = new String[MAX_REQUEST_VIEW_COUNT];
 
 
     public LiveHelper(Context context, LiveView liveview) {
@@ -120,8 +131,9 @@ public class LiveHelper extends Presenter {
                         mIsFrontCamera = false;
                     }
 
-                    Log.i(TAG, "createlive enableCamera result " + result);
-                    mLiveView.showVideoView(HOST);
+                    //如果是主播直接本地渲染
+                    if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
+                        mLiveView.showVideoView(HOST, MyCurrentLiveInfo.getHostID());
 
                 }
             }
@@ -133,37 +145,73 @@ public class LiveHelper extends Presenter {
 
 
     /**
-     * AVSDK server请求主播数据
+     * AVSDK 请求主播数据
      *
-     * @param identifier
+     * @param identifier 主播ID
      */
-    public void requestView(String identifier) {
-        Log.i(TAG, "requestView " + identifier);
-        AVView mRequestViewList[] = new AVView[MAX_REQUEST_VIEW_COUNT];
-        String mRequestIdentifierList[] = new String[MAX_REQUEST_VIEW_COUNT];
+    public void RequestView(String identifier, int viewindex, int requestCount, int type, int size) {
+        Log.i(TAG, "RequestView " + identifier);
+
         AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifier);
-        Log.d(TAG, "requestView hostIdentifier " + identifier + " endpoint " + endpoint);
+        Log.d(TAG, "RequestView hostIdentifier " + identifier + " endpoint " + endpoint);
         if (endpoint != null) {
 
+//
+//            AVView view = new AVView();
+//            view.videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
+//            view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
 
             AVView view = new AVView();
-            view.videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
-            view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
+            view.videoSrcType = type;
+            view.viewSizeType = size;
 
             //界面数
-            mRequestViewList[0] = view;
-            mRequestIdentifierList[0] = identifier;
-            mRequestViewList[0].viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
-            AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, 1, mRequestViewListCompleteCallback);
-            mLiveView.showVideoView(MEMBER);
+            mRequestViewList[viewindex] = view;
+            mRequestIdentifierList[viewindex] = identifier;
+            int ret = AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, requestCount, mRequestViewListCompleteCallback);
+
+
+
+            mLiveView.showVideoView(MEMBER, identifier);
 
         } else {
             Toast.makeText(mContext, "request remoteView empty !!!!! endpoint = null", Toast.LENGTH_SHORT).show();
         }
     }
 
+
+//    public void hostRequestView(String identifier, int viewindex, int requestCount, int type, int size) {
+//        Log.i(TAG, "RequestView " + identifier);
+//        AVView mRequestViewList[] = new AVView[MAX_REQUEST_VIEW_COUNT];
+//        String mRequestIdentifierList[] = new String[MAX_REQUEST_VIEW_COUNT];
+//        AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifier);
+//        Log.d(TAG, "RequestView hostIdentifier " + identifier + " endpoint " + endpoint);
+//        if (endpoint != null) {
+//
+////
+////            AVView view = new AVView();
+////            view.videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
+////            view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
+//
+//            AVView view = new AVView();
+//            view.videoSrcType = type;
+//            view.viewSizeType = size;
+//
+//            //界面数
+//            mRequestViewList[viewindex] = view;
+//            mRequestIdentifierList[viewindex] = identifier;
+//            mRequestViewList[viewindex].viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
+//            AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, requestCount, mRequestViewListCompleteCallback);
+//            mLiveView.showVideoView(MEMBER);
+//
+//        } else {
+//            Toast.makeText(mContext, "request remoteView empty !!!!! endpoint = null", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
+
     private AVEndpoint.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVEndpoint.RequestViewListCompleteCallback() {
-        protected void OnComplete(String identifierList[], int count, int result) {
+        protected void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
             // TODO
             Log.d(TAG, "RequestViewListCompleteCallback.OnComplete");
         }
@@ -247,7 +295,7 @@ public class LiveHelper extends Presenter {
                     continue;
                 TIMElem elem = currMsg.getElement(j);
                 TIMElemType type = elem.getType();
-
+                String sendId = currMsg.getSender();
                 //系统消息
                 if (type == TIMElemType.GroupSystem) {
                     if (TIMGroupSystemElemType.TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE == ((TIMGroupSystemElem) elem).getSubtype()) {
@@ -258,12 +306,12 @@ public class LiveHelper extends Presenter {
                 }
                 //定制消息
                 if (type == TIMElemType.Custom) {
-                    handleCustomMsg(elem);
+                    handleCustomMsg(elem, sendId);
                     continue;
                 }
 
                 //其他群消息过滤
-                if (!LiveRoomInfo.getChatRoomId().equals(currMsg.getConversation().getPeer())) {
+                if (!MyCurrentLiveInfo.getChatRoomId().equals(currMsg.getConversation().getPeer())) {
                     continue;
                 }
 
@@ -299,8 +347,31 @@ public class LiveHelper extends Presenter {
      *
      * @param elem
      */
-    private void handleCustomMsg(TIMElem elem) {
+    private void handleCustomMsg(TIMElem elem, String sendId) {
+        try {
+            String customText = new String(((TIMCustomElem) elem).getData(), "UTF-8");
+            Log.i(TAG, "cumstom msg  " + customText);
 
+            JSONTokener jsonParser = new JSONTokener(customText);
+            // 此时还未读取任何json文本，直接读取就是一个JSONObject对象。
+            // 如果此时的读取位置在"name" : 了，那么nextValue就是"yuanzhifei89"（String）
+            JSONObject json = (JSONObject) jsonParser.nextValue();
+            int action = json.getInt("userAction");
+            switch (action) {
+                case Constants.AVIMCMD_MUlTI_HOST_INVITE:
+                    mLiveView.showInviteDialog();
+                    break;
+                case Constants.AVIMCMD_MUlTI_JOIN:
+                    Toast.makeText(mContext, sendId + " accepted !", Toast.LENGTH_SHORT).show();
+//                    requestMu(sendId);
+                    break;
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (JSONException ex) {
+            // 异常处理代码
+        }
     }
 
 
@@ -456,11 +527,35 @@ public class LiveHelper extends Presenter {
         }
 
         mMembersDialogView.showMembersList(mDialogMembers);
+
     }
 
 
-    public void inviteVideoChat(String id) {
-        Toast.makeText(mContext, "send a invite to " + id, Toast.LENGTH_SHORT).show();
+    public void sendC2CMessage(int cmd, String id) {
+        JSONObject inviteCmd = new JSONObject();
+        try {
+            inviteCmd.put("userAction", cmd);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String cmds = inviteCmd.toString();
+        Log.i(TAG, "send cmd : " + cmd);
+        TIMMessage msg = new TIMMessage();
+        TIMCustomElem elem = new TIMCustomElem();
+        elem.setData(cmds.getBytes());
+        msg.addElement(elem);
+        mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, id);
+        mC2CConversation.sendMessage(msg, new TIMValueCallBack<TIMMessage>() {
+            @Override
+            public void onError(int i, String s) {
+                Log.e(TAG, "enter error" + i + ": " + s);
+            }
+
+            @Override
+            public void onSuccess(TIMMessage timMessage) {
+                Log.i(TAG, "send praise succ !");
+            }
+        });
     }
 
 

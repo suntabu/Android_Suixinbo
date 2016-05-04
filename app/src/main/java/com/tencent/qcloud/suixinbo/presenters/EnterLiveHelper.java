@@ -18,7 +18,7 @@ import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
-import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
+import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -38,6 +38,8 @@ public class EnterLiveHelper extends Presenter {
     private static final String TAG = EnterLiveHelper.class.getSimpleName();
     private static boolean isInChatRoom = false;
     private static boolean isInAVRoom = false;
+    private LiveHelper mLiveHelper;
+
 
     private static final int TYPE_MEMBER_CHANGE_IN = 1;//进入房间事件。
     private static final int TYPE_MEMBER_CHANGE_OUT = 2;//退出房间事件。
@@ -63,7 +65,7 @@ public class EnterLiveHelper extends Presenter {
             createLive();
         } else {
             Log.i(TAG, "joinLiveRoom startEnterRoom ");
-            joinLive(LiveRoomInfo.getRoomNum());
+            joinLive(MyCurrentLiveInfo.getRoomNum());
         }
 
     }
@@ -101,7 +103,7 @@ public class EnterLiveHelper extends Presenter {
             switch (eventid) {
                 case TYPE_MEMBER_CHANGE_IN:
                     for (String id : updateList) {
-                        String host = LiveRoomInfo.getHostID();
+                        String host = MyCurrentLiveInfo.getHostID();
                         if (id.equals(host)) {
 //                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
                         }
@@ -109,9 +111,17 @@ public class EnterLiveHelper extends Presenter {
                     break;
                 case TYPE_MEMBER_CHANGE_HAS_CAMERA_VIDEO:
                     for (String id : updateList) {
-                        String host = LiveRoomInfo.getHostID();
+                        String host = MyCurrentLiveInfo.getHostID();
                         if (id.equals(host)) {
                             mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
+                        } else {
+//
+                            Intent intent = new Intent(AvConstants.ACTION_MEMBER_CAMERA_OPEN);
+                            intent.putExtra("id", id);
+                            mContext.sendBroadcast(intent);
+
+
+//                                mLiveHelper.RequestView(id, 0, 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
                         }
                     }
                     break;
@@ -122,7 +132,7 @@ public class EnterLiveHelper extends Presenter {
             //用户
             for (String member : updateList) {
                 Log.i(TAG, " onEndpoints id " + member);
-                if (member.equals(LiveRoomInfo.getHostID())) {
+                if (member.equals(MyCurrentLiveInfo.getHostID())) {
 
                 }
 
@@ -158,6 +168,7 @@ public class EnterLiveHelper extends Presenter {
                 if (i == 10025) {
                     isInChatRoom = true;
                     createAVRoom(MySelfInfo.getInstance().getMyRoomNum());
+                    return;
                 }
                 // 创建IM房间失败，提示失败原因，并关闭等待对话框
                 Toast.makeText(mContext, " chatroom  error " + s + "i " + i, Toast.LENGTH_SHORT).show();
@@ -207,8 +218,8 @@ public class EnterLiveHelper extends Presenter {
                     liveInfo = new JSONObject();
                     liveInfo.put("title", "This is a test ");
                     liveInfo.put("cover", "");
-                    liveInfo.put("chatRoomId", LiveRoomInfo.getChatRoomId());
-                    liveInfo.put("avRoomId", LiveRoomInfo.getRoomNum());
+                    liveInfo.put("chatRoomId", MyCurrentLiveInfo.getChatRoomId());
+                    liveInfo.put("avRoomId", MyCurrentLiveInfo.getRoomNum());
                     JSONObject hostinfo = new JSONObject();
                     hostinfo.put("uid", MySelfInfo.getInstance().getId());
                     hostinfo.put("avatar", "");
@@ -251,7 +262,7 @@ public class EnterLiveHelper extends Presenter {
                 //已经在是成员了
                 if (i == Constants.IS_ALREADY_MEMBER) {
                     Log.i(TAG, "joinLiveRoom joinIMChatRoom callback succ ");
-                    joinAVRoom(LiveRoomInfo.getRoomNum());
+                    joinAVRoom(MyCurrentLiveInfo.getRoomNum());
                     isInChatRoom = true;
                 } else {
                     Toast.makeText(mContext, "join IM room fail " + s + " " + i, Toast.LENGTH_SHORT).show();
@@ -262,7 +273,7 @@ public class EnterLiveHelper extends Presenter {
             public void onSuccess() {
                 Log.i(TAG, "joinLiveRoom joinIMChatRoom callback succ ");
                 isInChatRoom = true;
-                joinAVRoom(LiveRoomInfo.getRoomNum());
+                joinAVRoom(MyCurrentLiveInfo.getRoomNum());
             }
         });
 

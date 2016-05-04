@@ -14,7 +14,7 @@ import android.widget.ListView;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.LiveShowAdapter;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
-import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
+import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LiveListViewHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveListView;
@@ -58,8 +58,8 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
                 Intent intent = new Intent(getActivity(), LiveActivity.class);
                 intent.putExtra(Constants.ID_STATUS, Constants.MEMBER);
                 MySelfInfo.getInstance().setIdStatus(Constants.MEMBER);
-                LiveRoomInfo.getInstance().setHostID(item.getHost().getUid());
-                LiveRoomInfo.getInstance().setRoomNum(item.getAvRoomId());
+                MyCurrentLiveInfo.setHostID(item.getHost().getUid());
+                MyCurrentLiveInfo.setRoomNum(item.getAvRoomId());
                 startActivity(intent);
             }
         });

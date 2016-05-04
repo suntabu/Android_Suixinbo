@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
+import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
@@ -75,8 +74,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 Intent intent = new Intent(this, LiveActivity.class);
                 intent.putExtra(Constants.ID_STATUS, Constants.HOST);
                 MySelfInfo.getInstance().setIdStatus(Constants.HOST);
-                LiveRoomInfo.getInstance().setHostID(MySelfInfo.getInstance().getId());
-                LiveRoomInfo.getInstance().setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
+                MyCurrentLiveInfo.setHostID(MySelfInfo.getInstance().getId());
+                MyCurrentLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
                 startActivity(intent);
                 break;
             case R.id.cover:

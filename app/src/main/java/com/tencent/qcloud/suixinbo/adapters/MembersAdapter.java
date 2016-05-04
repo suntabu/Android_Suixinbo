@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
 import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
+import com.tencent.qcloud.suixinbo.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -46,7 +47,7 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
         itemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                liveHelper.inviteVideoChat(selectId);
+                liveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE,selectId);
             }
         });
 

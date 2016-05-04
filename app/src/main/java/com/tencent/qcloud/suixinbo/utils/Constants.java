@@ -40,4 +40,13 @@ public class Constants {
 
     public static final String ROOT_DIR = "/sdcard/Suixinbo/";
 
+
+    public static final int AVIMCMD_MULTI = 0x800;             // 多人互动消息类型
+
+    public static final int AVIMCMD_MUlTI_HOST_INVITE = AVIMCMD_MULTI + 1;         // 多人主播发送邀请消息, C2C消息
+    public static final int AVIMCMD_MULT_CANCEL_INTERACT = AVIMCMD_MUlTI_HOST_INVITE + 1;       // 断开互动，Group消息，带断开者的imUsreid参数
+    public static final int AVIMCMD_MUlTI_JOIN = AVIMCMD_MULT_CANCEL_INTERACT + 1;       // 多人互动方收到AVIMCMD_Multi_Host_Invite多人邀请后，同意，C2C消息
+    public static final int AVIMCMD_MUlTI_REFUSE = AVIMCMD_MUlTI_JOIN + 1;      // 多人互动方收到AVIMCMD_Multi_Invite多人邀请后，拒绝，C2C消息
+
+
 }

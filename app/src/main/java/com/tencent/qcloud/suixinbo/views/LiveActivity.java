@@ -27,7 +27,7 @@ import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.ChatEntity;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
-import com.tencent.qcloud.suixinbo.model.LiveRoomInfo;
+import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.EnterLiveHelper;
 import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
@@ -49,7 +49,7 @@ import java.util.TimerTask;
  */
 public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener {
     private EnterLiveHelper mEnterRoomProsscessHelper;
-    private LiveHelper mLiveControlHelper;
+    private LiveHelper mLiveHelper;
     private static final String TAG = LiveActivity.class.getSimpleName();
 
     private ArrayList<ChatEntity> mArrayListChatEntity;
@@ -64,6 +64,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private Dialog mMemberDialog;
     private HeartLayout mHeartLayout;
     private TextView mLikeTv;
+	private int requestCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +76,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         //进出房间的协助类
         mEnterRoomProsscessHelper = new EnterLiveHelper(this, this);
         //房间内的交互协助类
-        mLiveControlHelper = new LiveHelper(this, this);
+        mLiveHelper = new LiveHelper(this, this);
 
         initView();
         registerReceiver();
@@ -125,19 +126,40 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (action.equals(AvConstants.ACTION_SURFACE_CREATED)) {
                 //打开摄像头
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-                    mLiveControlHelper.OpenCameraAndMic();
+                    mLiveHelper.OpenCameraAndMic();
                 } else {
                     //成员请求主播画面
-                    String host = LiveRoomInfo.getHostID();
-                    mLiveControlHelper.requestView(host);
+                    String host = MyCurrentLiveInfo.getHostID();
+                    mLiveHelper.RequestView(host, 0, 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
+                    MyCurrentLiveInfo.setCurrentRequestCount(1);
+                    MyCurrentLiveInfo.setIndexView(0);
                 }
 
             }
             //主播数据OK
             if (action.equals(AvConstants.ACTION_HOST_ENTER)) {
                 //主播上线才开始渲染视频
-                mEnterRoomProsscessHelper.initAvUILayer(avView);
+                //主播上线 请求主画面
+                if (MySelfInfo.getInstance().getIdStatus() == Constants.MEMBER) {
+                    mEnterRoomProsscessHelper.initAvUILayer(avView);
+
+//                        String host = MyCurrentLiveInfo.getHostID();
+//                        mLiveHelper.RequestView(host, 0, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
+                }
             }
+            if (action.equals(AvConstants.ACTION_MEMBER_CAMERA_OPEN)) {
+                String id = intent.getStringExtra("id");
+                Log.i(TAG, "member open camera " + id);
+                if (id.equals(MySelfInfo.getInstance().getId())) {//自己直接渲染
+                    showVideoView(true,id);
+                }else{//
+//                    int viewIndex = MyCurrentLiveInfo.getIndexView();
+//                    int requestCount = MyCurrentLiveInfo.getCurrentRequestCount();
+
+                    mLiveHelper.RequestView(id, 0, 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
+                }
+            }
+
 
         }
     };
@@ -146,6 +168,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AvConstants.ACTION_SURFACE_CREATED);
         intentFilter.addAction(AvConstants.ACTION_HOST_ENTER);
+        intentFilter.addAction(AvConstants.ACTION_MEMBER_CAMERA_OPEN);
         registerReceiver(mBroadcastReceiver, intentFilter);
 
     }
@@ -164,6 +187,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private FrameLayout mFullControllerUi;
 
     private void initView() {
+
         mHostbottomLy = (LinearLayout) findViewById(R.id.host_bottom_layout);
         mMemberbottomLy = (LinearLayout) findViewById(R.id.member_bottom_layout);
         mVideoChat = (TextView) findViewById(R.id.video_interact);
@@ -184,7 +208,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             BtnScreen.setOnClickListener(this);
             mVideoChat.setOnClickListener(this);
 
-            mMemberDialog = new MembersDialog(this,R.style.dialog);
+            mMemberDialog = new MembersDialog(this, R.style.dialog);
 
         } else {
             mMemberbottomLy.setVisibility(View.VISIBLE);
@@ -194,13 +218,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mLikeTv = (TextView) findViewById(R.id.member_send_good);
             mLikeTv.setOnClickListener(this);
             mVideoChat.setVisibility(View.GONE);
-
         }
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
         BtnNormal.setOnClickListener(this);
         mFullControllerUi = (FrameLayout) findViewById(R.id.controll_ui);
 
         avView = findViewById(R.id.av_video_layer_ui);
+        //直接初始化SurfaceView
+//        mEnterRoomProsscessHelper.initAvUILayer(avView);
         BtnBack = (TextView) findViewById(R.id.btn_back);
         BtnBack.setOnClickListener(this);
 
@@ -251,16 +276,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     public void EnterRoomComplete(int id_status, boolean isSucc) {
         Toast.makeText(LiveActivity.this, "EnterRoomComplete " + id_status + " isSucc " + isSucc, Toast.LENGTH_SHORT).show();
         if (isSucc == true) {
-
             //IM初始化
-            mLiveControlHelper.initTIMGroup("" + LiveRoomInfo.getRoomNum());
+            mLiveHelper.initTIMGroup("" + MyCurrentLiveInfo.getRoomNum());
 
             if (id_status == Constants.HOST) {//主播方式加入房间成功
                 //开启摄像头渲染画面
                 Log.i(TAG, "createlive EnterRoomComplete isSucc" + isSucc);
                 mEnterRoomProsscessHelper.initAvUILayer(avView);
             } else {//以成员方式加入房间成功
-
             }
         }
     }
@@ -276,9 +299,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 开启本地渲染
      */
     @Override
-    public void showVideoView(boolean isHost) {
+    public void showVideoView(boolean isLocal, String id) {
         //渲染本地界面
-        if (isHost == true) {
+        if (isLocal == true) {
             Log.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
             QavsdkControl.getInstance().setSelfId(MySelfInfo.getInstance().getId());
             QavsdkControl.getInstance().setLocalHasVideo(true, MySelfInfo.getInstance().getId());
@@ -286,10 +309,17 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mEnterRoomProsscessHelper.notifyServerCreateRoom();
 
         } else {
-            String host = LiveRoomInfo.getHostID();
-            QavsdkControl.getInstance().setRemoteHasVideo(true, LiveRoomInfo.getHostID(), AVView.VIDEO_SRC_TYPE_CAMERA);
+            QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_CAMERA);
         }
 
+    }
+
+
+    @Override
+    public void showInviteDialog() {
+        Toast.makeText(LiveActivity.this, "yes i receive a host invitation and open my Camera", Toast.LENGTH_SHORT).show();
+        mLiveHelper.OpenCameraAndMic();
+        mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, MyCurrentLiveInfo.getHostID());
     }
 
     @Override
@@ -314,25 +344,25 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 break;
             case R.id.flash_btn:
 
-                if (mLiveControlHelper.isFrontCamera() == true) {
+                if (mLiveHelper.isFrontCamera() == true) {
                     Toast.makeText(LiveActivity.this, "this is front cam", Toast.LENGTH_SHORT).show();
                 } else {
-                    mLiveControlHelper.toggleFlashLight();
+                    mLiveHelper.toggleFlashLight();
                 }
                 break;
             case R.id.switch_cam:
-                mLiveControlHelper.switchCamera();
+                mLiveHelper.switchCamera();
                 break;
             case R.id.beauty_btn:
 
                 break;
             case R.id.mic_btn:
-                if (mLiveControlHelper.isMicOpen() == true) {
+                if (mLiveHelper.isMicOpen() == true) {
                     BtnMic.setBackgroundResource(R.drawable.icon_mic_close);
-                    mLiveControlHelper.muteMic();
+                    mLiveHelper.muteMic();
                 } else {
                     BtnMic.setBackgroundResource(R.drawable.icon_mic_open);
-                    mLiveControlHelper.openMic();
+                    mLiveHelper.openMic();
                 }
 
                 break;
@@ -355,7 +385,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 发消息弹出框
      */
     private void inputMsgDialog() {
-        InputTextMsgDialog inputMsgDialog = new InputTextMsgDialog(this, R.style.inputdialog, mLiveControlHelper, this);
+        InputTextMsgDialog inputMsgDialog = new InputTextMsgDialog(this, R.style.inputdialog, mLiveHelper, this);
         WindowManager windowManager = getWindowManager();
         Display display = windowManager.getDefaultDisplay();
         WindowManager.LayoutParams lp = inputMsgDialog.getWindow().getAttributes();
