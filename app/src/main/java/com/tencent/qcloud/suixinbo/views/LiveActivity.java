@@ -34,6 +34,7 @@ import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.views.customviews.HeartLayout;
 import com.tencent.qcloud.suixinbo.views.customviews.InputTextMsgDialog;
 import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
@@ -61,7 +62,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private TimerTask mTimerTask = null;
     private static final int REFRESH_LISTVIEW = 5;
     private Dialog mMemberDialog;
-    private int requestCount = 0;
+    private HeartLayout mHeartLayout;
+    private TextView mLikeTv;
+	private int requestCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,6 +192,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mHostbottomLy = (LinearLayout) findViewById(R.id.host_bottom_layout);
         mMemberbottomLy = (LinearLayout) findViewById(R.id.member_bottom_layout);
         mVideoChat = (TextView) findViewById(R.id.video_interact);
+        mHeartLayout = (HeartLayout) findViewById(R.id.heart_layout);
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostbottomLy.setVisibility(View.VISIBLE);
             mMemberbottomLy.setVisibility(View.GONE);
@@ -212,6 +216,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mHostbottomLy.setVisibility(View.GONE);
             BtnInput = (TextView) findViewById(R.id.message_input);
             BtnInput.setOnClickListener(this);
+            mLikeTv = (TextView) findViewById(R.id.member_send_good);
+            mLikeTv.setOnClickListener(this);
             mVideoChat.setVisibility(View.GONE);
         }
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
@@ -335,6 +341,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 break;
             case R.id.message_input:
                 inputMsgDialog();
+                break;
+            case R.id.member_send_good:
+                // 添加飘星动画
+                mHeartLayout.addFavor();
                 break;
             case R.id.flash_btn:
 

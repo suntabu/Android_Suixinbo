@@ -17,6 +17,7 @@ import org.json.JSONTokener;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -48,7 +49,10 @@ public class OKhttpHelper {
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
-    private OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS)
+            .build();
 
 
     public String post(String url, String json) throws IOException {

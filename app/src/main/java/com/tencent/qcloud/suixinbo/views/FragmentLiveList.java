@@ -85,11 +85,12 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
 
     @Override
     public void showFirstPage(ArrayList<LiveInfoJson> result) {
-        if (result == null) return;
         mSwipeRefreshLayout.setRefreshing(false);
         liveList.clear();
-        for (LiveInfoJson item : result) {
-            liveList.add(item);
+        if (null != result) {
+            for (LiveInfoJson item : result) {
+                liveList.add(item);
+            }
         }
         adapter.notifyDataSetChanged();
     }
