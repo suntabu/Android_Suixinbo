@@ -29,6 +29,7 @@ import com.tencent.av.sdk.AVView;
 import com.tencent.av.utils.QLog;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.AvMemberInfo;
+import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 
 import java.util.ArrayList;
 
@@ -460,112 +461,6 @@ public class AVUIControl extends GLViewGroup {
         }
         return index;
     }
-//
-//    void layoutVideoView(boolean virtical) {
-//        if (QLog.isColorLevel()) {
-//            QLog.d(TAG, QLog.CLR, "layoutVideoView virtical: " + virtical);
-//        }
-//        if (mContext == null)
-//            return;
-//
-//        int width = getWidth();
-//        int height = getHeight();
-//
-//        Log.d(TAG, "width: " + getWidth() + "height: " + getHeight());
-//
-//        mGlVideoView[0].layout(0, 0, width, height);
-//        mGlVideoView[0].setBackgroundColor(Color.BLACK);
-//        //
-//        int edgeX = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetX);
-//        int edgeY = edgeX;
-//        if (mBottomOffset != 0) {
-//            edgeY = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetY);
-//        }
-//        final int w = (width - edgeX * 2) / 4;
-//        final int h = w;
-//        //
-//        int left = 0;
-//        int right = 0;
-//        int top = height - h - edgeY - mBottomOffset;
-//        int bottom = height - edgeY - mBottomOffset;
-//
-//        if (isSupportMultiVideo) {
-//            if (QLog.isColorLevel()) {
-//                QLog.d(TAG, QLog.CLR, "SupportMultiVideo");
-//            }
-//
-//            //多人画面的位置为了不与下面的关闭免提，打开麦克风等按钮重复，需要重新设计其位置，暂时置于视图中间
-//            top = (height - h) / 2;
-//            bottom = (height + h) / 2;
-//
-//            if (virtical) {
-//                left = mGlVideoView[1].getBounds().left;
-//                right = mGlVideoView[1].getBounds().right;
-//            } else {
-//                left = width - w - edgeX;
-//                right = width - edgeX;
-//            }
-//            mGlVideoView[1].layout(left, top, right, bottom);
-//            if (virtical) {
-//                left = mGlVideoView[2].getBounds().left;
-//                right = mGlVideoView[2].getBounds().right;
-//            } else {
-//                right = left;
-//                left = right - w;
-//            }
-//            mGlVideoView[2].layout(left, top, right, bottom);
-//            if (virtical) {
-//                left = mGlVideoView[3].getBounds().left;
-//                right = mGlVideoView[3].getBounds().right;
-//            } else {
-//                right = left;
-//                left = right - w;
-//            }
-//            mGlVideoView[3].layout(left, top, right, bottom);
-//            if (virtical) {
-//                left = mGlVideoView[4].getBounds().left;
-//                right = mGlVideoView[4].getBounds().right;
-//            } else {
-//                right = left;
-//                left = right - w;
-//            }
-//            mGlVideoView[4].layout(left, top, right, bottom);
-//            //
-//            mGlVideoView[1].setBackgroundColor(Color.WHITE);
-//            mGlVideoView[2].setBackgroundColor(Color.WHITE);
-//            mGlVideoView[3].setBackgroundColor(Color.WHITE);
-//            mGlVideoView[4].setBackgroundColor(Color.WHITE);
-//            //
-//            mGlVideoView[1].setPaddings(2, 3, 3, 3);
-//            mGlVideoView[2].setPaddings(2, 3, 2, 3);
-//            mGlVideoView[3].setPaddings(2, 3, 2, 3);
-//            mGlVideoView[4].setPaddings(3, 3, 2, 3);
-//        } else {
-//            int wRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_width);
-//            int hRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_height);
-//            int edgeXRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetX);
-//            int edgeYRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_offsetY);
-//            left = edgeXRemote;
-//            right = left + wRemote;
-//            top = edgeYRemote + mTopOffset;
-//            bottom = top + hRemote;
-//
-//            mGlVideoView[1].layout(left, top, right, bottom);
-//
-//            //
-//            mGlVideoView[1].setBackgroundColor(Color.WHITE);
-//            //		mGlVideoView[2].setBackgroundColor(Color.WHITE);
-//            //		mGlVideoView[3].setBackgroundColor(Color.WHITE);
-//            //		mGlVideoView[4].setBackgroundColor(Color.WHITE);
-//            //
-//            //		mGlVideoView[1].setPaddings(2, 3, 3, 3);
-//            //		mGlVideoView[2].setPaddings(2, 3, 2, 3);
-//            //		mGlVideoView[3].setPaddings(2, 3, 2, 3);
-//            //		mGlVideoView[4].setPaddings(3, 3, 2, 3);
-//        }
-//
-//        invalidate();
-//    }
 
 
     /**
@@ -910,7 +805,7 @@ public class AVUIControl extends GLViewGroup {
         }
 
 
-        if (isRemoteHasVideo) {// 打开摄像头
+        if (isRemoteHasVideo) {// 远端是否有视频数据
             GLVideoView view = null;
             mRemoteIdentifier = remoteIdentifier;
             int index = getViewIndexById(remoteIdentifier, videoSrcType);
@@ -925,14 +820,21 @@ public class AVUIControl extends GLViewGroup {
                     closeVideoView(remoteViewIndex);
                 }
             }
+            //不存在分配一个空的
             if (index < 0) {
-                index = getIdleViewIndex(0);
+                if (mRemoteIdentifier.equals(MyCurrentLiveInfo.getHostID())) {
+                    index = 0;
+                } else {
+                    index = getIdleViewIndex(1);//0 大屏保留给主播数据
+                }
+
                 if (index >= 0) {
                     view = mGlVideoView[index];
                     view.setRender(remoteIdentifier, videoSrcType);
                     remoteViewIndex = index;
                 }
-            } else {
+
+            } else {//存在用已有的
                 view = mGlVideoView[index];
             }
             if (view != null) {
