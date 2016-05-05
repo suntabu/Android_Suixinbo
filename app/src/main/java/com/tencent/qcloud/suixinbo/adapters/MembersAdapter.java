@@ -50,7 +50,7 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "select item:  " + selectId);
-                liveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, selectId);
+                liveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, "", selectId);
             }
         });
 

@@ -67,6 +67,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private TextView mLikeTv;
     private HeartBeatTask mHeartBeatTask;//心跳
     private Timer mHearBeatTimer, mVideoTimer;
+    private int thumbUp = 0;
 
 
     @Override
@@ -167,8 +168,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (action.equals(AvConstants.ACTION_SHOW_VIDEO_MEMBER_INFO)) {//点击成员
 
             }
-            if (action.equals(AvConstants.ACTION_HOST_LEAVE)) {//点击成员
-                mEnterRoomProsscessHelper.QuiteLive();
+            if (action.equals(AvConstants.ACTION_HOST_LEAVE)) {//主播结束
+                quiteLivePassively();
             }
 
 
@@ -200,7 +201,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private FrameLayout mFullControllerUi;
 
     private void initView() {
-
         mHostbottomLy = (LinearLayout) findViewById(R.id.host_bottom_layout);
         mMemberbottomLy = (LinearLayout) findViewById(R.id.member_bottom_layout);
         mVideoChat = (TextView) findViewById(R.id.video_interact);
@@ -282,6 +282,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mHearBeatTimer.cancel();
             mHearBeatTimer = null;
         }
+        thumbUp = 0;
         MyCurrentLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
         QavsdkControl.getInstance().onDestroy();
@@ -293,10 +294,29 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void onBackPressed() {
-
-        mEnterRoomProsscessHelper.QuiteLive();
+        quiteLiveByPurpose();
 
     }
+
+    /**
+     * 主动退出直播
+     */
+    private void quiteLiveByPurpose() {
+        //如果是直播，发消息
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.MEMBER)
+            mLiveHelper.sendGroupMessage(Constants.AVIMCMD_ExitLive, "");
+        mLiveHelper.unInitTIMListener();
+        mEnterRoomProsscessHelper.quiteLive();
+    }
+
+    /**
+     * 被动退出直播
+     */
+    private void quiteLivePassively() {
+        mLiveHelper.unInitTIMListener();
+        mEnterRoomProsscessHelper.quiteLive();
+    }
+
 
     /**
      * 完成进出房间流程
@@ -309,13 +329,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         Toast.makeText(LiveActivity.this, "EnterRoomComplete " + id_status + " isSucc " + isSucc, Toast.LENGTH_SHORT).show();
         if (isSucc == true) {
             //IM初始化
-            mLiveHelper.initTIMGroup("" + MyCurrentLiveInfo.getRoomNum());
+            mLiveHelper.initTIMListener("" + MyCurrentLiveInfo.getRoomNum());
 
             if (id_status == Constants.HOST) {//主播方式加入房间成功
                 //开启摄像头渲染画面
                 Log.i(TAG, "createlive EnterRoomComplete isSucc" + isSucc);
                 mEnterRoomProsscessHelper.initAvUILayer(avView);
             } else {//以成员方式加入房间成功
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_EnterLive, "");
             }
         }
     }
@@ -362,7 +383,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     public void showInviteDialog() {
         Toast.makeText(LiveActivity.this, "yes i receive a host invitation and open my Camera", Toast.LENGTH_SHORT).show();
         mLiveHelper.OpenCameraAndMic();
-        mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, MyCurrentLiveInfo.getHostID());
+        mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, "", MyCurrentLiveInfo.getHostID());
     }
 
     @Override
@@ -373,10 +394,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     }
 
     @Override
+    public void refreshThumbUp() {
+        thumbUp++;
+        mHeartLayout.addFavor();
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_back:
-                mEnterRoomProsscessHelper.QuiteLive();
+                quiteLiveByPurpose();
                 break;
             case R.id.message_input:
                 inputMsgDialog();
@@ -384,6 +411,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case R.id.member_send_good:
                 // 添加飘星动画
                 mHeartLayout.addFavor();
+                mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", MyCurrentLiveInfo.getHostID());
                 break;
             case R.id.flash_btn:
                 if (mLiveHelper.isFrontCamera() == true) {

@@ -11,4 +11,6 @@ public interface LiveView extends MvpView {
 
     void refreshText(String text, String name);
 
+    void refreshThumbUp();
+
 }

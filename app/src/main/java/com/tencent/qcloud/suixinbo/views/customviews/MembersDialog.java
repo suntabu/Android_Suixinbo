@@ -54,7 +54,7 @@ public class MembersDialog extends Dialog implements MembersDialogView {
      */
     @Override
     public void showMembersList(ArrayList<MemberInfo> data) {
-        if (data == null || data.size() == 0) return;
+        if (data == null) return;
         mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, data);
         mMemberList.setAdapter(mMembersAdapter);
         mMembersAdapter.notifyDataSetChanged();

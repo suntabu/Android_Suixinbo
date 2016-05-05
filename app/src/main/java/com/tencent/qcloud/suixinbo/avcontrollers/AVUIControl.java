@@ -619,6 +619,20 @@ public class AVUIControl extends GLViewGroup {
         layoutVideoView(false);
     }
 
+
+    /**
+     * 关闭小窗口
+     *
+     * @param identifier
+     */
+    public void closeMemberVideoView(String identifier) {
+        if (id_view.containsValue(identifier)) {
+            int index = getViewIndexById(identifier, AVView.VIDEO_SRC_TYPE_CAMERA);
+            if (index == -1) return;
+            closeVideoView(index);
+        }
+    }
+
     void initQQGlView() {
         if (QLog.isColorLevel()) {
             QLog.d(TAG, QLog.CLR, "initQQGlView");

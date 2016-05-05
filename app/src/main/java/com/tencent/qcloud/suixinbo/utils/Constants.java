@@ -49,4 +49,14 @@ public class Constants {
     public static final int AVIMCMD_MUlTI_REFUSE = AVIMCMD_MUlTI_JOIN + 1;      // 多人互动方收到AVIMCMD_Multi_Invite多人邀请后，拒绝，C2C消息
 
 
+    public static final int AVIMCMD_Text = -1;         // 普通的聊天消息
+
+    public static final int AVIMCMD_None = AVIMCMD_Text + 1;               // 无事件
+
+    // 以下事件为TCAdapter内部处理的通用事件
+    public static final int AVIMCMD_EnterLive = AVIMCMD_None + 1;          // 用户加入直播, Group消息
+    public static final int AVIMCMD_ExitLive = AVIMCMD_EnterLive + 1;         // 用户退出直播, Group消息
+    public static final int AVIMCMD_Praise = AVIMCMD_ExitLive + 1;           // 点赞消息, Demo中使用Group消息
+
+
 }
