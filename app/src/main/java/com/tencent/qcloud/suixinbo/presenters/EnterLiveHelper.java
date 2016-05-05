@@ -134,14 +134,14 @@ public class EnterLiveHelper extends Presenter {
                     }
             }
 
-            //用户
-            for (String member : updateList) {
-                Log.i(TAG, " onEndpoints id " + member);
-                if (member.equals(MyCurrentLiveInfo.getHostID())) {
-
-                }
-
-            }
+//            //用户
+//            for (String member : updateList) {
+//                Log.i(TAG, " onEndpoints id " + member);
+//                if (member.equals(MyCurrentLiveInfo.getHostID())) {
+//
+//                }
+//
+//            }
         }
 
         public void OnPrivilegeDiffNotify(int privilege) {

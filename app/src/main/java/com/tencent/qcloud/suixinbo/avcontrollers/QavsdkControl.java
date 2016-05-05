@@ -244,6 +244,7 @@ public class QavsdkControl {
     }
 
     public void setRemoteHasVideo(boolean isRemoteHasVideo, String identifier, int videoSrcType) {
+        Log.i(TAG, "setRemoteHasVideo : " + identifier);
         if (null != mAVUIControl) {
             mAVUIControl.setSmallVideoViewLayout(isRemoteHasVideo, identifier, videoSrcType);
         }
@@ -251,6 +252,7 @@ public class QavsdkControl {
 
     public void setSelfId(String key) {
         if (null != mAVUIControl) {
+
             mAVUIControl.setSelfId(key);
         }
     }

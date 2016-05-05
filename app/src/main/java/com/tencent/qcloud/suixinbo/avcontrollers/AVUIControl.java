@@ -595,6 +595,8 @@ public class AVUIControl extends GLViewGroup {
         view.enableLoading(false);
         view.setIsPC(false);
         view.clearRender();
+        //请求连接数减一
+        MyCurrentLiveInfo.setCurrentRequestCount(MyCurrentLiveInfo.getCurrentRequestCount() - 1);
 
 //		for (int i = 0; i < mGlVideoView.length - 1; i++) {
 //			GLVideoView view1 = mGlVideoView[i];
@@ -626,6 +628,7 @@ public class AVUIControl extends GLViewGroup {
      * @param identifier
      */
     public void closeMemberVideoView(String identifier) {
+
         if (id_view.containsValue(identifier)) {
             int index = getViewIndexById(identifier, AVView.VIDEO_SRC_TYPE_CAMERA);
             if (index == -1) return;
@@ -961,16 +964,16 @@ public class AVUIControl extends GLViewGroup {
             if (mGestureDetector != null) {
                 mGestureDetector.onTouchEvent(event);
             }
-            if (mTargetIndex == 1 && mMoveDetector != null) {
-                mMoveDetector.onTouchEvent(event);
-            } else if (mTargetIndex == 0 && mGlVideoView[0].getVideoSrcType() == AVView.VIDEO_SRC_TYPE_SCREEN) {
-                if (mScaleGestureDetector != null) {
-                    mScaleGestureDetector.onTouchEvent(event);
-                }
-                if (mMoveDetector != null) {
-                    mMoveDetector.onTouchEvent(event);
-                }
-            }
+//            if (mTargetIndex == 1 && mMoveDetector != null) {
+//                mMoveDetector.onTouchEvent(event);
+//            } else if (mTargetIndex == 0 && mGlVideoView[0].getVideoSrcType() == AVView.VIDEO_SRC_TYPE_SCREEN) {
+//                if (mScaleGestureDetector != null) {`
+//                    mScaleGestureDetector.onTouchEvent(event);
+//                }
+//                if (mMoveDetector != null) {
+//                    mMoveDetector.onTouchEvent(event);
+//                }
+//            }
             return true;
         }
     }

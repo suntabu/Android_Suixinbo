@@ -102,12 +102,33 @@ public class LiveHelper extends Presenter {
     /**
      * 开启摄像头和MIC
      */
-    public void OpenCameraAndMic() {
+    public void openCameraAndMic() {
         enableCamera(FRONT_CAMERA, true);
         AVAudioCtrl avAudioCtrl = QavsdkControl.getInstance().getAVContext().getAudioCtrl();//开启Mic
         avAudioCtrl.enableMic(true);
         isMicOpen = true;
 
+    }
+
+
+    public void closeCameraAndMic() {
+        closeCamera();
+        closeMic();
+    }
+
+
+    public void closeCamera() {
+        if (mIsFrontCamera) {
+            enableCamera(FRONT_CAMERA, false);
+        } else {
+            enableCamera(FRONT_CAMERA, false);
+        }
+    }
+
+    public void closeMic() {
+        AVAudioCtrl avAudioCtrl = QavsdkControl.getInstance().getAVContext().getAudioCtrl();//开启Mic
+        avAudioCtrl.enableMic(false);
+        isMicOpen = false;
     }
 
 
@@ -273,9 +294,6 @@ public class LiveHelper extends Presenter {
     }
 
 
-
-
-
     /**
      * 群消息回调
      */
@@ -394,6 +412,9 @@ public class LiveHelper extends Presenter {
                     break;
                 case Constants.AVIMCMD_ExitLive:
                     mLiveView.refreshText("quite live", sendId);
+                    break;
+                case Constants.AVIMCMD_MULT_CANCEL_INTERACT:
+                    openCameraAndMic();
                     break;
             }
 
