@@ -66,7 +66,7 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
             avatar.setImageBitmap(cirBitMap);
         }else{
-            Log.w(TAG, "user avator: "+data.getHost().getAvatar());
+            Log.d(TAG, "user avator: "+data.getHost().getAvatar());
             RequestManager req = Glide.with(mActivity);
             req.load(data.getHost().getAvatar()).transform(new GlideCircleTransform(mActivity)).into(avatar);
         }

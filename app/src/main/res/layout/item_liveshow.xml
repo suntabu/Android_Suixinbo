@@ -106,7 +106,7 @@
                     android:layout_marginLeft="10dp"
                     android:text="1000"
                     android:drawableLeft="@drawable/icon_red_hearts"
-                    android:drawablePadding="5dp"
+                    android:drawablePadding="10dp"
                     android:layout_gravity="center"
                     android:textSize="@dimen/h6"
                     android:textColor="@color/colorGray4"
