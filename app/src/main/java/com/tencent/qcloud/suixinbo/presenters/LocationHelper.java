@@ -25,6 +25,7 @@ import java.util.List;
  * 位置服务类
  */
 public class LocationHelper {
+    private static String TAG = "LocationHelper";
     private Activity locActivity;
 
     public LocationHelper(Activity activity){
@@ -48,7 +49,7 @@ public class LocationHelper {
         try {
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
-            Log.w("XIAO", "getAddressFromLocation->lat:"+latitude+", long:"+longitude);
+            Log.d(TAG, "getAddressFromLocation->lat:" + latitude + ", long:" + longitude);
             List<Address> list = geocoder.getFromLocation(latitude, longitude, 1);
             if (list.size() > 0){
                 Address address = list.get(0);
@@ -70,14 +71,11 @@ public class LocationHelper {
             return true;
         }
 
-        Log.e("XIAO", "getMyLocation->entered");
         Location curLoc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         if (null == curLoc){
-            Log.e("XIAO", "getMyLocation->request call");
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 0, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    Log.e("XIAO", "getMyLocation->onLocationChanged");
                     String strAddr = getAddressFromLocation(context, location);
                     if (TextUtils.isEmpty(strAddr)){
                         view.onLocationChanged(-1, strAddr);
@@ -91,16 +89,13 @@ public class LocationHelper {
 
                 @Override
                 public void onProviderEnabled(String provider) {
-                    Log.e("XIAO", "getMyLocation->onProviderEnabled");
                 }
 
                 @Override
                 public void onProviderDisabled(String provider) {
-                    Log.e("XIAO", "getMyLocation->onProviderDisabled");
                 }
             });
         }else{
-            Log.e("XIAO", "getMyLocation->location exist");
             String strAddr = getAddressFromLocation(context, curLoc);
             if (TextUtils.isEmpty(strAddr)){
                 view.onLocationChanged(-1, strAddr);

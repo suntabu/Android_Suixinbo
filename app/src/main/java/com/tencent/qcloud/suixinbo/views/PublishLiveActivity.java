@@ -77,6 +77,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 MyCurrentLiveInfo.setHostID(MySelfInfo.getInstance().getId());
                 MyCurrentLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
                 startActivity(intent);
+                this.finish();
                 break;
             case R.id.cover:
                 mPicChsDialog.show();

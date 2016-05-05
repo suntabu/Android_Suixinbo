@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/text_live_preview"
-            android:textColor="@color/colorTextG4"
+            android:textColor="@color/colorTextWhite"
             android:textSize="@dimen/h10" />
 
         <TextView
@@ -30,6 +30,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="12dp"
             android:onClick="onClick"
+            android:textColor="@color/colorTextWhite"
             android:text="@string/btn_cancel"
             />
 
@@ -44,18 +45,6 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/textview"
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_gravity="center"
-                android:background="@color/colorLightGray"
-                android:gravity="center"
-                android:text="@string/text_live_add_title_tips"
-                android:textSize="16sp"
-                />
-
             <ImageView
                 android:id="@+id/cover"
                 android:layout_width="match_parent"
@@ -63,6 +52,18 @@
                 android:scaleType="fitXY"
                 android:background="@drawable/cover_background"
                 android:onClick="onClick" />
+            <TextView
+                android:id="@+id/textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:drawableTop="@drawable/image"
+                android:drawablePadding="5dp"
+                android:textColor="@color/colorTextG2"
+                android:text="@string/text_live_add_title_tips"
+                android:textSize="16sp"
+                />
         </FrameLayout>
 
         <FrameLayout
@@ -154,7 +155,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="15dp"
                     android:gravity="center"
                     android:singleLine="true"
                     android:text="@string/text_start_record"
@@ -183,6 +184,7 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
             android:text="@string/text_record_info" />
     </LinearLayout>
 
