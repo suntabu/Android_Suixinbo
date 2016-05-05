@@ -41,6 +41,7 @@ import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -67,6 +68,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private TextView mLikeTv;
     private HeartBeatTask mHeartBeatTask;//心跳
     private Timer mHearBeatTimer, mVideoTimer;
+    private HashMap<String, Integer> ID_View = new HashMap<String, Integer>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +158,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 Log.i(TAG, "member open camera " + id);
                 if (id.equals(MySelfInfo.getInstance().getId())) {//自己直接渲染
                     showVideoView(true, id);
-                } else {//
+                } else {//其他成员，发请求，请求数自增
                     int requestCount = MyCurrentLiveInfo.getCurrentRequestCount();
                     mLiveHelper.RequestView(id, requestCount, requestCount + 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
                     requestCount = requestCount + 1;
@@ -317,24 +320,31 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         finish();
     }
 
+
+    private static int index = 0;
+
     /**
-     * 开启本地渲染
+     * 加载视频数据
+     *
+     * @param isLocal 是否是本地数据
+     * @param id      身份
      */
     @Override
     public void showVideoView(boolean isLocal, String id) {
-        //渲染本地界面
+
+
+        //渲染本地Camera
         if (isLocal == true) {
             Log.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
             QavsdkControl.getInstance().setSelfId(MySelfInfo.getInstance().getId());
             QavsdkControl.getInstance().setLocalHasVideo(true, MySelfInfo.getInstance().getId());
-            //通知用户服务器
+            //主播通知用户服务器
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
                 mEnterRoomProsscessHelper.notifyServerCreateRoom();
                 mHearBeatTimer = new Timer(true);
                 mHeartBeatTask = new HeartBeatTask();
                 mHearBeatTimer.schedule(mHeartBeatTask, 1000, 3 * 1000);
             }
-
         } else {
             QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_CAMERA);
         }
