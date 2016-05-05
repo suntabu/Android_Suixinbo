@@ -2,6 +2,7 @@ package com.tencent.qcloud.suixinbo.presenters;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.util.Log;
@@ -27,6 +28,7 @@ import com.tencent.av.sdk.AVError;
 import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
+import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
 import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
@@ -171,14 +173,12 @@ public class LiveHelper extends Presenter {
             int ret = AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, requestCount, mRequestViewListCompleteCallback);
 
 
-
             mLiveView.showVideoView(REMOTE, identifier);
 
         } else {
             Toast.makeText(mContext, "request remoteView empty !!!!! endpoint = null", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     private AVEndpoint.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVEndpoint.RequestViewListCompleteCallback() {
@@ -270,8 +270,8 @@ public class LiveHelper extends Presenter {
                 //系统消息
                 if (type == TIMElemType.GroupSystem) {
                     if (TIMGroupSystemElemType.TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE == ((TIMGroupSystemElem) elem).getSubtype()) {
-//                        mUIhandler.sendEmptyMessage(IM_HOST_LEAVE);
-//                        LEVAE_MODE = true;
+                        mContext.sendBroadcast(new Intent(
+                                AvConstants.ACTION_HOST_LEAVE));
                     }
 
                 }

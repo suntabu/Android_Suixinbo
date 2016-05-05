@@ -82,6 +82,13 @@ public class AvConstants {
 	public static final String ACTION_HOST_ENTER = PACKAGE
 			+ ".ACTION_HOST_ENTER";
 
+	public static final String ACTION_SHOW_VIDEO_MEMBER_INFO=PACKAGE
+			+ ".ACTION_SHOW_VIDEO_MEMBER_INFO";
+
+	public static final String ACTION_HOST_LEAVE=PACKAGE
+			+ ".ACTION_HOST_LEAVE";
+
+
 	public static final String ACTION_MEMBER_CAMERA_OPEN = PACKAGE
 			+ ".ACTION_MEMBER_CAMERA_OPEN";
 

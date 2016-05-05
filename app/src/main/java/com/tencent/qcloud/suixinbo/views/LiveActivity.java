@@ -41,7 +41,6 @@ import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -68,7 +67,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private TextView mLikeTv;
     private HeartBeatTask mHeartBeatTask;//心跳
     private Timer mHearBeatTimer, mVideoTimer;
-    private HashMap<String, Integer> ID_View = new HashMap<String, Integer>();
 
 
     @Override
@@ -166,6 +164,13 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 }
             }
 
+            if (action.equals(AvConstants.ACTION_SHOW_VIDEO_MEMBER_INFO)) {//点击成员
+
+            }
+            if (action.equals(AvConstants.ACTION_HOST_LEAVE)) {//点击成员
+                mEnterRoomProsscessHelper.QuiteLive();
+            }
+
 
         }
     };
@@ -175,6 +180,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         intentFilter.addAction(AvConstants.ACTION_SURFACE_CREATED);
         intentFilter.addAction(AvConstants.ACTION_HOST_ENTER);
         intentFilter.addAction(AvConstants.ACTION_MEMBER_CAMERA_OPEN);
+        intentFilter.addAction(AvConstants.ACTION_SHOW_VIDEO_MEMBER_INFO);
+        intentFilter.addAction(AvConstants.ACTION_HOST_LEAVE);
         registerReceiver(mBroadcastReceiver, intentFilter);
 
     }
@@ -332,7 +339,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void showVideoView(boolean isLocal, String id) {
 
-
         //渲染本地Camera
         if (isLocal == true) {
             Log.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
@@ -380,7 +386,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 mHeartLayout.addFavor();
                 break;
             case R.id.flash_btn:
-
                 if (mLiveHelper.isFrontCamera() == true) {
                     Toast.makeText(LiveActivity.this, "this is front cam", Toast.LENGTH_SHORT).show();
                 } else {

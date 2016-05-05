@@ -51,6 +51,9 @@ public class EnterLiveHelper extends Presenter {
     private static final int TYPE_MEMBER_CHANGE_NO_SCREEN_VIDEO = 8;//无发屏幕视频事件。
 
 
+
+
+
     public EnterLiveHelper(Context context, EnterQuiteRoomView view) {
         mContext = context;
         mStepInOutView = view;

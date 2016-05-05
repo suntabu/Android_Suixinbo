@@ -32,6 +32,7 @@ import com.tencent.qcloud.suixinbo.model.AvMemberInfo;
 import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AVUIControl extends GLViewGroup {
     static final String TAG = "VideoLayerUI";
@@ -64,6 +65,8 @@ public class AVUIControl extends GLViewGroup {
 
     private SurfaceView mSurfaceView = null;
     private QavsdkControl qavsdk;
+    private HashMap<Integer, String> id_view = new HashMap<Integer, String>();
+
     private SurfaceHolder.Callback mSurfaceHolderListener = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
@@ -98,6 +101,7 @@ public class AVUIControl extends GLViewGroup {
         initQQGlView();
         initCameraPreview();
         initVideoParam();
+        id_view.clear();
     }
 
     private void initVideoParam() {
@@ -826,11 +830,13 @@ public class AVUIControl extends GLViewGroup {
                     index = 0;
                 } else {
                     index = getIdleViewIndex(1);//0 大屏保留给主播数据
+
                 }
 
                 if (index >= 0) {
                     view = mGlVideoView[index];
                     view.setRender(remoteIdentifier, videoSrcType);
+                    id_view.put(index, mRemoteIdentifier);//存index，对应的ID
                     remoteViewIndex = index;
                 }
 
@@ -965,27 +971,38 @@ public class AVUIControl extends GLViewGroup {
             if (mTargetIndex <= 0) {
                 // 显示控制层
             } else {
-                switchVideo(0, mTargetIndex);
+//                switchVideo(0, mTargetIndex);
+                showVideoMemberInfo(mTargetIndex);
+
             }
             return true;
         }
 
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            if (mTargetIndex == 0 && mGlVideoView[0].getVideoSrcType() == AVView.VIDEO_SRC_TYPE_SCREEN) {
-                mClickTimes++;
-                if (mClickTimes % 2 == 1) {
-                    mGlVideoView[0].setScale(GLVideoView.MAX_SCALE + 1, 0, 0, true);
-                } else {
-                    mGlVideoView[0].setScale(GLVideoView.MIN_SCALE, 0, 0, true);
-                }
-                return true;
-            }
-            return super.onDoubleTap(e);
-        }
+
+//        @Override
+//        public boolean onDoubleTap(MotionEvent e) {
+//            if (mTargetIndex == 0 && mGlVideoView[0].getVideoSrcType() == AVView.VIDEO_SRC_TYPE_SCREEN) {
+//                mClickTimes++;
+//                if (mClickTimes % 2 == 1) {
+//                    mGlVideoView[0].setScale(GLVideoView.MAX_SCALE + 1, 0, 0, true);
+//                } else {
+//                    mGlVideoView[0].setScale(GLVideoView.MIN_SCALE, 0, 0, true);
+//                }
+//                return true;
+//            }
+//            return super.onDoubleTap(e);
+//        }
     }
 
-    ;
+    public void showVideoMemberInfo(int indexview) {
+        String identifier = id_view.get(indexview);
+        Log.d(TAG, "showVideoMemberInfo " + identifier);
+        if (identifier == null) return;
+        mContext.sendBroadcast(new Intent(
+                AvConstants.ACTION_SHOW_VIDEO_MEMBER_INFO).putExtra(
+                AvConstants.EXTRA_IDENTIFIER, identifier));
+    }
+
 
     class MoveListener implements OnMoveGestureListener {
         int startX = 0;
