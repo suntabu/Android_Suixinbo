@@ -35,6 +35,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
     private static final String TAG = "FragmentLiveList";
     private TextView mID;
     private ImageView mAvatar;
+    private TextView mProfileName;
+    private TextView mProfileInfo;
     private LoginHeloper mLoginHeloper;
     private ProfileInfoHelper mProfileHelper;
     private LineControllerView mBtnLogout;
@@ -55,6 +57,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         mID = (TextView) view.findViewById(R.id.name);
         mID.setText(MySelfInfo.getInstance().getId());
         mAvatar = (ImageView) view.findViewById(R.id.profile_avatar);
+        mProfileName = (TextView) view.findViewById(R.id.profile_name);
+        mProfileInfo = (TextView) view.findViewById(R.id.profile_info);
         mBtnLogout = (LineControllerView) view.findViewById(R.id.logout);
         mBtnLogout.setOnClickListener(this);
 
@@ -95,6 +99,13 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
 
     @Override
     public void updateProfileInfo(TIMUserProfile profile) {
+        if (TextUtils.isEmpty(profile.getNickName())){
+            MySelfInfo.getInstance().setNickName(profile.getIdentifier());
+        }else{
+            MySelfInfo.getInstance().setNickName(profile.getNickName());
+        }
+        mProfileName.setText(MySelfInfo.getInstance().getNickName());
+        mProfileInfo.setText(profile.getRemark());
         if (TextUtils.isEmpty(profile.getFaceUrl())){
             Bitmap bitmap = BitmapFactory.decodeResource(this.getContext().getResources(), R.drawable.default_avatar);
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
@@ -102,9 +113,9 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         }else{
             Log.d(TAG, "profile avator: " + profile.getFaceUrl());
             MySelfInfo.getInstance().setAvatar(profile.getFaceUrl());
-            MySelfInfo.getInstance().writeToCache(getContext());
             RequestManager req = Glide.with(getActivity());
             req.load(profile.getFaceUrl()).transform(new GlideCircleTransform(getActivity())).into(mAvatar);
         }
+        MySelfInfo.getInstance().writeToCache(getContext());
     }
 }

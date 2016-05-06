@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -186,6 +187,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("XIAO", "onActivityResult->result: "+resultCode+", req code:"+requestCode);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case CAPTURE_IMAGE_CAMERA:
@@ -205,12 +207,14 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
 
     public void startPhotoZoom(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");
+        Log.e("XIAO", "zoom url: "+uri);
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
         intent.putExtra("aspectX", 1);
         intent.putExtra("aspectY", 1);
-        intent.putExtra("outputX", 300);
-        intent.putExtra("outputY", 300);
+        intent.putExtra("outputX", 100);
+        intent.putExtra("outputY", 100);
+        intent.putExtra("return-data", true);
 //        intent.putExtra("return-data", true);
 //        intent.putExtra("output", fileUri);
         startActivityForResult(intent, CROP_CHOOSE);
