@@ -78,9 +78,9 @@ public class LocationHelper {
                 public void onLocationChanged(Location location) {
                     String strAddr = getAddressFromLocation(context, location);
                     if (TextUtils.isEmpty(strAddr)){
-                        view.onLocationChanged(-1, strAddr);
+                        view.onLocationChanged(-1, 0, 0, strAddr);
                     }else{
-                        view.onLocationChanged(0, strAddr);
+                        view.onLocationChanged(0, location.getLatitude(), location.getLongitude(), strAddr);
                     }
                 }
 
@@ -98,9 +98,9 @@ public class LocationHelper {
         }else{
             String strAddr = getAddressFromLocation(context, curLoc);
             if (TextUtils.isEmpty(strAddr)){
-                view.onLocationChanged(-1, strAddr);
+                view.onLocationChanged(-1, 0, 0, strAddr);
             }else{
-                view.onLocationChanged(0, strAddr);
+                view.onLocationChanged(0, curLoc.getLatitude(), curLoc.getLongitude(), strAddr);
             }
         }
 

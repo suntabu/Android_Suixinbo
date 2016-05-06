@@ -5,6 +5,6 @@ package com.tencent.qcloud.suixinbo.presenters.viewinface;
  */
 public interface LocationView extends MvpView{
 
-    void onLocationChanged(int code, String location);
+    void onLocationChanged(int code, double lat1, double long1, String location);
 
 }

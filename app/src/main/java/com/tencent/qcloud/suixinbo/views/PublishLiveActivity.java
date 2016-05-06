@@ -21,7 +21,6 @@ import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
-import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LocationView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -41,6 +40,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     private ImageView cover;
     private Uri fileUri;
     private TextView tvLBS;
+    private TextView tvTitle;
     private CustomSwitch btnLBS;
     private static final int CAPTURE_IMAGE_CAMERA = 100;
     private static final int IMAGE_STORE = 200;
@@ -54,6 +54,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         setContentView(R.layout.activity_live_publish);
         mPublishLivePresenter = new PublishHelper(this);
         mLocationHelper = new LocationHelper(this);
+        tvTitle = (TextView) findViewById(R.id.live_title);
         BtnBack = (TextView) findViewById(R.id.btn_cancel);
         BtnPublish = (TextView) findViewById(R.id.btn_publish);
         cover = (ImageView) findViewById(R.id.cover);
@@ -80,6 +81,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 Intent intent = new Intent(this, LiveActivity.class);
                 intent.putExtra(Constants.ID_STATUS, Constants.HOST);
                 MySelfInfo.getInstance().setIdStatus(Constants.HOST);
+                MyCurrentLiveInfo.setTitle(tvTitle.getText().toString());
                 MyCurrentLiveInfo.setHostID(MySelfInfo.getInstance().getId());
                 MyCurrentLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
                 startActivity(intent);
@@ -221,13 +223,20 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     }
 
     @Override
-    public void onLocationChanged(int code, String location) {
+    public void onLocationChanged(int code, double lat1, double long1, String location) {
         if (btnLBS.getChecked()) {
             if (0 == code) {
                 tvLBS.setText(location);
+                MyCurrentLiveInfo.setLat1(lat1);
+                MyCurrentLiveInfo.setLong1(long1);
+                MyCurrentLiveInfo.setAddress(location);
             } else {
                 tvLBS.setText(getString(R.string.text_live_lbs_fail));
             }
+        }else{
+            MyCurrentLiveInfo.setLat1(0);
+            MyCurrentLiveInfo.setLong1(0);
+            MyCurrentLiveInfo.setAddress("");
         }
     }
 

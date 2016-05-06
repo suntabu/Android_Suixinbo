@@ -59,6 +59,8 @@
     <string name="text_live_close_lbs">不显示位置</string>
     <string name="text_live_location">正在定位中</string>
     <string name="text_live_lbs_fail">定位失败</string>
+    <string name="text_live_lbs_unknown">未知</string>
+    <string name="text_live_default_title">我的直播我做主</string>
     <string name="text_start_record">开始录制</string>
     <string name="text_record_info">开始录制后直播视频自动录制，并可以进行回放</string>
     <string name="text_live_all_see">所有人可看</string>
