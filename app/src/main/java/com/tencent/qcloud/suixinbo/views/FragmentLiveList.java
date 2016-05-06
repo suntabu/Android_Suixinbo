@@ -60,6 +60,8 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
                 MySelfInfo.getInstance().setIdStatus(Constants.MEMBER);
                 MyCurrentLiveInfo.setHostID(item.getHost().getUid());
                 MyCurrentLiveInfo.setRoomNum(item.getAvRoomId());
+                MyCurrentLiveInfo.setMembers(item.getWatchCount());
+                MyCurrentLiveInfo.setAdmires(item.getAdmireCount());
                 startActivity(intent);
             }
         });

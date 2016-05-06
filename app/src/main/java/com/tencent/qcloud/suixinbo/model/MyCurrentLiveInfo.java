@@ -4,7 +4,8 @@ package com.tencent.qcloud.suixinbo.model;
  * Created by admin on 16/4/22.
  */
 public class MyCurrentLiveInfo {
-
+    private static int members;
+    private static int admires;
     public static int RoomNum;
 
     public static String hostID;
@@ -35,6 +36,22 @@ public class MyCurrentLiveInfo {
 
     public static void setHostID(String hostID) {
         MyCurrentLiveInfo.hostID = hostID;
+    }
+
+    public static int getMembers() {
+        return members;
+    }
+
+    public static void setMembers(int members) {
+        MyCurrentLiveInfo.members = members;
+    }
+
+    public static int getAdmires() {
+        return admires;
+    }
+
+    public static void setAdmires(int admires) {
+        MyCurrentLiveInfo.admires = admires;
     }
 
     public static int getRoomNum() {

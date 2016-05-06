@@ -92,8 +92,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private TextView mVideoTime;
     private ObjectAnimator mObjAnim;
     private ImageView mRecordBall;
-	private int thumbUp = 0;
     private String selectVideoId;
+
+    private TextView tvMembers;
+    private TextView tvAdmires;
 
 
     @Override
@@ -309,6 +311,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 		mVideoMemberCtrlBt = (LinearLayout) findViewById(R.id.video_member_bottom_layout);
         mVideoMemberCtrlBt.setVisibility(View.INVISIBLE);
         mHostNameTv = (TextView) findViewById(R.id.host_name);
+        tvMembers = (TextView)findViewById(R.id.member_counts);
+        tvAdmires = (TextView)findViewById(R.id.heart_counts);
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostbottomLy.setVisibility(View.VISIBLE);
             mMemberbottomLy.setVisibility(View.GONE);
@@ -372,6 +376,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mArrayListChatEntity = new ArrayList<ChatEntity>();
         mChatMsgListAdapter = new ChatMsgListAdapter(this, mListViewMsgItems, mArrayListChatEntity);
         mListViewMsgItems.setAdapter(mChatMsgListAdapter);
+
+        tvMembers.setText("" + MyCurrentLiveInfo.getMembers());
+        tvAdmires.setText("" + MyCurrentLiveInfo.getAdmires());
     }
 
 
@@ -422,7 +429,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mVideoTimer.cancel();
             mVideoTimer = null;
         }
-		thumbUp = 0;
+		MyCurrentLiveInfo.setMembers(0);
+        MyCurrentLiveInfo.setAdmires(0);
         MyCurrentLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
         QavsdkControl.getInstance().onDestroy();
@@ -548,8 +556,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     @Override
     public void refreshThumbUp() {
-        thumbUp++;
+        MyCurrentLiveInfo.setAdmires(MyCurrentLiveInfo.getAdmires()+1);
         mHeartLayout.addFavor();
+        tvAdmires.setText(""+MyCurrentLiveInfo.getAdmires());
     }
 
     @Override
@@ -565,6 +574,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 // 添加飘星动画
                 mHeartLayout.addFavor();
                 mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", MyCurrentLiveInfo.getHostID());
+                MyCurrentLiveInfo.setAdmires(MyCurrentLiveInfo.getAdmires() + 1);
+                tvAdmires.setText(""+MyCurrentLiveInfo.getAdmires());
                 break;
             case R.id.flash_btn:
                 if (mLiveHelper.isFrontCamera() == true) {
