@@ -36,6 +36,7 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
         TextView tvMembers;
         TextView tvAdmires;
         TextView tvLbs;
+        ImageView ivCover;
         ImageView ivAvatar;
     }
 
@@ -57,6 +58,7 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_liveshow, null);
 
             holder = new ViewHolder();
+            holder.ivCover = (ImageView) convertView.findViewById(R.id.cover);
             holder.tvTitle = (TextView) convertView.findViewById(R.id.live_title);
             holder.tvHost = (TextView) convertView.findViewById(R.id.host_name);
             holder.tvMembers = (TextView) convertView.findViewById(R.id.live_members);
@@ -68,6 +70,12 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
         }
 
         LiveInfoJson data = getItem(position);
+        if (!TextUtils.isEmpty(data.getCover())){
+            Log.d(TAG, "load cover: " + data.getCover());
+            RequestManager req = Glide.with(mActivity);
+            req.load(data.getCover()).into(holder.ivCover);
+        }
+
         if (null == data.getHost() || TextUtils.isEmpty(data.getHost().getAvatar())){
             // 显示默认图片
             Bitmap bitmap = BitmapFactory.decodeResource(this.getContext().getResources(), R.drawable.default_avatar);
