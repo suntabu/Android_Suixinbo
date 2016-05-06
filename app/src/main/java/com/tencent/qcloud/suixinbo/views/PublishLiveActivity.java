@@ -21,6 +21,7 @@ import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
+import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LocationView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -207,14 +208,13 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
 
     public void startPhotoZoom(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");
-        Log.e("XIAO", "zoom url: "+uri);
+        Log.e("XIAO", "zoom url: " + uri);
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
         intent.putExtra("aspectX", 1);
         intent.putExtra("aspectY", 1);
-        intent.putExtra("outputX", 100);
-        intent.putExtra("outputY", 100);
-        intent.putExtra("return-data", true);
+        intent.putExtra("outputX", 300);
+        intent.putExtra("outputY", 300);
 //        intent.putExtra("return-data", true);
 //        intent.putExtra("output", fileUri);
         startActivityForResult(intent, CROP_CHOOSE);

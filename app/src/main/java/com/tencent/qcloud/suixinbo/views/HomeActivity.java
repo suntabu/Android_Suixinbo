@@ -18,6 +18,8 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 
+import java.util.List;
+
 /**
  * 主界面
  */
@@ -88,5 +90,9 @@ public class HomeActivity extends FragmentActivity implements ProfileView{
             MySelfInfo.getInstance().setAvatar(profile.getFaceUrl());
             MySelfInfo.getInstance().setNickName(profile.getNickName());
         }
+    }
+
+    @Override
+    public void updateUserInfo(List<TIMUserProfile> profiles) {
     }
 }

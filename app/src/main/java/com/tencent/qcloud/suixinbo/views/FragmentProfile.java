@@ -27,6 +27,8 @@ import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
 
+import java.util.List;
+
 
 /**
  * 视频和照片输入页面
@@ -117,5 +119,10 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
             req.load(profile.getFaceUrl()).transform(new GlideCircleTransform(getActivity())).into(mAvatar);
         }
         MySelfInfo.getInstance().writeToCache(getContext());
+    }
+
+    @Override
+    public void updateUserInfo(List<TIMUserProfile> profiles) {
+
     }
 }
