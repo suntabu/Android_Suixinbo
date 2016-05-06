@@ -28,4 +28,13 @@ public class UIUtils {
         canvas.drawBitmap(source, 0, 0, paint);
         return target;
     }
+
+    // 字符串截断
+    public static String getLimitString(String source, int length){
+        if (null!=source && source.length()>length){
+            int reallen = 0;
+            return source.substring(0, length)+"...";
+        }
+        return source;
+    }
 }

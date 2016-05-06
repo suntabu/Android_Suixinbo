@@ -12,6 +12,10 @@ public class Constants {
 
     public static final String USER_SIG = "user_sig";
 
+    public static final String USER_NICK = "user_nick";
+
+    public static final String USER_AVATAR = "user_avatar";
+
     public static final String USER_ROOM_NUM = "user_room_num";
 
 //    //
