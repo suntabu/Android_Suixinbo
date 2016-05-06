@@ -6,13 +6,13 @@
     android:background="@drawable/head_layout_background"
     android:orientation="horizontal">
 
-    <com.tencent.qcloud.suixinbo.views.customviews.CircularImageButton
-        android:id="@+id/textview"
+    <ImageView
+        android:id="@+id/head_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="15dp"
-        android:background="@drawable/icon_members" />
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/icon_members" />
 
     <LinearLayout
         android:layout_width="wrap_content"

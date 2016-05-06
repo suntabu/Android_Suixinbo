@@ -108,7 +108,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mEnterRoomProsscessHelper.startEnterRoom();
 
 //        QavsdkControl.getInstance().setCameraPreviewChangeCallback();
-
+        mVideoTimer = new Timer(true);
     }
 
     private static class MyHandler extends Handler {
@@ -127,9 +127,49 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         }
     }
 
+    /**
+     * 时间格式化
+     */
+    private void updateWallTime() {
+        String hs, ms, ss;
+
+        long h, m, s;
+        h = mSecond / 3600;
+        m = (mSecond % 3600) / 60;
+        s = (mSecond % 3600) % 60;
+        if (h < 10) {
+            hs = "0" + h;
+        } else {
+            hs = "" + h;
+        }
+
+        if (m < 10) {
+            ms = "0" + m;
+        } else {
+            ms = "" + m;
+        }
+
+        if (s < 10) {
+            ss = "0" + s;
+        } else {
+            ss = "" + s;
+        }
+        if (hs.equals("00")) {
+            formatTime = ms + ":" + ss;
+        } else {
+            formatTime = hs + ":" + ms + ":" + ss;
+        }
+
+        if (Constants.HOST==MySelfInfo.getInstance().getIdStatus() && null!=mVideoTime){
+            mVideoTime.setText(formatTime);
+        }
+    }
 
     private void processInnerMsg(Message msg) {
         switch (msg.what) {
+            case UPDAT_WALL_TIME_TIMER_TASK:
+                updateWallTime();
+                break;
             case REFRESH_LISTVIEW:
                 doRefreshListView();
                 break;
@@ -277,7 +317,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
 
             mMemberDialog = new MembersDialog(this, R.style.dialog);
-
+            startRecordAnimation();
+            showHeadIcon();
         } else {
             mMemberbottomLy.setVisibility(View.VISIBLE);
             mHostbottomLy.setVisibility(View.GONE);
@@ -330,6 +371,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         }
     }
 
+    /**
+     * 记时器
+     */
+    private class VideoTimerTask extends TimerTask {
+        public void run() {
+            ++mSecond;
+            if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
+                mHandler.sendEmptyMessage(UPDAT_WALL_TIME_TIMER_TASK);
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -408,6 +459,15 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         finish();
     }
 
+    /**
+     * 红点动画
+     */
+    private void startRecordAnimation() {
+        mObjAnim = ObjectAnimator.ofFloat(mRecordBall, "alpha", 1f, 0f, 1f);
+        mObjAnim.setDuration(1000);
+        mObjAnim.setRepeatCount(-1);
+        mObjAnim.start();
+    }
 
     private static int index = 0;
 
@@ -420,6 +480,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void showVideoView(boolean isLocal, String id) {
         mVideoTimerTask = new VideoTimerTask();
+        mVideoTimer.schedule(mVideoTimerTask, 1000, 1000);
         //渲染本地Camera
         if (isLocal == true) {
             Log.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
