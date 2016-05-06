@@ -35,7 +35,7 @@ public class InputTextMsgDialog extends Dialog {
     private Activity mVideoPlayActivity;
     private InputMethodManager imm;
     private int mViewPositionY = 0;
-    private final String reg ="[`~@#$%^&*()-_+=|{}':;,/.<>￥…（）—【】‘；：”“’。，、]";
+    private final String reg = "[`~@#$%^&*()-_+=|{}':;,/.<>￥…（）—【】‘；：”“’。，、]";
     private Pattern pattern = Pattern.compile(reg);
 
     public InputTextMsgDialog(Context context, int theme, LiveHelper presenter, LiveActivity activity) {
@@ -63,7 +63,7 @@ public class InputTextMsgDialog extends Dialog {
                     imm.showSoftInput(messageTextView, InputMethodManager.SHOW_FORCED);
                     imm.hideSoftInputFromWindow(messageTextView.getWindowToken(), 0);
                     dismiss();
-                }else{
+                } else {
                     Toast.makeText(mContext, "input can not be empty!", Toast.LENGTH_LONG).show();
                 }
 
@@ -76,7 +76,7 @@ public class InputTextMsgDialog extends Dialog {
             }
         });
 
-        final LinearLayout rldlgview = (LinearLayout)findViewById(R.id.rl_inputdlg_view);
+        final LinearLayout rldlgview = (LinearLayout) findViewById(R.id.rl_inputdlg_view);
         rldlgview.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -102,7 +102,7 @@ public class InputTextMsgDialog extends Dialog {
     /**
      * add message text
      */
-    public void setMessageText(String strInfo){
+    public void setMessageText(String strInfo) {
         messageTextView.setText(strInfo);
         messageTextView.setSelection(strInfo.length());
     }
@@ -138,7 +138,7 @@ public class InputTextMsgDialog extends Dialog {
         if (Nmsg.addElement(elem) != 0) {
             return;
         }
-        mLiveControlHelper.sendText(Nmsg);
+        mLiveControlHelper.sendGroupText(Nmsg);
     }
 
     @Override

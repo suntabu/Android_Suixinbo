@@ -85,7 +85,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private TextView mVideoTime;
     private ObjectAnimator mObjAnim;
     private ImageView mRecordBall;
-
+	private int thumbUp = 0;
+    private String selectVideoId;
 
 
     @Override
@@ -107,7 +108,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mEnterRoomProsscessHelper.startEnterRoom();
 
 //        QavsdkControl.getInstance().setCameraPreviewChangeCallback();
-        mVideoTimer = new Timer(true);
 
     }
 
@@ -127,49 +127,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         }
     }
 
-    /**
-     * 时间格式化
-     */
-    private void updateWallTime() {
-        String hs, ms, ss;
-
-        long h, m, s;
-        h = mSecond / 3600;
-        m = (mSecond % 3600) / 60;
-        s = (mSecond % 3600) % 60;
-        if (h < 10) {
-            hs = "0" + h;
-        } else {
-            hs = "" + h;
-        }
-
-        if (m < 10) {
-            ms = "0" + m;
-        } else {
-            ms = "" + m;
-        }
-
-        if (s < 10) {
-            ss = "0" + s;
-        } else {
-            ss = "" + s;
-        }
-        if (hs.equals("00")) {
-            formatTime = ms + ":" + ss;
-        } else {
-            formatTime = hs + ":" + ms + ":" + ss;
-        }
-
-        if (Constants.HOST==MySelfInfo.getInstance().getIdStatus() && null!=mVideoTime){
-            mVideoTime.setText(formatTime);
-        }
-    }
 
     private void processInnerMsg(Message msg) {
         switch (msg.what) {
-            case UPDAT_WALL_TIME_TIMER_TASK:
-                updateWallTime();
-                break;
             case REFRESH_LISTVIEW:
                 doRefreshListView();
                 break;
@@ -189,14 +149,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (action.equals(AvConstants.ACTION_SURFACE_CREATED)) {
                 //打开摄像头
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-                    mLiveHelper.OpenCameraAndMic();
+                    mLiveHelper.openCameraAndMic();
                 } else {
                     //成员请求主播画面
-                    String host = MyCurrentLiveInfo.getHostID();
-                    int requestCount = MyCurrentLiveInfo.getCurrentRequestCount();
-                    mLiveHelper.RequestView(host, requestCount, requestCount + 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
-                    requestCount = requestCount + 1;
-                    MyCurrentLiveInfo.setCurrentRequestCount(requestCount);
+//                    String host = MyCurrentLiveInfo.getHostID();
+//                    int requestCount = MyCurrentLiveInfo.getCurrentRequestCount();
+//                    mLiveHelper.RequestView(host, requestCount, requestCount + 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
+//                    requestCount = requestCount + 1;
+//                    MyCurrentLiveInfo.setCurrentRequestCount(requestCount);
                 }
 
             }
@@ -205,7 +165,13 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 //主播上线才开始渲染视频
                 //主播上线 请求主画面
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.MEMBER) {
-                    mEnterRoomProsscessHelper.initAvUILayer(avView);
+                    //成员请求主播画面
+                    String host = MyCurrentLiveInfo.getHostID();
+                    int requestCount = MyCurrentLiveInfo.getCurrentRequestCount();
+                    mLiveHelper.RequestView(host, requestCount, requestCount + 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
+                    requestCount = requestCount + 1;
+                    MyCurrentLiveInfo.setCurrentRequestCount(requestCount);
+//                    mEnterRoomProsscessHelper.initAvUILayer(avView);
 
 //                        String host = MyCurrentLiveInfo.getHostID();
 //                        mLiveHelper.RequestView(host, 0, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
@@ -225,10 +191,13 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             }
 
             if (action.equals(AvConstants.ACTION_SHOW_VIDEO_MEMBER_INFO)) {//点击成员
+                selectVideoId = intent.getStringExtra(AvConstants.EXTRA_IDENTIFIER);
+                mHostbottomLy.setVisibility(View.INVISIBLE);
+                mVideoMemberCtrlBt.setVisibility(View.VISIBLE);
 
             }
-            if (action.equals(AvConstants.ACTION_HOST_LEAVE)) {//点击成员
-                mEnterRoomProsscessHelper.QuiteLive();
+            if (action.equals(AvConstants.ACTION_HOST_LEAVE)) {//主播结束
+                quiteLivePassively();
             }
 
 
@@ -254,10 +223,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 初始化UI
      */
     private View avView;
-    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat;
+    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat, BtnCtrlVideo, BtnCtrlMic, BtnHungup;
     private ListView mListViewMsgItems;
-    private LinearLayout mHostbottomLy, mMemberbottomLy;
-    private FrameLayout mFullControllerUi;
+    private LinearLayout mHostbottomLy, mMemberbottomLy, mVideoMemberCtrlBt;
+    private FrameLayout mFullControllerUi, mBackgound;
 
     private void showHeadIcon(){
         if (TextUtils.isEmpty(MySelfInfo.getInstance().getAvatar())){
@@ -279,6 +248,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mHeartLayout = (HeartLayout) findViewById(R.id.heart_layout);
         mVideoTime = (TextView)findViewById(R.id.broadcasting_time);
         mHeadIcon = (ImageView)findViewById(R.id.head_icon);
+		mVideoMemberCtrlBt = (LinearLayout) findViewById(R.id.video_member_bottom_layout);
+        mVideoMemberCtrlBt.setVisibility(View.INVISIBLE);
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostbottomLy.setVisibility(View.VISIBLE);
             mMemberbottomLy.setVisibility(View.GONE);
@@ -287,8 +258,15 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             BtnSwitch = (TextView) findViewById(R.id.switch_cam);
             BtnBeauty = (TextView) findViewById(R.id.beauty_btn);
             BtnMic = (TextView) findViewById(R.id.mic_btn);
-            BtnScreen = (TextView) findViewById(R.id.fullscreen_btn);
+            BtnCtrlVideo = (TextView) findViewById(R.id.camera_controll);
+            BtnCtrlMic = (TextView) findViewById(R.id.mic_controll);
+            BtnHungup = (TextView) findViewById(R.id.close_member_video);
+            BtnCtrlVideo.setOnClickListener(this);
+            BtnCtrlMic.setOnClickListener(this);
+            BtnHungup.setOnClickListener(this);
 
+
+            BtnScreen = (TextView) findViewById(R.id.fullscreen_btn);
             mVideoChat.setVisibility(View.VISIBLE);
             Btnflash.setOnClickListener(this);
             BtnSwitch.setOnClickListener(this);
@@ -297,9 +275,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             BtnScreen.setOnClickListener(this);
             mVideoChat.setOnClickListener(this);
 
+
             mMemberDialog = new MembersDialog(this, R.style.dialog);
-            startRecordAnimation();
-            showHeadIcon();
+
         } else {
             mMemberbottomLy.setVisibility(View.VISIBLE);
             mHostbottomLy.setVisibility(View.GONE);
@@ -312,10 +290,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
         BtnNormal.setOnClickListener(this);
         mFullControllerUi = (FrameLayout) findViewById(R.id.controll_ui);
-
+        mBackgound = (FrameLayout) findViewById(R.id.av_screen_layout);
+        mBackgound.setOnClickListener(this);
         avView = findViewById(R.id.av_video_layer_ui);
         //直接初始化SurfaceView
-//        mEnterRoomProsscessHelper.initAvUILayer(avView);
+        mEnterRoomProsscessHelper.initAvUILayer(avView);
         BtnBack = (TextView) findViewById(R.id.btn_back);
         BtnBack.setOnClickListener(this);
 
@@ -351,16 +330,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         }
     }
 
-    /**
-     * 记时器
-     */
-    private class VideoTimerTask extends TimerTask {
-        public void run() {
-            ++mSecond;
-            if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
-                mHandler.sendEmptyMessage(UPDAT_WALL_TIME_TIMER_TASK);
-        }
-    }
 
     @Override
     protected void onDestroy() {
@@ -373,6 +342,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mVideoTimer.cancel();
             mVideoTimer = null;
         }
+		thumbUp = 0;
         MyCurrentLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
         QavsdkControl.getInstance().onDestroy();
@@ -384,10 +354,29 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void onBackPressed() {
-
-        mEnterRoomProsscessHelper.QuiteLive();
+        quiteLiveByPurpose();
 
     }
+
+    /**
+     * 主动退出直播
+     */
+    private void quiteLiveByPurpose() {
+        //如果是直播，发消息
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.MEMBER)
+            mLiveHelper.sendGroupMessage(Constants.AVIMCMD_ExitLive, "");
+        mLiveHelper.unInitTIMListener();
+        mEnterRoomProsscessHelper.quiteLive();
+    }
+
+    /**
+     * 被动退出直播
+     */
+    private void quiteLivePassively() {
+        mLiveHelper.unInitTIMListener();
+        mEnterRoomProsscessHelper.quiteLive();
+    }
+
 
     /**
      * 完成进出房间流程
@@ -400,13 +389,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         Toast.makeText(LiveActivity.this, "EnterRoomComplete " + id_status + " isSucc " + isSucc, Toast.LENGTH_SHORT).show();
         if (isSucc == true) {
             //IM初始化
-            mLiveHelper.initTIMGroup("" + MyCurrentLiveInfo.getRoomNum());
+            mLiveHelper.initTIMListener("" + MyCurrentLiveInfo.getRoomNum());
 
             if (id_status == Constants.HOST) {//主播方式加入房间成功
                 //开启摄像头渲染画面
                 Log.i(TAG, "createlive EnterRoomComplete isSucc" + isSucc);
                 mEnterRoomProsscessHelper.initAvUILayer(avView);
             } else {//以成员方式加入房间成功
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_EnterLive, "");
             }
         }
     }
@@ -416,16 +406,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
 //        Toast.makeText(LiveActivity.this, "" + liveinfo.getTitle()+"end", Toast.LENGTH_SHORT).show();
         finish();
-    }
-
-    /**
-     * 红点动画
-     */
-    private void startRecordAnimation() {
-        mObjAnim = ObjectAnimator.ofFloat(mRecordBall, "alpha", 1f, 0f, 1f);
-        mObjAnim.setDuration(1000);
-        mObjAnim.setRepeatCount(-1);
-        mObjAnim.start();
     }
 
 
@@ -440,7 +420,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void showVideoView(boolean isLocal, String id) {
         mVideoTimerTask = new VideoTimerTask();
-        mVideoTimer.schedule(mVideoTimerTask, 1000, 1000);
         //渲染本地Camera
         if (isLocal == true) {
             Log.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
@@ -463,8 +442,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void showInviteDialog() {
         Toast.makeText(LiveActivity.this, "yes i receive a host invitation and open my Camera", Toast.LENGTH_SHORT).show();
-        mLiveHelper.OpenCameraAndMic();
-        mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, MyCurrentLiveInfo.getHostID());
+        mLiveHelper.openCameraAndMic();
+        mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, "", MyCurrentLiveInfo.getHostID());
     }
 
     @Override
@@ -475,10 +454,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     }
 
     @Override
+    public void refreshThumbUp() {
+        thumbUp++;
+        mHeartLayout.addFavor();
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_back:
-                mEnterRoomProsscessHelper.QuiteLive();
+                quiteLiveByPurpose();
                 break;
             case R.id.message_input:
                 inputMsgDialog();
@@ -486,6 +471,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case R.id.member_send_good:
                 // 添加飘星动画
                 mHeartLayout.addFavor();
+                mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", MyCurrentLiveInfo.getHostID());
                 break;
             case R.id.flash_btn:
                 if (mLiveHelper.isFrontCamera() == true) {
@@ -514,12 +500,23 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 mFullControllerUi.setVisibility(View.INVISIBLE);
                 BtnNormal.setVisibility(View.VISIBLE);
                 break;
+            case R.id.av_screen_layout:
+                mHostbottomLy.setVisibility(View.VISIBLE);
+                mVideoMemberCtrlBt.setVisibility(View.INVISIBLE);
+                break;
             case R.id.normal_btn:
                 mFullControllerUi.setVisibility(View.VISIBLE);
                 BtnNormal.setVisibility(View.GONE);
                 break;
             case R.id.video_interact:
                 mMemberDialog.show();
+                break;
+            case R.id.camera_controll:
+                break;
+            case R.id.mic_controll:
+                break;
+            case R.id.close_member_video:
+                mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, selectVideoId, selectVideoId);
                 break;
         }
     }

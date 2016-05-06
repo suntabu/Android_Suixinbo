@@ -51,9 +51,6 @@ public class EnterLiveHelper extends Presenter {
     private static final int TYPE_MEMBER_CHANGE_NO_SCREEN_VIDEO = 8;//无发屏幕视频事件。
 
 
-
-
-
     public EnterLiveHelper(Context context, EnterQuiteRoomView view) {
         mContext = context;
         mStepInOutView = view;
@@ -130,16 +127,21 @@ public class EnterLiveHelper extends Presenter {
                     break;
                 case TYPE_MEMBER_CHANGE_HAS_AUDIO:
                     break;
+
+                case TYPE_MEMBER_CHANGE_OUT:
+                    for (String id : updateList) {
+                        QavsdkControl.getInstance().closeMemberView(id);
+                    }
             }
 
-            //用户
-            for (String member : updateList) {
-                Log.i(TAG, " onEndpoints id " + member);
-                if (member.equals(MyCurrentLiveInfo.getHostID())) {
-
-                }
-
-            }
+//            //用户
+//            for (String member : updateList) {
+//                Log.i(TAG, " onEndpoints id " + member);
+//                if (member.equals(MyCurrentLiveInfo.getHostID())) {
+//
+//                }
+//
+//            }
         }
 
         public void OnPrivilegeDiffNotify(int privilege) {
@@ -175,7 +177,7 @@ public class EnterLiveHelper extends Presenter {
                 }
                 // 创建IM房间失败，提示失败原因，并关闭等待对话框
                 Toast.makeText(mContext, " chatroom  error " + s + "i " + i, Toast.LENGTH_SHORT).show();
-                QuiteLive();
+                quiteLive();
             }
 
             @Override
@@ -296,7 +298,7 @@ public class EnterLiveHelper extends Presenter {
     /**
      * 退出房间
      */
-    public void QuiteLive() {
+    public void quiteLive() {
         //退出IM房间
         quiteIMChatRoom();
         //退出AV房间
@@ -349,7 +351,7 @@ public class EnterLiveHelper extends Presenter {
         if ((isInChatRoom == true)) {
             //主播解散群
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-                TIMGroupManager.getInstance().deleteGroup("" + MySelfInfo.getInstance().getMyRoomNum(), new TIMCallBack() {
+                TIMGroupManager.getInstance().deleteGroup("" + MyCurrentLiveInfo.getRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
                     }
@@ -362,14 +364,15 @@ public class EnterLiveHelper extends Presenter {
                 TIMManager.getInstance().deleteConversation(TIMConversationType.Group, "" + MySelfInfo.getInstance().getMyRoomNum());
             } else {
                 //成员退出群
-                TIMGroupManager.getInstance().quitGroup("" + MySelfInfo.getInstance().getMyRoomNum(), new TIMCallBack() {
+                TIMGroupManager.getInstance().quitGroup("" +  MyCurrentLiveInfo.getRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
-
+                        Log.e(TAG, "onError i: " + i + "  " + s);
                     }
 
                     @Override
                     public void onSuccess() {
+                        Log.i(TAG, "onSuccess ");
                         isInChatRoom = false;
                     }
                 });

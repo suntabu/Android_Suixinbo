@@ -59,7 +59,7 @@ public class LiveHelper extends Presenter {
     private static final int MAX_REQUEST_VIEW_COUNT = 3;//当前最大支持请求画面个数
     private static final boolean LOCAL = true;
     private static final boolean REMOTE = false;
-    private TIMConversation mConversation;
+    private TIMConversation mGroupConversation;
     private TIMConversation mC2CConversation;
     private boolean isMicOpen = true;
     private static final String UNREAD = "0";
@@ -102,12 +102,33 @@ public class LiveHelper extends Presenter {
     /**
      * 开启摄像头和MIC
      */
-    public void OpenCameraAndMic() {
+    public void openCameraAndMic() {
         enableCamera(FRONT_CAMERA, true);
         AVAudioCtrl avAudioCtrl = QavsdkControl.getInstance().getAVContext().getAudioCtrl();//开启Mic
         avAudioCtrl.enableMic(true);
         isMicOpen = true;
 
+    }
+
+
+    public void closeCameraAndMic() {
+        closeCamera();
+        closeMic();
+    }
+
+
+    public void closeCamera() {
+        if (mIsFrontCamera) {
+            enableCamera(FRONT_CAMERA, false);
+        } else {
+            enableCamera(FRONT_CAMERA, false);
+        }
+    }
+
+    public void closeMic() {
+        AVAudioCtrl avAudioCtrl = QavsdkControl.getInstance().getAVContext().getAudioCtrl();//开启Mic
+        avAudioCtrl.enableMic(false);
+        isMicOpen = false;
     }
 
 
@@ -188,9 +209,9 @@ public class LiveHelper extends Presenter {
         }
     };
 
-    public void sendText(TIMMessage Nmsg) {
-        if (mConversation != null)
-            mConversation.sendMessage(Nmsg, new TIMValueCallBack<TIMMessage>() {
+    public void sendGroupText(TIMMessage Nmsg) {
+        if (mGroupConversation != null)
+            mGroupConversation.sendMessage(Nmsg, new TIMValueCallBack<TIMMessage>() {
                 @Override
                 public void onError(int i, String s) {
                     if (i == 85) { //消息体太长
@@ -215,14 +236,61 @@ public class LiveHelper extends Presenter {
             });
     }
 
+
+    public void sendGroupMessage(int cmd, String param) {
+        JSONObject inviteCmd = new JSONObject();
+        try {
+            inviteCmd.put("userAction", cmd);
+            inviteCmd.put("actionParam", param);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String cmds = inviteCmd.toString();
+        Log.i(TAG, "send cmd : " + cmd);
+        TIMMessage Gmsg = new TIMMessage();
+        TIMCustomElem elem = new TIMCustomElem();
+        elem.setData(cmds.getBytes());
+        Gmsg.addElement(elem);
+
+        if (mGroupConversation != null)
+            mGroupConversation.sendMessage(Gmsg, new TIMValueCallBack<TIMMessage>() {
+                @Override
+                public void onError(int i, String s) {
+                    if (i == 85) { //消息体太长
+                        Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                    } else if (i == 6011) {//群主不存在
+                        Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
+                    }
+                    Log.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
+                }
+
+                @Override
+                public void onSuccess(TIMMessage timMessage) {
+                    Log.i(TAG, "onSuccess ");
+                    //发送成回显示消息内容
+//                    for (int j = 0; j < timMessage.getElementCount(); j++) {
+//                        TIMElem elem = (TIMElem) timMessage.getElement(0);
+//                        String sendId = timMessage.getSender();
+//                        handleTextMessage(elem, sendId);
+//                    }
+//                    Log.i(TAG, "Send text Msg ok");
+
+                }
+            });
+    }
+
     /**
      * 初始化聊天室  设置监听器
      */
-    public void initTIMGroup(String chatRoomId) {
-        Log.v(TAG, "initTIMGroup->current room id: " + chatRoomId);
-        mConversation = TIMManager.getInstance().getConversation(TIMConversationType.Group, chatRoomId);
+    public void initTIMListener(String chatRoomId) {
+        Log.v(TAG, "initTIMListener->current room id: " + chatRoomId);
+        mGroupConversation = TIMManager.getInstance().getConversation(TIMConversationType.Group, chatRoomId);
         TIMManager.getInstance().addMessageListener(msgListener);
         mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, chatRoomId);
+    }
+
+    public void unInitTIMListener() {
+        TIMManager.getInstance().removeMessageListener(msgListener);
     }
 
 
@@ -249,8 +317,8 @@ public class LiveHelper extends Presenter {
 
 
         if (tlist.size() > 0) {
-            if (mConversation != null)
-                mConversation.setReadMessage(tlist.get(0));
+            if (mGroupConversation != null)
+                mGroupConversation.setReadMessage(tlist.get(0));
             Log.d(TAG, "parseIMMessage readMessage " + tlist.get(0).timestamp());
         }
 //        if (!bNeverLoadMore && (tlist.size() < mLoadMsgNum))
@@ -335,6 +403,18 @@ public class LiveHelper extends Presenter {
                 case Constants.AVIMCMD_MUlTI_JOIN:
                     Toast.makeText(mContext, sendId + " accepted !", Toast.LENGTH_SHORT).show();
 //                    requestMu(sendId);
+                    break;
+                case Constants.AVIMCMD_Praise:
+                    mLiveView.refreshThumbUp();
+                    break;
+                case Constants.AVIMCMD_EnterLive:
+                    mLiveView.refreshText("Step in live", sendId);
+                    break;
+                case Constants.AVIMCMD_ExitLive:
+                    mLiveView.refreshText("quite live", sendId);
+                    break;
+                case Constants.AVIMCMD_MULT_CANCEL_INTERACT:
+                    openCameraAndMic();
                     break;
             }
 
@@ -502,10 +582,11 @@ public class LiveHelper extends Presenter {
     }
 
 
-    public void sendC2CMessage(int cmd, String id) {
+    public void sendC2CMessage(int cmd, String Param, String sendId) {
         JSONObject inviteCmd = new JSONObject();
         try {
             inviteCmd.put("userAction", cmd);
+            inviteCmd.put("actionParam", Param);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -515,7 +596,7 @@ public class LiveHelper extends Presenter {
         TIMCustomElem elem = new TIMCustomElem();
         elem.setData(cmds.getBytes());
         msg.addElement(elem);
-        mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, id);
+        mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, sendId);
         mC2CConversation.sendMessage(msg, new TIMValueCallBack<TIMMessage>() {
             @Override
             public void onError(int i, String s) {

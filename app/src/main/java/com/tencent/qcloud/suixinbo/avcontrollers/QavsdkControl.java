@@ -49,7 +49,6 @@ public class QavsdkControl {
 
     /**
      * 启动SDK系统
-     *
      */
     public int startContext() {
         if (mAVContextControl == null)
@@ -70,7 +69,6 @@ public class QavsdkControl {
             return;
         mAVContextControl.setAVConfig(appid, accountype, identifier, usersig);
     }
-
 
 
     /**
@@ -210,7 +208,7 @@ public class QavsdkControl {
      * 初始化UI层
      *
      * @param context
-     * @param view AVSDK UILayer层
+     * @param view    AVSDK UILayer层
      */
     public void initAvUILayer(Context context, View view) {
         mAVUIControl = new AVUIControl(context, view);
@@ -239,7 +237,6 @@ public class QavsdkControl {
     }
 
 
-
     public void setLocalHasVideo(boolean isLocalHasVideo, String selfIdentifier) {
         if (null != mAVUIControl) {
             mAVUIControl.setLocalHasVideo(isLocalHasVideo, false, selfIdentifier);
@@ -247,6 +244,7 @@ public class QavsdkControl {
     }
 
     public void setRemoteHasVideo(boolean isRemoteHasVideo, String identifier, int videoSrcType) {
+        Log.i(TAG, "setRemoteHasVideo : " + identifier);
         if (null != mAVUIControl) {
             mAVUIControl.setSmallVideoViewLayout(isRemoteHasVideo, identifier, videoSrcType);
         }
@@ -254,6 +252,7 @@ public class QavsdkControl {
 
     public void setSelfId(String key) {
         if (null != mAVUIControl) {
+
             mAVUIControl.setSelfId(key);
         }
     }
@@ -388,5 +387,12 @@ public class QavsdkControl {
         return mAVRoomControl.changeAuthority(auth_bits, auth_buffer, callback);
     }
 
+    public void closeMemberView(String id) {
+        if (null != mAVUIControl) {
+            mAVUIControl.closeMemberVideoView(id);
+        } else {
+
+        }
+    }
 
 }
