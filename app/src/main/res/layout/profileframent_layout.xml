@@ -10,13 +10,12 @@
         android:layout_height="220dp"
         android:background="@color/colorRed">
 
-        <com.tencent.qcloud.suixinbo.views.customviews.CircularImageButton
+        <ImageView
             android:id="@+id/profile_avatar"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/userlogo" />
+            android:layout_marginTop="20dp" />
 
         <TextView
             android:id="@+id/profile_name"

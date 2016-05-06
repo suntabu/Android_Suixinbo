@@ -1,25 +1,32 @@
 package com.tencent.qcloud.suixinbo.views;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.ChatMsgListAdapter;
@@ -35,6 +42,8 @@ import com.tencent.qcloud.suixinbo.presenters.OKhttpHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
+import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.HeartLayout;
 import com.tencent.qcloud.suixinbo.views.customviews.InputTextMsgDialog;
 import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
@@ -56,6 +65,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private ArrayList<ChatEntity> mArrayListChatEntity;
     private ChatMsgListAdapter mChatMsgListAdapter;
     private static final int MINFRESHINTERVAL = 500;
+    private static final int UPDAT_WALL_TIME_TIMER_TASK = 1;
     private boolean mBoolRefreshLock = false;
     private boolean mBoolNeedRefresh = false;
     private final Timer mTimer = new Timer();
@@ -66,8 +76,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private HeartLayout mHeartLayout;
     private TextView mLikeTv;
     private HeartBeatTask mHeartBeatTask;//心跳
+    private ImageView mHeadIcon;
+
+    private long mSecond = 0;
+    private String formatTime;
     private Timer mHearBeatTimer, mVideoTimer;
-    private int thumbUp = 0;
+    private VideoTimerTask mVideoTimerTask;//计时器
+    private TextView mVideoTime;
+    private ObjectAnimator mObjAnim;
+    private ImageView mRecordBall;
+	private int thumbUp = 0;
     private String selectVideoId;
 
 
@@ -90,7 +108,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mEnterRoomProsscessHelper.startEnterRoom();
 
 //        QavsdkControl.getInstance().setCameraPreviewChangeCallback();
-
+        mVideoTimer = new Timer(true);
     }
 
     private static class MyHandler extends Handler {
@@ -109,9 +127,49 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         }
     }
 
+    /**
+     * 时间格式化
+     */
+    private void updateWallTime() {
+        String hs, ms, ss;
+
+        long h, m, s;
+        h = mSecond / 3600;
+        m = (mSecond % 3600) / 60;
+        s = (mSecond % 3600) % 60;
+        if (h < 10) {
+            hs = "0" + h;
+        } else {
+            hs = "" + h;
+        }
+
+        if (m < 10) {
+            ms = "0" + m;
+        } else {
+            ms = "" + m;
+        }
+
+        if (s < 10) {
+            ss = "0" + s;
+        } else {
+            ss = "" + s;
+        }
+        if (hs.equals("00")) {
+            formatTime = ms + ":" + ss;
+        } else {
+            formatTime = hs + ":" + ms + ":" + ss;
+        }
+
+        if (Constants.HOST==MySelfInfo.getInstance().getIdStatus() && null!=mVideoTime){
+            mVideoTime.setText(formatTime);
+        }
+    }
 
     private void processInnerMsg(Message msg) {
         switch (msg.what) {
+            case UPDAT_WALL_TIME_TIMER_TASK:
+                updateWallTime();
+                break;
             case REFRESH_LISTVIEW:
                 doRefreshListView();
                 break;
@@ -219,17 +277,32 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private LinearLayout mHostbottomLy, mMemberbottomLy, mVideoMemberCtrlBt;
     private FrameLayout mFullControllerUi, mBackgound;
 
+    private void showHeadIcon(){
+        if (TextUtils.isEmpty(MySelfInfo.getInstance().getAvatar())){
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.default_avatar);
+            Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
+            mHeadIcon.setImageBitmap(cirBitMap);
+        }else{
+            Log.d(TAG, "load icon: " + MySelfInfo.getInstance().getAvatar());
+            RequestManager req = Glide.with(this);
+            req.load(MySelfInfo.getInstance().getAvatar()).transform(new GlideCircleTransform(this)).into(mHeadIcon);
+        }
+    }
+
     private void initView() {
 
         mHostbottomLy = (LinearLayout) findViewById(R.id.host_bottom_layout);
         mMemberbottomLy = (LinearLayout) findViewById(R.id.member_bottom_layout);
         mVideoChat = (TextView) findViewById(R.id.video_interact);
         mHeartLayout = (HeartLayout) findViewById(R.id.heart_layout);
-        mVideoMemberCtrlBt = (LinearLayout) findViewById(R.id.video_member_bottom_layout);
+        mVideoTime = (TextView)findViewById(R.id.broadcasting_time);
+        mHeadIcon = (ImageView)findViewById(R.id.head_icon);
+		mVideoMemberCtrlBt = (LinearLayout) findViewById(R.id.video_member_bottom_layout);
         mVideoMemberCtrlBt.setVisibility(View.INVISIBLE);
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostbottomLy.setVisibility(View.VISIBLE);
             mMemberbottomLy.setVisibility(View.GONE);
+            mRecordBall = (ImageView) findViewById(R.id.record_ball);
             Btnflash = (TextView) findViewById(R.id.flash_btn);
             BtnSwitch = (TextView) findViewById(R.id.switch_cam);
             BtnBeauty = (TextView) findViewById(R.id.beauty_btn);
@@ -253,7 +326,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
 
             mMemberDialog = new MembersDialog(this, R.style.dialog);
-
+            startRecordAnimation();
+            showHeadIcon();
         } else {
             mMemberbottomLy.setVisibility(View.VISIBLE);
             mHostbottomLy.setVisibility(View.GONE);
@@ -306,6 +380,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         }
     }
 
+    /**
+     * 记时器
+     */
+    private class VideoTimerTask extends TimerTask {
+        public void run() {
+            ++mSecond;
+            if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
+                mHandler.sendEmptyMessage(UPDAT_WALL_TIME_TIMER_TASK);
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -314,7 +398,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mHearBeatTimer.cancel();
             mHearBeatTimer = null;
         }
-        thumbUp = 0;
+        if (null != mVideoTimer){
+            mVideoTimer.cancel();
+            mVideoTimer = null;
+        }
+		thumbUp = 0;
         MyCurrentLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
         QavsdkControl.getInstance().onDestroy();
@@ -382,6 +470,15 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         finish();
     }
 
+    /**
+     * 红点动画
+     */
+    private void startRecordAnimation() {
+        mObjAnim = ObjectAnimator.ofFloat(mRecordBall, "alpha", 1f, 0f, 1f);
+        mObjAnim.setDuration(1000);
+        mObjAnim.setRepeatCount(-1);
+        mObjAnim.start();
+    }
 
     private static int index = 0;
 
@@ -394,6 +491,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void showVideoView(boolean isLocal, String id) {
         Log.i(TAG, "showVideoView " + id);
+        mVideoTimerTask = new VideoTimerTask();
+        mVideoTimer.schedule(mVideoTimerTask, 1000, 1000);
         //渲染本地Camera
         if (isLocal == true) {
             Log.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());

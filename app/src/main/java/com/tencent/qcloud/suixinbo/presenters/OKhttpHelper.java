@@ -146,7 +146,7 @@ public class OKhttpHelper {
                 int id = data.getInt("avRoomId");
                 Log.i(TAG, "getMyRoomId " + id);
                 MySelfInfo.getInstance().setMyRoomNum(id);
-                MySelfInfo.getInstance().writeToCache(context.getApplicationContext(), MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig(), MySelfInfo.getInstance().getMyRoomNum());
+                MySelfInfo.getInstance().writeToCache(context.getApplicationContext());
             }
         } catch (IOException e) {
             e.printStackTrace();

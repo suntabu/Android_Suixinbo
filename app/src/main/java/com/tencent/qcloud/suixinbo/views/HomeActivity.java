@@ -5,20 +5,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TabHost;
 
+import com.tencent.TIMUserProfile;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
+import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 
 /**
  * 主界面
  */
-public class HomeActivity extends FragmentActivity {
+public class HomeActivity extends FragmentActivity implements ProfileView{
     private FragmentTabHost mTabHost;
     private LayoutInflater layoutInflater;
+    private ProfileInfoHelper infoHelper;
     private final Class fragmentArray[] = {FragmentLiveList.class,FragmentPublish.class, FragmentProfile.class};
     private int mImageViewArray[] = {R.drawable.tab_live,R.drawable.icon_publish,R.drawable.tab_profile};
     private String mTextviewArray[] = {"live" ,"publish","profile"};
@@ -54,6 +60,11 @@ public class HomeActivity extends FragmentActivity {
             }
         });
 
+        // 检测是否需要获取头像
+        if (TextUtils.isEmpty(MySelfInfo.getInstance().getAvatar())){
+            infoHelper = new ProfileInfoHelper(this);
+            infoHelper.getMyProfile();
+        }
     }
 
 
@@ -71,5 +82,11 @@ public class HomeActivity extends FragmentActivity {
         super.onDestroy();
     }
 
-
+    @Override
+    public void updateProfileInfo(TIMUserProfile profile) {
+        if (null != profile) {
+            MySelfInfo.getInstance().setAvatar(profile.getFaceUrl());
+            MySelfInfo.getInstance().setNickName(profile.getNickName());
+        }
+    }
 }

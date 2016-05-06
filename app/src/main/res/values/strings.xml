@@ -10,7 +10,8 @@
     <string name="action_settings">settings</string>
 
 
-
+    <string name="btn_take_photo">拍照</string>
+    <string name="btn_pic_photo">从手机相册选择</string>
     <string name="btn_cancel">取消</string>
 
 

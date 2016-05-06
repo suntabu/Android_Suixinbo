@@ -13,6 +13,8 @@ public class MySelfInfo {
     private static final String TAG = MySelfInfo.class.getSimpleName();
     private String id;
     private String userSig;
+    private String nickName;    // 呢称
+    private String avatar;      // 头像
 
     private int id_status;
 
@@ -41,6 +43,21 @@ public class MySelfInfo {
         this.userSig = userSig;
     }
 
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 
     public int getMyRoomNum() {
         return myRoomNum;
@@ -51,12 +68,14 @@ public class MySelfInfo {
     }
 
 
-    public void writeToCache(Context context, String id, String sig, int roomnum) {
+    public void writeToCache(Context context) {
         SharedPreferences settings = context.getSharedPreferences(Constants.USER_INFO, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(Constants.USER_ID, id);
-        editor.putString(Constants.USER_SIG, sig);
-        editor.putInt(Constants.USER_ROOM_NUM, roomnum);
+        editor.putString(Constants.USER_SIG, userSig);
+        editor.putString(Constants.USER_NICK, nickName);
+        editor.putString(Constants.USER_AVATAR, avatar);
+        editor.putInt(Constants.USER_ROOM_NUM, myRoomNum);
         editor.commit();
     }
 
@@ -72,6 +91,8 @@ public class MySelfInfo {
         id = sharedata.getString(Constants.USER_ID, null);
         userSig = sharedata.getString(Constants.USER_SIG, null);
         myRoomNum = sharedata.getInt(Constants.USER_ROOM_NUM, -1);
+        nickName = sharedata.getString(Constants.USER_NICK, null);
+        avatar = sharedata.getString(Constants.USER_AVATAR, null);
         Log.i(TAG, " getCache id: " + id);
     }
 

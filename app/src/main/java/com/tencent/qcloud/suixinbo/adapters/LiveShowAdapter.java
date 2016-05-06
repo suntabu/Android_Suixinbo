@@ -66,7 +66,7 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
             avatar.setImageBitmap(cirBitMap);
         }else{
-            Log.d(TAG, "user avator: "+data.getHost().getAvatar());
+            Log.d(TAG, "user avator: " + data.getHost().getAvatar());
             RequestManager req = Glide.with(mActivity);
             req.load(data.getHost().getAvatar()).transform(new GlideCircleTransform(mActivity)).into(avatar);
         }
@@ -74,7 +74,7 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
         TextView hostName = (TextView) view.findViewById(R.id.host_name);
         hostName.setText("@"+data.getHost().getUid());
         TextView title = (TextView) view.findViewById(R.id.live_title);
-        title.setText(data.getTitle());
+        title.setText(UIUtils.getLimitString(data.getTitle(), 10));
         TextView admire = (TextView) view.findViewById(R.id.praises);
         admire.setText("" + data.getAdmireCount());
         return view;

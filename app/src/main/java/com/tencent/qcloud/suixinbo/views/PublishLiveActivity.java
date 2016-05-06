@@ -8,7 +8,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -58,7 +63,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         BtnPublish.setOnClickListener(this);
         btnLBS.setOnClickListener(this);
 
-        initExitDialog();
+        initPhotoDialog();
 
     }
 
@@ -103,11 +108,22 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     /**
      * 图片选择对话框
      */
-    private void initExitDialog() {
+    private void initPhotoDialog() {
         mPicChsDialog = new Dialog(this, R.style.dialog);
         mPicChsDialog.setContentView(R.layout.pic_choose);
+
+        WindowManager windowManager = getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        Window dlgwin = mPicChsDialog.getWindow();
+        WindowManager.LayoutParams lp = dlgwin.getAttributes();
+        dlgwin.setGravity(Gravity.BOTTOM);
+        lp.width = (int)(display.getWidth()); //设置宽度
+
+        mPicChsDialog.getWindow().setAttributes(lp);
+
         TextView camera = (TextView) mPicChsDialog.findViewById(R.id.chos_camera);
         TextView picLib = (TextView) mPicChsDialog.findViewById(R.id.pic_lib);
+        TextView cancel = (TextView) mPicChsDialog.findViewById(R.id.btn_cancel);
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,6 +136,12 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
             @Override
             public void onClick(View view) {
                 getPicFrom(IMAGE_STORE);
+                mPicChsDialog.dismiss();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 mPicChsDialog.dismiss();
             }
         });
@@ -165,6 +187,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("XIAO", "onActivityResult->result: "+resultCode+", req code:"+requestCode);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case CAPTURE_IMAGE_CAMERA:
@@ -184,12 +207,14 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
 
     public void startPhotoZoom(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");
+        Log.e("XIAO", "zoom url: "+uri);
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
         intent.putExtra("aspectX", 1);
         intent.putExtra("aspectY", 1);
-        intent.putExtra("outputX", 300);
-        intent.putExtra("outputY", 300);
+        intent.putExtra("outputX", 100);
+        intent.putExtra("outputY", 100);
+        intent.putExtra("return-data", true);
 //        intent.putExtra("return-data", true);
 //        intent.putExtra("output", fileUri);
         startActivityForResult(intent, CROP_CHOOSE);
