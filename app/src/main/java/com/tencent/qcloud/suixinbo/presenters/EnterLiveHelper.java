@@ -39,7 +39,7 @@ public class EnterLiveHelper extends Presenter {
     private static boolean isInChatRoom = false;
     private static boolean isInAVRoom = false;
     private LiveHelper mLiveHelper;
-
+    private   ArrayList<String> video_ids = new ArrayList<String>();
 
     private static final int TYPE_MEMBER_CHANGE_IN = 1;//进入房间事件。
     private static final int TYPE_MEMBER_CHANGE_OUT = 2;//退出房间事件。
@@ -110,20 +110,19 @@ public class EnterLiveHelper extends Presenter {
                     }
                     break;
                 case TYPE_MEMBER_CHANGE_HAS_CAMERA_VIDEO:
+                    video_ids.clear();
                     for (String id : updateList) {
-                        String host = MyCurrentLiveInfo.getHostID();
-                        if (id.equals(host)) {
-                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
-                        } else {
-//
-                            Intent intent = new Intent(AvConstants.ACTION_MEMBER_CAMERA_OPEN);
-                            intent.putExtra("id", id);
-                            mContext.sendBroadcast(intent);
+                        video_ids.add(id);
+//                        String host = MyCurrentLiveInfo.getHostID();
+//                        if (id.equals(host)) {
+//                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
+//                        } else {
 
-
-//                                mLiveHelper.RequestView(id, 0, 1, AVView.VIDEO_SRC_TYPE_CAMERA, AVView.VIEW_SIZE_TYPE_BIG);
-                        }
+//                        }
                     }
+                    Intent intent = new Intent(AvConstants.ACTION_CAMERA_OPEN_IN_LIVE);
+                    intent.putStringArrayListExtra("ids", video_ids);
+                    mContext.sendBroadcast(intent);
                     break;
                 case TYPE_MEMBER_CHANGE_HAS_AUDIO:
                     break;
@@ -364,7 +363,7 @@ public class EnterLiveHelper extends Presenter {
                 TIMManager.getInstance().deleteConversation(TIMConversationType.Group, "" + MySelfInfo.getInstance().getMyRoomNum());
             } else {
                 //成员退出群
-                TIMGroupManager.getInstance().quitGroup("" +  MyCurrentLiveInfo.getRoomNum(), new TIMCallBack() {
+                TIMGroupManager.getInstance().quitGroup("" + MyCurrentLiveInfo.getRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
                         Log.e(TAG, "onError i: " + i + "  " + s);

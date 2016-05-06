@@ -89,8 +89,8 @@ public class AvConstants {
 			+ ".ACTION_HOST_LEAVE";
 
 
-	public static final String ACTION_MEMBER_CAMERA_OPEN = PACKAGE
-			+ ".ACTION_MEMBER_CAMERA_OPEN";
+	public static final String ACTION_CAMERA_OPEN_IN_LIVE = PACKAGE
+			+ ".ACTION_CAMERA_OPEN_IN_LIVE";
 
 	public static final String EXTRA_RELATION_ID = "relationId";
 	public static final String EXTRA_AV_ERROR_RESULT = "av_error_result";

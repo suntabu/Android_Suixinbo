@@ -170,40 +170,41 @@ public class LiveHelper extends Presenter {
     /**
      * AVSDK 请求主播数据
      *
-     * @param identifier 主播ID
+     * @param identifiers 主播ID
      */
-    public void RequestView(String identifier, int viewindex, int requestCount, int type, int size) {
-        Log.i(TAG, "RequestView " + identifier);
-
-        AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifier);
-        Log.d(TAG, "RequestView hostIdentifier " + identifier + " endpoint " + endpoint);
+    public void RequestViewList(ArrayList<String> identifiers) {
+        Log.i(TAG, "RequestViewList " + identifiers);
+        if (identifiers.size() == 0) return;
+        AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifiers.get(0));
+        Log.d(TAG, "RequestViewList hostIdentifier " + identifiers + " endpoint " + endpoint);
         if (endpoint != null) {
 
-//
-//            AVView view = new AVView();
-//            view.videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
-//            view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
+            int viewindex = 0;
+            for (String id : identifiers) {
+                AVView view = new AVView();
+                view.videoSrcType =  AVView.VIDEO_SRC_TYPE_CAMERA;
+                view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
+                //界面数
+                mRequestViewList[viewindex] = view;
+                mRequestIdentifierList[viewindex] = id;
+                viewindex++;
+            }
+            int ret = AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, identifiers.size(), mRequestViewListCompleteCallback);
 
-            AVView view = new AVView();
-            view.videoSrcType = type;
-            view.viewSizeType = size;
-
-            //界面数
-            mRequestViewList[viewindex] = view;
-            mRequestIdentifierList[viewindex] = identifier;
-            int ret = AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, requestCount, mRequestViewListCompleteCallback);
-
-
-            mLiveView.showVideoView(REMOTE, identifier);
 
         } else {
             Toast.makeText(mContext, "request remoteView empty !!!!! endpoint = null", Toast.LENGTH_SHORT).show();
         }
+
+
     }
 
 
     private AVEndpoint.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVEndpoint.RequestViewListCompleteCallback() {
         protected void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
+            for (String id : identifierList) {
+                mLiveView.showVideoView(REMOTE, id);
+            }
             // TODO
             Log.d(TAG, "RequestViewListCompleteCallback.OnComplete");
         }
