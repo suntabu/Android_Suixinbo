@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.tencent.TIMUserProfile;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.ChatMsgListAdapter;
@@ -40,8 +41,10 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.EnterLiveHelper;
 import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
 import com.tencent.qcloud.suixinbo.presenters.OKhttpHelper;
+import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
@@ -51,6 +54,7 @@ import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -58,8 +62,9 @@ import java.util.TimerTask;
 /**
  * Live直播类
  */
-public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener {
+public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener, ProfileView {
     private EnterLiveHelper mEnterRoomProsscessHelper;
+    private ProfileInfoHelper mUserInfoHelper;
     private LiveHelper mLiveHelper;
     private static final String TAG = LiveActivity.class.getSimpleName();
 
@@ -79,6 +84,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private TextView mLikeTv;
     private HeartBeatTask mHeartBeatTask;//心跳
     private ImageView mHeadIcon;
+    private TextView mHostNameTv;
 
     private long mSecond = 0;
     private String formatTime;
@@ -88,7 +94,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private ObjectAnimator mObjAnim;
     private ImageView mRecordBall;
     private int thumbUp = 0;
+
     private String selectVideoId;
+
+    private TextView tvMembers;
+    private TextView tvAdmires;
 
 
     @Override
@@ -102,6 +112,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mEnterRoomProsscessHelper = new EnterLiveHelper(this, this);
         //房间内的交互协助类
         mLiveHelper = new LiveHelper(this, this);
+        // 用户资料类
+        mUserInfoHelper = new ProfileInfoHelper(this);
 
         initView();
         registerReceiver();
@@ -261,15 +273,15 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private LinearLayout mHostbottomLy, mMemberbottomLy, mVideoMemberCtrlBt;
     private FrameLayout mFullControllerUi, mBackgound;
 
-    private void showHeadIcon() {
-        if (TextUtils.isEmpty(MySelfInfo.getInstance().getAvatar())) {
+    private void showHeadIcon(String avatar) {
+        if (TextUtils.isEmpty(avatar)) {
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.default_avatar);
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
             mHeadIcon.setImageBitmap(cirBitMap);
         } else {
-            Log.d(TAG, "load icon: " + MySelfInfo.getInstance().getAvatar());
+            Log.d(TAG, "load icon: " + avatar);
             RequestManager req = Glide.with(this);
-            req.load(MySelfInfo.getInstance().getAvatar()).transform(new GlideCircleTransform(this)).into(mHeadIcon);
+            req.load(avatar).transform(new GlideCircleTransform(this)).into(mHeadIcon);
         }
     }
 
@@ -286,6 +298,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mHeadIcon = (ImageView) findViewById(R.id.head_icon);
         mVideoMemberCtrlBt = (LinearLayout) findViewById(R.id.video_member_bottom_layout);
         mVideoMemberCtrlBt.setVisibility(View.INVISIBLE);
+        mHostNameTv = (TextView) findViewById(R.id.host_name);
+        tvMembers = (TextView) findViewById(R.id.member_counts);
+        tvAdmires = (TextView) findViewById(R.id.heart_counts);
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostbottomLy.setVisibility(View.VISIBLE);
             mMemberbottomLy.setVisibility(View.GONE);
@@ -314,8 +329,12 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
             mMemberDg = new MembersDialog(this, R.style.dialog);
             startRecordAnimation();
-            showHeadIcon();
+            showHeadIcon(MySelfInfo.getInstance().getAvatar());
         } else {
+            LinearLayout llRecordTip = (LinearLayout) findViewById(R.id.record_tip);
+            llRecordTip.setVisibility(View.GONE);
+            mHostNameTv.setVisibility(View.VISIBLE);
+
             mMemberbottomLy.setVisibility(View.VISIBLE);
             mHostbottomLy.setVisibility(View.GONE);
             BtnInput = (TextView) findViewById(R.id.message_input);
@@ -323,6 +342,12 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mLikeTv = (TextView) findViewById(R.id.member_send_good);
             mLikeTv.setOnClickListener(this);
             mVideoChat.setVisibility(View.GONE);
+
+            List<String> ids = new ArrayList<>();
+            ids.add(MyCurrentLiveInfo.getHostID());
+            mUserInfoHelper.getUsersInfo(ids);
+            showHeadIcon(null);
+            mHostNameTv.setText(MyCurrentLiveInfo.getHostID());
         }
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
         BtnNormal.setOnClickListener(this);
@@ -335,6 +360,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mArrayListChatEntity = new ArrayList<ChatEntity>();
         mChatMsgListAdapter = new ChatMsgListAdapter(this, mListViewMsgItems, mArrayListChatEntity);
         mListViewMsgItems.setAdapter(mChatMsgListAdapter);
+
+        tvMembers.setText("" + MyCurrentLiveInfo.getMembers());
+        tvAdmires.setText("" + MyCurrentLiveInfo.getAdmires());
     }
 
 
@@ -386,6 +414,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mVideoTimer = null;
         }
         thumbUp = 0;
+        MyCurrentLiveInfo.setMembers(0);
+        MyCurrentLiveInfo.setAdmires(0);
         MyCurrentLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
         QavsdkControl.getInstance().onDestroy();
@@ -454,11 +484,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     /**
      * 有成员退群
+     *
      * @param list 成员ID 列表
      */
     @Override
     public void memberQuiteLive(String[] list) {
         for (String id : list) {
+            MyCurrentLiveInfo.setMembers(MyCurrentLiveInfo.getMembers() - 1);
+            tvMembers.setText("" + MyCurrentLiveInfo.getMembers());
             refreshTextListView(id, "quite live", Constants.MEMBER_EXIT);
         }
         //如果存在视频互动，取消
@@ -469,11 +502,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     /**
      * 有成员入群
+     *
      * @param list 成员ID 列表
      */
     @Override
     public void memberJoinLive(final String[] list) {
         for (String id : list) {
+            MyCurrentLiveInfo.setMembers(MyCurrentLiveInfo.getMembers() + 1);
+            tvMembers.setText("" + MyCurrentLiveInfo.getMembers());
             refreshTextListView(id, "join live", Constants.MEMBER_ENTER);
         }
     }
@@ -535,8 +571,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     @Override
     public void refreshThumbUp() {
-        thumbUp++;
+        MyCurrentLiveInfo.setAdmires(MyCurrentLiveInfo.getAdmires() + 1);
         mHeartLayout.addFavor();
+        tvAdmires.setText("" + MyCurrentLiveInfo.getAdmires());
     }
 
     @Override
@@ -552,6 +589,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 // 添加飘星动画
                 mHeartLayout.addFavor();
                 mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", MyCurrentLiveInfo.getHostID());
+                MyCurrentLiveInfo.setAdmires(MyCurrentLiveInfo.getAdmires() + 1);
+                tvAdmires.setText("" + MyCurrentLiveInfo.getAdmires());
                 break;
             case R.id.flash_btn:
                 if (mLiveHelper.isFrontCamera() == true) {
@@ -726,6 +765,25 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mTimer.schedule(mTimerTask, MINFRESHINTERVAL);
         } else {
             mBoolRefreshLock = false;
+        }
+    }
+
+    @Override
+    public void updateProfileInfo(TIMUserProfile profile) {
+
+    }
+
+    @Override
+    public void updateUserInfo(List<TIMUserProfile> profiles) {
+        if (null != profiles) {
+            for (TIMUserProfile user : profiles) {
+                if (user.getIdentifier().equals(MyCurrentLiveInfo.getHostID())) {
+                    mHostNameTv.setText(TextUtils.isEmpty(user.getNickName()) ? MyCurrentLiveInfo.getHostID() : user.getNickName());
+                    showHeadIcon(user.getFaceUrl());
+                } else {
+                    Log.w(TAG, "updateUserInfo->uid not match: " + user.getIdentifier() + "/" + MyCurrentLiveInfo.getHostID());
+                }
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.tencent.qcloud.suixinbo.presenters;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import com.tencent.TIMValueCallBack;
 import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVRoom;
 import com.tencent.av.sdk.AVRoomMulti;
+import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
@@ -220,7 +222,11 @@ public class EnterLiveHelper extends Presenter {
                 JSONObject liveInfo = null;
                 try {
                     liveInfo = new JSONObject();
-                    liveInfo.put("title", "This is a test ");
+                    if (TextUtils.isEmpty(MyCurrentLiveInfo.getTitle())){
+                        liveInfo.put("title", mContext.getString(R.string.text_live_default_title));
+                    }else {
+                        liveInfo.put("title", MyCurrentLiveInfo.getTitle());
+                    }
                     liveInfo.put("cover", "");
                     liveInfo.put("chatRoomId", MyCurrentLiveInfo.getChatRoomId());
                     liveInfo.put("avRoomId", MyCurrentLiveInfo.getRoomNum());
@@ -230,9 +236,13 @@ public class EnterLiveHelper extends Presenter {
                     hostinfo.put("username", "");
                     liveInfo.put("host", hostinfo);
                     JSONObject lbs = new JSONObject();
-                    lbs.put("longitude", 0);
-                    lbs.put("latitude", 0);
-                    lbs.put("address", "深圳");
+                    lbs.put("longitude", MyCurrentLiveInfo.getLong1());
+                    lbs.put("latitude", MyCurrentLiveInfo.getLat1());
+                    if (TextUtils.isEmpty(MyCurrentLiveInfo.getAddress())){
+                        lbs.put("address", mContext.getString(R.string.text_live_lbs_unknown));
+                    }else {
+                        lbs.put("address", MyCurrentLiveInfo.getAddress());
+                    }
                     liveInfo.put("lbs", lbs);
 
                 } catch (JSONException e) {

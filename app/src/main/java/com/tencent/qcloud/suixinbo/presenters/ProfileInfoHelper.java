@@ -7,6 +7,8 @@ import com.tencent.TIMUserProfile;
 import com.tencent.TIMValueCallBack;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 
+import java.util.List;
+
 /**
  * 用户资料获取
  */
@@ -28,6 +30,20 @@ public class ProfileInfoHelper {
             @Override
             public void onSuccess(TIMUserProfile timUserProfile) {
                 mView.updateProfileInfo(timUserProfile);
+            }
+        });
+    }
+
+    public void getUsersInfo(List<String> users){
+        TIMFriendshipManager.getInstance().getFriendsProfile(users, new TIMValueCallBack<List<TIMUserProfile>>() {
+            @Override
+            public void onError(int i, String s) {
+                Log.w(TAG, "getUsersInfo->error:"+i+","+s);
+            }
+
+            @Override
+            public void onSuccess(List<TIMUserProfile> profiles) {
+                mView.updateUserInfo(profiles);
             }
         });
     }

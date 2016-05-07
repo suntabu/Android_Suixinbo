@@ -17,7 +17,7 @@
             android:id="@+id/cover"
             android:layout_width="match_parent"
             android:layout_height="280dp"
-            android:background="@drawable/cover_background"
+            android:src="@drawable/cover_background"
             android:scaleType="fitXY" />
 
         <ImageView
