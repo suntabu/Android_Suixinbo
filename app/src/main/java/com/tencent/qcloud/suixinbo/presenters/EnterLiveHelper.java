@@ -39,7 +39,7 @@ public class EnterLiveHelper extends Presenter {
     private static boolean isInChatRoom = false;
     private static boolean isInAVRoom = false;
     private LiveHelper mLiveHelper;
-    private   ArrayList<String> video_ids = new ArrayList<String>();
+    private ArrayList<String> video_ids = new ArrayList<String>();
 
     private static final int TYPE_MEMBER_CHANGE_IN = 1;//进入房间事件。
     private static final int TYPE_MEMBER_CHANGE_OUT = 2;//退出房间事件。
@@ -102,12 +102,13 @@ public class EnterLiveHelper extends Presenter {
 
             switch (eventid) {
                 case TYPE_MEMBER_CHANGE_IN:
-                    for (String id : updateList) {
-                        String host = MyCurrentLiveInfo.getHostID();
-                        if (id.equals(host)) {
-//                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
-                        }
-                    }
+                    mStepInOutView.memberJoinLive(updateList);
+//                    for (String id : updateList) {
+//                        String host = MyCurrentLiveInfo.getHostID();
+//                        if (id.equals(host)) {
+////                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
+//                        }
+//                    }
                     break;
                 case TYPE_MEMBER_CHANGE_HAS_CAMERA_VIDEO:
                     video_ids.clear();
@@ -128,9 +129,8 @@ public class EnterLiveHelper extends Presenter {
                     break;
 
                 case TYPE_MEMBER_CHANGE_OUT:
-                    for (String id : updateList) {
-                        QavsdkControl.getInstance().closeMemberView(id);
-                    }
+                    mStepInOutView.memberQuiteLive(updateList);
+
             }
 
 //            //用户

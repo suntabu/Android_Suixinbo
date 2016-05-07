@@ -30,6 +30,7 @@ import com.tencent.av.utils.QLog;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.AvMemberInfo;
 import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -203,6 +204,7 @@ public class AVUIControl extends GLViewGroup {
                 index = getIdleViewIndex(0);
                 if (index >= 0) {
                     view = mGlVideoView[index];
+                    id_view.put(index, MySelfInfo.getInstance().getId());
                     view.setRender(identifier, AVView.VIDEO_SRC_TYPE_CAMERA);
                     localViewIndex = index;
                 }
@@ -628,7 +630,7 @@ public class AVUIControl extends GLViewGroup {
      * @param identifier
      */
     public void closeMemberVideoView(String identifier) {
-
+        Log.i(TAG, "closeMemberVideoView "+identifier);
         if (id_view.containsValue(identifier)) {
             int index = getViewIndexById(identifier, AVView.VIDEO_SRC_TYPE_CAMERA);
             if (index == -1) return;

@@ -13,6 +13,8 @@
     <string name="btn_take_photo">拍照</string>
     <string name="btn_pic_photo">从手机相册选择</string>
     <string name="btn_cancel">取消</string>
+    <string name="btn_refuse">拒绝</string>
+    <string name="btn_agree">同意</string>
 
 
     <string name="error_code_prefix">错误码：</string>
@@ -25,10 +27,13 @@
 
     <!-- live play -->
     <string name="send">发送</string>
+    <string name="invite_dialog_tips">主播邀请您与他进行互动直播</string>
 
     <!-- msgadapter -->
     <item type="id" name="tag_first"></item>
     <item type="id" name="tag_second"></item>
+
+
 
 
 

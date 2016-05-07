@@ -3,6 +3,7 @@ package com.tencent.qcloud.suixinbo.views.customviews;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.widget.ListView;
 
@@ -31,6 +32,7 @@ public class MembersDialog extends Dialog implements MembersDialogView {
         mMemberList = (ListView) findViewById(R.id.member_list);
         Window window = getWindow();
         window.setGravity(Gravity.TOP);
+        setCanceledOnTouchOutside(true);
 //        mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, members);
 //        mMemberList.setAdapter(mMembersAdapter);
     }
@@ -58,5 +60,15 @@ public class MembersDialog extends Dialog implements MembersDialogView {
         mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, data);
         mMemberList.setAdapter(mMembersAdapter);
         mMembersAdapter.notifyDataSetChanged();
+    }
+
+    public boolean onTouchEvent(MotionEvent event)
+    {
+
+        if(event.getAction() == MotionEvent.ACTION_OUTSIDE){
+            System.out.println("TOuch outside the dialog ******************** ");
+            this.dismiss();
+        }
+        return false;
     }
 }

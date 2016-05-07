@@ -13,5 +13,7 @@ public interface EnterQuiteRoomView extends MvpView {
 
     void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo);
 
+    void memberQuiteLive(String[] list);
 
+    void memberJoinLive(String[] list);
 }

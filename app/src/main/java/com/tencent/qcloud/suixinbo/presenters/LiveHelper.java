@@ -182,7 +182,7 @@ public class LiveHelper extends Presenter {
             int viewindex = 0;
             for (String id : identifiers) {
                 AVView view = new AVView();
-                view.videoSrcType =  AVView.VIDEO_SRC_TYPE_CAMERA;
+                view.videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
                 view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
                 //界面数
                 mRequestViewList[viewindex] = view;
@@ -241,8 +241,8 @@ public class LiveHelper extends Presenter {
     public void sendGroupMessage(int cmd, String param) {
         JSONObject inviteCmd = new JSONObject();
         try {
-            inviteCmd.put("userAction", cmd);
-            inviteCmd.put("actionParam", param);
+            inviteCmd.put(Constants.CMD_KEY, cmd);
+            inviteCmd.put(Constants.CMD_PARAM, param);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -396,26 +396,32 @@ public class LiveHelper extends Presenter {
             // 此时还未读取任何json文本，直接读取就是一个JSONObject对象。
             // 如果此时的读取位置在"name" : 了，那么nextValue就是"yuanzhifei89"（String）
             JSONObject json = (JSONObject) jsonParser.nextValue();
-            int action = json.getInt("userAction");
+            int action = json.getInt(Constants.CMD_KEY);
             switch (action) {
                 case Constants.AVIMCMD_MUlTI_HOST_INVITE:
                     mLiveView.showInviteDialog();
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
-                    Toast.makeText(mContext, sendId + " accepted !", Toast.LENGTH_SHORT).show();
-//                    requestMu(sendId);
+                    break;
+                case Constants.AVIMCMD_MUlTI_REFUSE:
+                    Toast.makeText(mContext, sendId + " refuse !", Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.AVIMCMD_Praise:
                     mLiveView.refreshThumbUp();
                     break;
                 case Constants.AVIMCMD_EnterLive:
-                    mLiveView.refreshText("Step in live", sendId);
+//                    mLiveView.refreshText("Step in live", sendId);
                     break;
                 case Constants.AVIMCMD_ExitLive:
                     mLiveView.refreshText("quite live", sendId);
                     break;
-                case Constants.AVIMCMD_MULT_CANCEL_INTERACT:
-                    openCameraAndMic();
+                case Constants.AVIMCMD_MULT_CANCEL_INTERACT://主播关闭摄像头命令
+                    //如果是自己关闭Camera和Mic
+                    String closeId = json.getString(Constants.CMD_PARAM);
+                    if (closeId.equals(MySelfInfo.getInstance().getId()))
+                        closeCameraAndMic();
+                    //其他人关闭小窗口
+                    QavsdkControl.getInstance().closeMemberView(closeId);
                     break;
             }
 
@@ -586,8 +592,8 @@ public class LiveHelper extends Presenter {
     public void sendC2CMessage(int cmd, String Param, String sendId) {
         JSONObject inviteCmd = new JSONObject();
         try {
-            inviteCmd.put("userAction", cmd);
-            inviteCmd.put("actionParam", Param);
+            inviteCmd.put(Constants.CMD_KEY, cmd);
+            inviteCmd.put(Constants.CMD_PARAM, Param);
         } catch (JSONException e) {
             e.printStackTrace();
         }
