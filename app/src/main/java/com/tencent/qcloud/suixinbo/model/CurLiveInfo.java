@@ -3,7 +3,7 @@ package com.tencent.qcloud.suixinbo.model;
 /**
  * Created by admin on 16/4/22.
  */
-public class MyCurrentLiveInfo {
+public class CurLiveInfo {
     private static int members;
     private static int admires;
     private static String title;
@@ -26,13 +26,13 @@ public class MyCurrentLiveInfo {
     }
 
     public static void setIndexView(int indexView) {
-        MyCurrentLiveInfo.indexView = indexView;
+        CurLiveInfo.indexView = indexView;
     }
 
     public static int indexView = 0;
 
     public static void setCurrentRequestCount(int currentRequestCount) {
-        MyCurrentLiveInfo.currentRequestCount = currentRequestCount;
+        CurLiveInfo.currentRequestCount = currentRequestCount;
     }
 
     public static String getHostID() {
@@ -40,7 +40,7 @@ public class MyCurrentLiveInfo {
     }
 
     public static void setHostID(String hostID) {
-        MyCurrentLiveInfo.hostID = hostID;
+        CurLiveInfo.hostID = hostID;
     }
 
     public static int getMembers() {
@@ -48,7 +48,7 @@ public class MyCurrentLiveInfo {
     }
 
     public static void setMembers(int members) {
-        MyCurrentLiveInfo.members = members;
+        CurLiveInfo.members = members;
     }
 
     public static int getAdmires() {
@@ -56,7 +56,7 @@ public class MyCurrentLiveInfo {
     }
 
     public static void setAdmires(int admires) {
-        MyCurrentLiveInfo.admires = admires;
+        CurLiveInfo.admires = admires;
     }
 
     public static String getTitle() {
@@ -64,7 +64,7 @@ public class MyCurrentLiveInfo {
     }
 
     public static void setTitle(String title) {
-        MyCurrentLiveInfo.title = title;
+        CurLiveInfo.title = title;
     }
 
     public static double getLat1() {
@@ -72,7 +72,7 @@ public class MyCurrentLiveInfo {
     }
 
     public static void setLat1(double lat1) {
-        MyCurrentLiveInfo.lat1 = lat1;
+        CurLiveInfo.lat1 = lat1;
     }
 
     public static double getLong1() {
@@ -80,7 +80,7 @@ public class MyCurrentLiveInfo {
     }
 
     public static void setLong1(double long1) {
-        MyCurrentLiveInfo.long1 = long1;
+        CurLiveInfo.long1 = long1;
     }
 
     public static String getAddress() {
@@ -88,7 +88,7 @@ public class MyCurrentLiveInfo {
     }
 
     public static void setAddress(String address) {
-        MyCurrentLiveInfo.address = address;
+        CurLiveInfo.address = address;
     }
 
     public static int getRoomNum() {

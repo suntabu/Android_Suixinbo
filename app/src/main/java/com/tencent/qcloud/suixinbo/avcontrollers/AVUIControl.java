@@ -29,7 +29,7 @@ import com.tencent.av.sdk.AVView;
 import com.tencent.av.utils.QLog;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.AvMemberInfo;
-import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
+import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 
 import java.util.ArrayList;
@@ -598,7 +598,7 @@ public class AVUIControl extends GLViewGroup {
         view.setIsPC(false);
         view.clearRender();
         //请求连接数减一
-        MyCurrentLiveInfo.setCurrentRequestCount(MyCurrentLiveInfo.getCurrentRequestCount() - 1);
+        CurLiveInfo.setCurrentRequestCount(CurLiveInfo.getCurrentRequestCount() - 1);
 
 //		for (int i = 0; i < mGlVideoView.length - 1; i++) {
 //			GLVideoView view1 = mGlVideoView[i];
@@ -845,7 +845,7 @@ public class AVUIControl extends GLViewGroup {
             }
             //不存在分配一个空的
             if (index < 0) {
-                if (mRemoteIdentifier.equals(MyCurrentLiveInfo.getHostID())) {
+                if (mRemoteIdentifier.equals(CurLiveInfo.getHostID())) {
                     index = 0;
                 } else {
                     index = getIdleViewIndex(1);//0 大屏保留给主播数据

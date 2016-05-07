@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
+import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
@@ -81,9 +81,9 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 Intent intent = new Intent(this, LiveActivity.class);
                 intent.putExtra(Constants.ID_STATUS, Constants.HOST);
                 MySelfInfo.getInstance().setIdStatus(Constants.HOST);
-                MyCurrentLiveInfo.setTitle(tvTitle.getText().toString());
-                MyCurrentLiveInfo.setHostID(MySelfInfo.getInstance().getId());
-                MyCurrentLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
+                CurLiveInfo.setTitle(tvTitle.getText().toString());
+                CurLiveInfo.setHostID(MySelfInfo.getInstance().getId());
+                CurLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
                 startActivity(intent);
                 this.finish();
                 break;
@@ -227,16 +227,16 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         if (btnLBS.getChecked()) {
             if (0 == code) {
                 tvLBS.setText(location);
-                MyCurrentLiveInfo.setLat1(lat1);
-                MyCurrentLiveInfo.setLong1(long1);
-                MyCurrentLiveInfo.setAddress(location);
+                CurLiveInfo.setLat1(lat1);
+                CurLiveInfo.setLong1(long1);
+                CurLiveInfo.setAddress(location);
             } else {
                 tvLBS.setText(getString(R.string.text_live_lbs_fail));
             }
         }else{
-            MyCurrentLiveInfo.setLat1(0);
-            MyCurrentLiveInfo.setLong1(0);
-            MyCurrentLiveInfo.setAddress("");
+            CurLiveInfo.setLat1(0);
+            CurLiveInfo.setLong1(0);
+            CurLiveInfo.setAddress("");
         }
     }
 

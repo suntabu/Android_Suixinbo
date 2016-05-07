@@ -19,8 +19,8 @@ import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
+import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
-import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.EnterQuiteRoomView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -67,7 +67,7 @@ public class EnterLiveHelper extends Presenter {
             createLive();
         } else {
             Log.i(TAG, "joinLiveRoom startEnterRoom ");
-            joinLive(MyCurrentLiveInfo.getRoomNum());
+            joinLive(CurLiveInfo.getRoomNum());
         }
 
     }
@@ -106,7 +106,7 @@ public class EnterLiveHelper extends Presenter {
                 case TYPE_MEMBER_CHANGE_IN:
                     mStepInOutView.memberJoinLive(updateList);
 //                    for (String id : updateList) {
-//                        String host = MyCurrentLiveInfo.getHostID();
+//                        String host = CurLiveInfo.getHostID();
 //                        if (id.equals(host)) {
 ////                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
 //                        }
@@ -116,7 +116,7 @@ public class EnterLiveHelper extends Presenter {
                     video_ids.clear();
                     for (String id : updateList) {
                         video_ids.add(id);
-//                        String host = MyCurrentLiveInfo.getHostID();
+//                        String host = CurLiveInfo.getHostID();
 //                        if (id.equals(host)) {
 //                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
 //                        } else {
@@ -138,7 +138,7 @@ public class EnterLiveHelper extends Presenter {
 //            //用户
 //            for (String member : updateList) {
 //                Log.i(TAG, " onEndpoints id " + member);
-//                if (member.equals(MyCurrentLiveInfo.getHostID())) {
+//                if (member.equals(CurLiveInfo.getHostID())) {
 //
 //                }
 //
@@ -222,26 +222,26 @@ public class EnterLiveHelper extends Presenter {
                 JSONObject liveInfo = null;
                 try {
                     liveInfo = new JSONObject();
-                    if (TextUtils.isEmpty(MyCurrentLiveInfo.getTitle())){
+                    if (TextUtils.isEmpty(CurLiveInfo.getTitle())){
                         liveInfo.put("title", mContext.getString(R.string.text_live_default_title));
                     }else {
-                        liveInfo.put("title", MyCurrentLiveInfo.getTitle());
+                        liveInfo.put("title", CurLiveInfo.getTitle());
                     }
                     liveInfo.put("cover", "");
-                    liveInfo.put("chatRoomId", MyCurrentLiveInfo.getChatRoomId());
-                    liveInfo.put("avRoomId", MyCurrentLiveInfo.getRoomNum());
+                    liveInfo.put("chatRoomId", CurLiveInfo.getChatRoomId());
+                    liveInfo.put("avRoomId", CurLiveInfo.getRoomNum());
                     JSONObject hostinfo = new JSONObject();
                     hostinfo.put("uid", MySelfInfo.getInstance().getId());
                     hostinfo.put("avatar", "");
                     hostinfo.put("username", "");
                     liveInfo.put("host", hostinfo);
                     JSONObject lbs = new JSONObject();
-                    lbs.put("longitude", MyCurrentLiveInfo.getLong1());
-                    lbs.put("latitude", MyCurrentLiveInfo.getLat1());
-                    if (TextUtils.isEmpty(MyCurrentLiveInfo.getAddress())){
+                    lbs.put("longitude", CurLiveInfo.getLong1());
+                    lbs.put("latitude", CurLiveInfo.getLat1());
+                    if (TextUtils.isEmpty(CurLiveInfo.getAddress())){
                         lbs.put("address", mContext.getString(R.string.text_live_lbs_unknown));
                     }else {
-                        lbs.put("address", MyCurrentLiveInfo.getAddress());
+                        lbs.put("address", CurLiveInfo.getAddress());
                     }
                     liveInfo.put("lbs", lbs);
 
@@ -276,7 +276,7 @@ public class EnterLiveHelper extends Presenter {
                 //已经在是成员了
                 if (i == Constants.IS_ALREADY_MEMBER) {
                     Log.i(TAG, "joinLiveRoom joinIMChatRoom callback succ ");
-                    joinAVRoom(MyCurrentLiveInfo.getRoomNum());
+                    joinAVRoom(CurLiveInfo.getRoomNum());
                     isInChatRoom = true;
                 } else {
                     Toast.makeText(mContext, "join IM room fail " + s + " " + i, Toast.LENGTH_SHORT).show();
@@ -287,7 +287,7 @@ public class EnterLiveHelper extends Presenter {
             public void onSuccess() {
                 Log.i(TAG, "joinLiveRoom joinIMChatRoom callback succ ");
                 isInChatRoom = true;
-                joinAVRoom(MyCurrentLiveInfo.getRoomNum());
+                joinAVRoom(CurLiveInfo.getRoomNum());
             }
         });
 
@@ -312,7 +312,7 @@ public class EnterLiveHelper extends Presenter {
         quiteIMChatRoom();
         //退出AV房间
         quiteAVRoom();
-        MyCurrentLiveInfo.setCurrentRequestCount(0);
+        CurLiveInfo.setCurrentRequestCount(0);
         uninitAudioService();
         //通知结束
         notifyServerLiveEnd();
@@ -360,7 +360,7 @@ public class EnterLiveHelper extends Presenter {
         if ((isInChatRoom == true)) {
             //主播解散群
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-                TIMGroupManager.getInstance().deleteGroup("" + MyCurrentLiveInfo.getRoomNum(), new TIMCallBack() {
+                TIMGroupManager.getInstance().deleteGroup("" + CurLiveInfo.getRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
                     }
@@ -373,7 +373,7 @@ public class EnterLiveHelper extends Presenter {
                 TIMManager.getInstance().deleteConversation(TIMConversationType.Group, "" + MySelfInfo.getInstance().getMyRoomNum());
             } else {
                 //成员退出群
-                TIMGroupManager.getInstance().quitGroup("" + MyCurrentLiveInfo.getRoomNum(), new TIMCallBack() {
+                TIMGroupManager.getInstance().quitGroup("" + CurLiveInfo.getRoomNum(), new TIMCallBack() {
                     @Override
                     public void onError(int i, String s) {
                         Log.e(TAG, "onError i: " + i + "  " + s);

@@ -30,8 +30,8 @@ import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
+import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
-import com.tencent.qcloud.suixinbo.model.MyCurrentLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.MembersDialogView;
@@ -156,7 +156,7 @@ public class LiveHelper extends Presenter {
 
                     //如果是主播直接本地渲染
                     if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
-                        mLiveView.showVideoView(LOCAL, MyCurrentLiveInfo.getHostID());
+                        mLiveView.showVideoView(LOCAL, CurLiveInfo.getHostID());
 
                 }
             }
@@ -203,6 +203,7 @@ public class LiveHelper extends Presenter {
     private AVEndpoint.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVEndpoint.RequestViewListCompleteCallback() {
         protected void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
             for (String id : identifierList) {
+
                 mLiveView.showVideoView(REMOTE, id);
             }
             // TODO
@@ -351,7 +352,7 @@ public class LiveHelper extends Presenter {
                 }
 
                 //其他群消息过滤
-                if (!MyCurrentLiveInfo.getChatRoomId().equals(currMsg.getConversation().getPeer())) {
+                if (!CurLiveInfo.getChatRoomId().equals(currMsg.getConversation().getPeer())) {
                     continue;
                 }
 
@@ -418,10 +419,11 @@ public class LiveHelper extends Presenter {
                 case Constants.AVIMCMD_MULT_CANCEL_INTERACT://主播关闭摄像头命令
                     //如果是自己关闭Camera和Mic
                     String closeId = json.getString(Constants.CMD_PARAM);
-                    if (closeId.equals(MySelfInfo.getInstance().getId()))
+                    if (closeId.equals(MySelfInfo.getInstance().getId()))//是自己
                         closeCameraAndMic();
                     //其他人关闭小窗口
                     QavsdkControl.getInstance().closeMemberView(closeId);
+                    mLiveView.refreshUI(closeId);
                     break;
             }
 
