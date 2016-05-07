@@ -3,7 +3,6 @@ package com.tencent.qcloud.suixinbo.views.customviews;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.Window;
 import android.widget.ListView;
 
@@ -62,13 +61,4 @@ public class MembersDialog extends Dialog implements MembersDialogView {
         mMembersAdapter.notifyDataSetChanged();
     }
 
-    public boolean onTouchEvent(MotionEvent event)
-    {
-
-        if(event.getAction() == MotionEvent.ACTION_OUTSIDE){
-            System.out.println("TOuch outside the dialog ******************** ");
-            this.dismiss();
-        }
-        return false;
-    }
 }

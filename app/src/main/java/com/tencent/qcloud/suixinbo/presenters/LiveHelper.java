@@ -577,13 +577,11 @@ public class LiveHelper extends Presenter {
             }
             MemberInfo member = new MemberInfo();
             member.setUserId(item.getUser());
-
+            if (QavsdkControl.getInstance().containIdView(item.getUser())) {
+                member.setIsOnVideoChat(true);
+            }
             mDialogMembers.add(member);
-            //判断是否在视频中
-//            for (String id : videoMembers) {
-//                if (id.equals(item.getUser())) ;
-//                member.setIsOnVideoChat(true);
-//            }
+
         }
 
         mMembersDialogView.showMembersList(mDialogMembers);

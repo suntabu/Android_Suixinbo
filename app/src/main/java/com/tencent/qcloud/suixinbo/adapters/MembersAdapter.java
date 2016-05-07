@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.tencent.qcloud.suixinbo.R;
+import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
 import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -38,7 +39,7 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.members_item_layout, null);
             holder = new ViewHolder();
             holder.id = (TextView) convertView.findViewById(R.id.item_name);
-            holder.inviteBtn = (TextView) convertView.findViewById(R.id.item_video_btn);
+            holder.videoCtrl = (TextView) convertView.findViewById(R.id.video_chat_ctl);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -46,13 +47,26 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
         MemberInfo data = getItem(position);
         final String selectId = data.getUserId();
         holder.id.setText(selectId);
-        holder.inviteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i(TAG, "select item:  " + selectId);
-                liveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, "", selectId);
-            }
-        });
+        if (data.isOnVideoChat() == true) {
+            holder.videoCtrl.setBackgroundResource(R.drawable.btn_video_disconnect);
+            holder.videoCtrl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i(TAG, "select item:  " + selectId);
+                    QavsdkControl.getInstance().closeMemberView(selectId);
+                    liveHelper.sendC2CMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT,selectId, selectId);
+                }
+            });
+        } else {
+            holder.videoCtrl.setBackgroundResource(R.drawable.btn_video_connection);
+            holder.videoCtrl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i(TAG, "select item:  " + selectId);
+                    liveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, "", selectId);
+                }
+            });
+        }
 
 
         return convertView;
@@ -60,7 +74,7 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
 
     public final class ViewHolder {
         public TextView id;
-        public TextView inviteBtn;
+        public TextView videoCtrl;
     }
 
 }

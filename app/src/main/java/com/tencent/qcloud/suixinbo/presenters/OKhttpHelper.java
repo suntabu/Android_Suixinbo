@@ -102,7 +102,7 @@ public class OKhttpHelper {
             JSONObject stopLive = new JSONObject();
             stopLive.put("uid", id);
             stopLive.put("watchCount", 1000);
-            stopLive.put("admireCount", 10);
+            stopLive.put("admireCount", 0);
             stopLive.put("timeSpan", 200);
             String json = stopLive.toString();
             String res = post(STOP_ROOM, json);

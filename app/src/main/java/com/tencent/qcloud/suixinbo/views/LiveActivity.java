@@ -389,7 +389,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         public void run() {
             String host = CurLiveInfo.getHostID();
             Log.i(TAG, "HeartBeatTask " + host);
-            OKhttpHelper.getInstance().sendHeartBeat(host, 10, 10, 100);
+            OKhttpHelper.getInstance().sendHeartBeat(host, CurLiveInfo.getMembers(),  CurLiveInfo.getAdmires(), 0);
         }
     }
 

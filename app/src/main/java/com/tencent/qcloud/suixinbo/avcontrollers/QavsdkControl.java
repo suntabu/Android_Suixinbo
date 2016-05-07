@@ -7,6 +7,7 @@ import android.view.View;
 import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVRoom;
 import com.tencent.av.sdk.AVRoomMulti;
+import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.model.AvMemberInfo;
 
 import java.util.ArrayList;
@@ -390,9 +391,15 @@ public class QavsdkControl {
     public void closeMemberView(String id) {
         if (null != mAVUIControl) {
             mAVUIControl.closeMemberVideoView(id);
-        } else {
-
         }
+    }
+
+    public boolean containIdView(String id) {
+        if (null != mAVUIControl) {
+            if (mAVUIControl.getViewIndexById(id, AVView.VIDEO_SRC_TYPE_CAMERA) != -1)
+                return true;
+        }
+        return false;
     }
 
 }
