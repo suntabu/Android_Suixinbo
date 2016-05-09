@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -38,7 +39,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     private TextView BtnBack, BtnPublish;
     private Dialog mPicChsDialog;
     private ImageView cover;
-    private Uri fileUri;
+    private Uri fileUri, cropUri;
+    private TextView tvPicTip;
     private TextView tvLBS;
     private TextView tvTitle;
     private CustomSwitch btnLBS;
@@ -56,6 +58,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         mLocationHelper = new LocationHelper(this);
         tvTitle = (TextView) findViewById(R.id.live_title);
         BtnBack = (TextView) findViewById(R.id.btn_cancel);
+        tvPicTip = (TextView) findViewById(R.id.tv_pic_tip);
         BtnPublish = (TextView) findViewById(R.id.btn_publish);
         cover = (ImageView) findViewById(R.id.cover);
         tvLBS = (TextView)findViewById(R.id.address);
@@ -160,7 +163,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         switch (type) {
             case CAPTURE_IMAGE_CAMERA:
                 Intent intent_photo = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent_photo.putExtra(MediaStore.EXTRA_OUTPUT, createCoverUri());
+                fileUri = createCoverUri("");
+                intent_photo.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 startActivityForResult(intent_photo, CAPTURE_IMAGE_CAMERA);
                 break;
             case IMAGE_STORE:
@@ -172,8 +176,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         }
     }
 
-    private Uri createCoverUri() {
-        String filename = MySelfInfo.getInstance().getId() + ".jpg";
+    private Uri createCoverUri(String type) {
+        String filename = MySelfInfo.getInstance().getId()+ type + ".jpg";
         File outputImage = new File(Environment.getExternalStorageDirectory(), filename);
         try {
             if (outputImage.exists()) {
@@ -183,14 +187,13 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         } catch (IOException e) {
             e.printStackTrace();
         }
-        fileUri = Uri.fromFile(outputImage);
-        return fileUri;
+        
+        return Uri.fromFile(outputImage);
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("XIAO", "onActivityResult->result: "+resultCode+", req code:"+requestCode);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case CAPTURE_IMAGE_CAMERA:
@@ -200,7 +203,9 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                     startPhotoZoom(data.getData());
                     break;
                 case CROP_CHOOSE:
-                    cover.setImageURI(data.getData());
+                    tvPicTip.setVisibility(View.GONE);
+                    cover.setImageBitmap(null);
+                    cover.setImageURI(cropUri);
                     break;
 
             }
@@ -209,16 +214,18 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     }
 
     public void startPhotoZoom(Uri uri) {
+        cropUri = createCoverUri("_crop");
+
         Intent intent = new Intent("com.android.camera.action.CROP");
-        Log.e("XIAO", "zoom url: " + uri);
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        intent.putExtra("outputX", 300);
-        intent.putExtra("outputY", 300);
-//        intent.putExtra("return-data", true);
-//        intent.putExtra("output", fileUri);
+        intent.putExtra("aspectX", 500);
+        intent.putExtra("aspectY", 309);
+        intent.putExtra("outputX", 500);
+        intent.putExtra("outputY", 309);
+        intent.putExtra("return-data", false);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, cropUri);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         startActivityForResult(intent, CROP_CHOOSE);
     }
 

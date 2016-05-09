@@ -44,7 +44,8 @@
 
         <activity android:name=".views.RegisterActivity" />
         <activity android:name=".views.HomeActivity" />
-        <activity android:name=".views.PublishLiveActivity" />
+        <activity android:name=".views.PublishLiveActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize" /> <!-- 避免部分机器调用摄像头时自动横竖屏切换造成Activity重建 -->
         <activity android:name=".views.LiveActivity" />
 
         <service
