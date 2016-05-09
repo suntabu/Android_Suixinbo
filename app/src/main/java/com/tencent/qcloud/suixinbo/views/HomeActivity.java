@@ -23,13 +23,13 @@ import java.util.List;
 /**
  * 主界面
  */
-public class HomeActivity extends FragmentActivity implements ProfileView{
+public class HomeActivity extends FragmentActivity implements ProfileView {
     private FragmentTabHost mTabHost;
     private LayoutInflater layoutInflater;
     private ProfileInfoHelper infoHelper;
-    private final Class fragmentArray[] = {FragmentLiveList.class,FragmentPublish.class, FragmentProfile.class};
-    private int mImageViewArray[] = {R.drawable.tab_live,R.drawable.icon_publish,R.drawable.tab_profile};
-    private String mTextviewArray[] = {"live" ,"publish","profile"};
+    private final Class fragmentArray[] = {FragmentLiveList.class, FragmentPublish.class, FragmentProfile.class};
+    private int mImageViewArray[] = {R.drawable.tab_live, R.drawable.icon_publish, R.drawable.tab_profile};
+    private String mTextviewArray[] = {"live", "publish", "profile"};
 
 
     @Override
@@ -57,13 +57,13 @@ public class HomeActivity extends FragmentActivity implements ProfileView{
 //                DialogFragment newFragment = InputDialog.newInstance();
 //                newFragment.show(ft, "dialog");
 
-                startActivity(new Intent(HomeActivity.this,PublishLiveActivity.class));
+                startActivity(new Intent(HomeActivity.this, PublishLiveActivity.class));
 
             }
         });
 
         // 检测是否需要获取头像
-        if (TextUtils.isEmpty(MySelfInfo.getInstance().getAvatar())){
+        if (TextUtils.isEmpty(MySelfInfo.getInstance().getAvatar())) {
             infoHelper = new ProfileInfoHelper(this);
             infoHelper.getMyProfile();
         }
