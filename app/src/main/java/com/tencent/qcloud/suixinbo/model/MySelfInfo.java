@@ -15,6 +15,8 @@ public class MySelfInfo {
     private String userSig;
     private String nickName;    // 呢称
     private String avatar;      // 头像
+    private String CosSig;
+
 
     private int id_status;
 
@@ -65,6 +67,14 @@ public class MySelfInfo {
 
     public void setMyRoomNum(int myRoomNum) {
         this.myRoomNum = myRoomNum;
+    }
+
+    public String getCosSig() {
+        return CosSig;
+    }
+
+    public void setCosSig(String cosSig) {
+        CosSig = cosSig;
     }
 
 

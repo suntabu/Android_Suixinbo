@@ -37,6 +37,8 @@ public class OKhttpHelper {
     public static final String STOP_ROOM = "http://203.195.167.34/sxb/index.php?svc=live&cmd=end";
     public static final String GET_LIVELIST = "http://203.195.167.34/sxb/index.php?svc=live&cmd=list";
     public static final String SEND_HEARTBEAT = "http://203.195.167.34/sxb/index.php?svc=live&cmd=host_heartbeat";
+    public static final String GET_COS_SIG = "http://203.195.167.34/sxb/index.php?svc=cos&cmd=get_sign";
+
 
     public static OKhttpHelper getInstance() {
         if (instance == null) {
@@ -214,6 +216,28 @@ public class OKhttpHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getCosSig() {
+        try {
+            String response = OKhttpHelper.getInstance().post(GET_COS_SIG, "");
+
+            Log.i(TAG, "getCosSig " + response.toString());
+            JSONTokener jsonParser = new JSONTokener(response);
+            JSONObject reg_response = (JSONObject) jsonParser.nextValue();
+            int ret = reg_response.getInt("errorCode");
+            if (ret == 0) {
+                JSONObject data = reg_response.getJSONObject("data");
+                String sign = data.getString("sign");
+                return sign;
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
