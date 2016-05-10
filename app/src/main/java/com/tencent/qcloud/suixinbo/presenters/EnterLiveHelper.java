@@ -227,7 +227,7 @@ public class EnterLiveHelper extends Presenter {
                     }else {
                         liveInfo.put("title", CurLiveInfo.getTitle());
                     }
-                    liveInfo.put("cover", "");
+                    liveInfo.put("cover", CurLiveInfo.getCoverurl());
                     liveInfo.put("chatRoomId", CurLiveInfo.getChatRoomId());
                     liveInfo.put("avRoomId", CurLiveInfo.getRoomNum());
                     JSONObject hostinfo = new JSONObject();

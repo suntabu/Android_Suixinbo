@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -16,6 +16,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
@@ -23,6 +24,7 @@ import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LocationView;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.UploadView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.views.customviews.CustomSwitch;
 
@@ -32,13 +34,14 @@ import java.io.IOException;
 /**
  * Created by admin on 16/4/21.
  */
-public class PublishLiveActivity extends Activity implements View.OnClickListener, LocationView {
+public class PublishLiveActivity extends Activity implements View.OnClickListener, LocationView, UploadView {
     private PublishHelper mPublishLivePresenter;
     private LocationHelper mLocationHelper;
     private TextView BtnBack, BtnPublish;
     private Dialog mPicChsDialog;
     private ImageView cover;
-    private Uri fileUri;
+    private Uri fileUri, cropUri;
+    private TextView tvPicTip;
     private TextView tvLBS;
     private TextView tvTitle;
     private CustomSwitch btnLBS;
@@ -47,15 +50,17 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     private static final String TAG = PublishLiveActivity.class.getSimpleName();
 
     private static final int CROP_CHOOSE = 10;
+    private boolean bUploading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_publish);
-        mPublishLivePresenter = new PublishHelper(this);
+        mPublishLivePresenter = new PublishHelper(this, this);
         mLocationHelper = new LocationHelper(this);
         tvTitle = (TextView) findViewById(R.id.live_title);
         BtnBack = (TextView) findViewById(R.id.btn_cancel);
+        tvPicTip = (TextView) findViewById(R.id.tv_pic_tip);
         BtnPublish = (TextView) findViewById(R.id.btn_publish);
         cover = (ImageView) findViewById(R.id.cover);
         tvLBS = (TextView)findViewById(R.id.address);
@@ -66,7 +71,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         btnLBS.setOnClickListener(this);
 
         initPhotoDialog();
-
+        // 提前更新sig
+        mPublishLivePresenter.updateSig();
     }
 
 
@@ -77,15 +83,18 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 finish();
                 break;
             case R.id.btn_publish:
-                mPublishLivePresenter.uploadCover();
-                Intent intent = new Intent(this, LiveActivity.class);
-                intent.putExtra(Constants.ID_STATUS, Constants.HOST);
-                MySelfInfo.getInstance().setIdStatus(Constants.HOST);
-                CurLiveInfo.setTitle(tvTitle.getText().toString());
-                CurLiveInfo.setHostID(MySelfInfo.getInstance().getId());
-                CurLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
-                startActivity(intent);
-                this.finish();
+                if (bUploading){
+                    Toast.makeText(this, getString(R.string.publish_wait_uploading), Toast.LENGTH_SHORT).show();
+                }else {
+                    Intent intent = new Intent(this, LiveActivity.class);
+                    intent.putExtra(Constants.ID_STATUS, Constants.HOST);
+                    MySelfInfo.getInstance().setIdStatus(Constants.HOST);
+                    CurLiveInfo.setTitle(tvTitle.getText().toString());
+                    CurLiveInfo.setHostID(MySelfInfo.getInstance().getId());
+                    CurLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
+                    startActivity(intent);
+                    this.finish();
+                }
                 break;
             case R.id.cover:
                 mPicChsDialog.show();
@@ -160,7 +169,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         switch (type) {
             case CAPTURE_IMAGE_CAMERA:
                 Intent intent_photo = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent_photo.putExtra(MediaStore.EXTRA_OUTPUT, createCoverUri());
+                fileUri = createCoverUri("");
+                intent_photo.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 startActivityForResult(intent_photo, CAPTURE_IMAGE_CAMERA);
                 break;
             case IMAGE_STORE:
@@ -172,8 +182,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         }
     }
 
-    private Uri createCoverUri() {
-        String filename = MySelfInfo.getInstance().getId() + ".jpg";
+    private Uri createCoverUri(String type) {
+        String filename = MySelfInfo.getInstance().getId()+ type + ".jpg";
         File outputImage = new File(Environment.getExternalStorageDirectory(), filename);
         try {
             if (outputImage.exists()) {
@@ -183,14 +193,13 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         } catch (IOException e) {
             e.printStackTrace();
         }
-        fileUri = Uri.fromFile(outputImage);
-        return fileUri;
+        
+        return Uri.fromFile(outputImage);
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("XIAO", "onActivityResult->result: "+resultCode+", req code:"+requestCode);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case CAPTURE_IMAGE_CAMERA:
@@ -200,7 +209,11 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                     startPhotoZoom(data.getData());
                     break;
                 case CROP_CHOOSE:
-                    cover.setImageURI(data.getData());
+                    tvPicTip.setVisibility(View.GONE);
+                    cover.setImageBitmap(null);
+                    cover.setImageURI(cropUri);
+                    bUploading = true;
+                    mPublishLivePresenter.uploadCover(cropUri.getPath());
                     break;
 
             }
@@ -209,16 +222,18 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     }
 
     public void startPhotoZoom(Uri uri) {
+        cropUri = createCoverUri("_crop");
+
         Intent intent = new Intent("com.android.camera.action.CROP");
-        Log.e("XIAO", "zoom url: " + uri);
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        intent.putExtra("outputX", 300);
-        intent.putExtra("outputY", 300);
-//        intent.putExtra("return-data", true);
-//        intent.putExtra("output", fileUri);
+        intent.putExtra("aspectX", 500);
+        intent.putExtra("aspectY", 309);
+        intent.putExtra("outputX", 500);
+        intent.putExtra("outputY", 309);
+        intent.putExtra("return-data", false);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, cropUri);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         startActivityForResult(intent, CROP_CHOOSE);
     }
 
@@ -255,5 +270,16 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         default:
             break;
         }
+    }
+
+    @Override
+    public void onUploadResult(int code, String url) {
+        if (0 == code){
+            CurLiveInfo.setCoverurl(url);
+            Toast.makeText(this, getString(R.string.publish_upload_success), Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(this, getString(R.string.publish_upload_cover_failed), Toast.LENGTH_SHORT).show();
+        }
+        bUploading = false;
     }
 }
