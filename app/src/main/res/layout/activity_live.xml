@@ -80,6 +80,7 @@
             android:layout_marginBottom="10dp"
             android:layout_marginTop="15dp" />
 
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -95,8 +96,16 @@
                 android:focusable="true" />
         </RelativeLayout>
 
-
     </FrameLayout>
+
+
+    <include
+        android:id="@+id/qav_beauty_setting"
+        layout="@layout/qav_beauty_setting"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="20dp" />
 
 
     <TextView
@@ -109,6 +118,4 @@
         android:background="@drawable/icon_nomal"
         android:onClick="onClick"
         android:visibility="gone" />
-
-
 </FrameLayout>

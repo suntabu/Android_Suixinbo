@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -283,10 +284,12 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 初始化UI
      */
     private View avView;
-    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat, BtnCtrlVideo, BtnCtrlMic, BtnHungup;
+    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat, BtnCtrlVideo, BtnCtrlMic, BtnHungup, mBeautyConfirm;
     private ListView mListViewMsgItems;
-    private LinearLayout mHostCtrView, mNomalMemberCtrView, mVideoMemberCtrlView;
+    private LinearLayout mHostCtrView, mNomalMemberCtrView, mVideoMemberCtrlView, mBeautySettings;
     private FrameLayout mFullControllerUi, mBackgound;
+    private SeekBar mBeautyBar;
+    private int mBeautyRate;
 
     private void showHeadIcon(String avatar) {
         if (TextUtils.isEmpty(avatar)) {
@@ -343,15 +346,42 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             BtnScreen.setOnClickListener(this);
             mVideoChat.setOnClickListener(this);
 
-
             mMemberDg = new MembersDialog(this, R.style.dialog);
             startRecordAnimation();
             showHeadIcon(MySelfInfo.getInstance().getAvatar());
+            mBeautySettings = (LinearLayout) findViewById(R.id.qav_beauty_setting);
+            mBeautyConfirm = (TextView) findViewById(R.id.qav_beauty_setting_finish);
+            mBeautyConfirm.setOnClickListener(this);
+            mBeautyBar = (SeekBar) (findViewById(R.id.qav_beauty_progress));
+            mBeautyBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    // TODO Auto-generated method stub
+                    Log.d("SeekBar", "onStopTrackingTouch");
+                    Toast.makeText(LiveActivity.this, "beauty " + mBeautyRate + "%", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    // TODO Auto-generated method stub
+                    Log.d("SeekBar", "onStartTrackingTouch");
+                }
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress,
+                                              boolean fromUser) {
+                    // TODO Auto-generated method stub
+                    mBeautyRate = progress;
+                    QavsdkControl.getInstance().getAVContext().getVideoCtrl().inputBeautyParam(getBeautyProgress(progress));
+
+                }
+            });
         } else {
             LinearLayout llRecordTip = (LinearLayout) findViewById(R.id.record_tip);
             llRecordTip.setVisibility(View.GONE);
             mHostNameTv.setVisibility(View.VISIBLE);
-
+            initInviteDialog();
             mNomalMemberCtrView.setVisibility(View.VISIBLE);
             mHostCtrView.setVisibility(View.GONE);
             BtnInput = (TextView) findViewById(R.id.message_input);
@@ -573,9 +603,17 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     }
 
 
+    private float getBeautyProgress(int progress) {
+        Log.d("shixu", "progress: " + progress);
+        return (9.0f * progress / 100.0f);
+    }
+
+
     @Override
     public void showInviteDialog() {
-        handleInviteDialog();
+        if (inviteDg.isShowing() != true) {
+            inviteDg.isShowing();
+        }
     }
 
     @Override
@@ -628,9 +666,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case R.id.switch_cam:
                 mLiveHelper.switchCamera();
                 break;
-            case R.id.beauty_btn:
-
-                break;
             case R.id.mic_btn:
                 if (mLiveHelper.isMicOpen() == true) {
                     BtnMic.setBackgroundResource(R.drawable.icon_mic_close);
@@ -671,6 +706,23 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 QavsdkControl.getInstance().closeMemberView(backGroundId);
                 backToNormalCtrlView();
                 break;
+            case R.id.beauty_btn:
+                if (mBeautySettings != null) {
+                    if (mBeautySettings.getVisibility() == View.GONE) {
+                        mBeautySettings.setVisibility(View.VISIBLE);
+                        mFullControllerUi.setVisibility(View.INVISIBLE);
+                    } else {
+                        mBeautySettings.setVisibility(View.GONE);
+                        mFullControllerUi.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    Log.i(TAG, "beauty_btn mTopBar  is null ");
+                }
+                break;
+            case R.id.qav_beauty_setting_finish:
+                mBeautySettings.setVisibility(View.GONE);
+                mFullControllerUi.setVisibility(View.VISIBLE);
+                break;
         }
     }
 
@@ -706,7 +758,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     /**
      * 主播邀请应答框
      */
-    private void handleInviteDialog() {
+    private void initInviteDialog() {
         inviteDg = new Dialog(this, R.style.dialog);
         inviteDg.setContentView(R.layout.invite_dialog);
         TextView hostId = (TextView) inviteDg.findViewById(R.id.host_id);
