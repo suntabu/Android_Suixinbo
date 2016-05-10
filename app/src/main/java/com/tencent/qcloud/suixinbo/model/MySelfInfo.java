@@ -16,6 +16,7 @@ public class MySelfInfo {
     private String nickName;    // 呢称
     private String avatar;      // 头像
     private String CosSig;
+    private long sigExpire;
 
 
     private int id_status;
@@ -77,6 +78,13 @@ public class MySelfInfo {
         CosSig = cosSig;
     }
 
+    public long getSigExpire() {
+        return sigExpire;
+    }
+
+    public void setSigExpire(long sigExpire) {
+        this.sigExpire = sigExpire;
+    }
 
     public void writeToCache(Context context) {
         SharedPreferences settings = context.getSharedPreferences(Constants.USER_INFO, 0);

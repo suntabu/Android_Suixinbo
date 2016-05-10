@@ -34,14 +34,8 @@
     <item type="id" name="tag_second"></item>
 
 
-
-
-
-
     <!-- profile fragment-->
     <string name="btn_login_out">退出登录</string>
-
-
 
 
     <!-- fragment publish -->
@@ -49,6 +43,8 @@
     <string name="publish_photo_take">拍照</string>
     <string name="publish_photo_album">相册</string>
     <string name="publish_need_photo_tips">从未发起过图片，请选择一张作为直播封面</string>
+    <string name="publish_wait_uploading">请等待封面上传完成</string>
+    <string name="publish_upload_success">上传封面成功</string>
     <string name="publish_photo_make_sure_tips">请添加一张照片</string>
     <string name="publish_photo_make_sure_title">请输入图片标题</string>
     <string name="publish_create_room_failed">创建房间失败</string>

@@ -10,6 +10,7 @@ public class CurLiveInfo {
     private static double lat1;
     private static double long1;
     private static String address;
+    private static String coverurl = "";
 
     public static int RoomNum;
 
@@ -99,6 +100,13 @@ public class CurLiveInfo {
         RoomNum = roomNum;
     }
 
+    public static String getCoverurl() {
+        return coverurl;
+    }
+
+    public static void setCoverurl(String coverurl) {
+        CurLiveInfo.coverurl = coverurl;
+    }
 
     public static String getChatRoomId() {
         return "" + RoomNum;
