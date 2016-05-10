@@ -28,7 +28,6 @@ import com.tencent.av.sdk.AVError;
 import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
-import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
@@ -341,7 +340,7 @@ public class LiveHelper extends Presenter {
                 if (type == TIMElemType.GroupSystem) {
                     if (TIMGroupSystemElemType.TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE == ((TIMGroupSystemElem) elem).getSubtype()) {
                         mContext.sendBroadcast(new Intent(
-                                AvConstants.ACTION_HOST_LEAVE));
+                                Constants.ACTION_HOST_LEAVE));
                     }
 
                 }

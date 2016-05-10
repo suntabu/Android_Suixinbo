@@ -17,7 +17,6 @@ import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVRoom;
 import com.tencent.av.sdk.AVRoomMulti;
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
@@ -51,7 +50,7 @@ public class EnterLiveHelper extends Presenter {
     private static final int TYPE_MEMBER_CHANGE_NO_AUDIO = 6;//无发语音事件。
     private static final int TYPE_MEMBER_CHANGE_HAS_SCREEN_VIDEO = 7;//有发屏幕视频事件。
     private static final int TYPE_MEMBER_CHANGE_NO_SCREEN_VIDEO = 8;//无发屏幕视频事件。
-    private int audioCat = AvConstants.AUDIO_VOICE_CHAT_MODE;
+    private int audioCat = Constants.AUDIO_VOICE_CHAT_MODE;
 
 
     public EnterLiveHelper(Context context, EnterQuiteRoomView view) {
@@ -124,7 +123,7 @@ public class EnterLiveHelper extends Presenter {
 
 //                        }
                     }
-                    Intent intent = new Intent(AvConstants.ACTION_CAMERA_OPEN_IN_LIVE);
+                    Intent intent = new Intent(Constants.ACTION_CAMERA_OPEN_IN_LIVE);
                     intent.putStringArrayListExtra("ids", video_ids);
                     mContext.sendBroadcast(intent);
                     break;

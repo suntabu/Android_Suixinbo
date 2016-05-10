@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -25,14 +24,14 @@ import com.tencent.av.opengl.ui.GLRootView;
 import com.tencent.av.opengl.ui.GLView;
 import com.tencent.av.opengl.ui.GLViewGroup;
 import com.tencent.av.opengl.utils.Utils;
+import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
 import com.tencent.av.utils.QLog;
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.model.AvMemberInfo;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
+import com.tencent.qcloud.suixinbo.utils.Constants;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AVUIControl extends GLViewGroup {
@@ -75,7 +74,7 @@ public class AVUIControl extends GLViewGroup {
             if (qavsdk.getRoom() != null) {
                 qavsdk.getAVContext().setRenderMgrAndHolder(mGraphicRenderMgr, holder);
             }
-            mContext.sendBroadcast(new Intent(AvConstants.ACTION_SURFACE_CREATED));
+            mContext.sendBroadcast(new Intent(Constants.ACTION_SURFACE_CREATED));
             Log.e(TAG, " surfaceCreated");
         }
 
@@ -296,8 +295,9 @@ public class AVUIControl extends GLViewGroup {
         mCacheRotation = rotation;
 
         // layoutVideoView(true);
-        if ((qavsdk != null) && (qavsdk.getAVVideoControl() != null)) {
-            qavsdk.getAVVideoControl().setRotation(rotation);
+        if (qavsdk != null) {
+            AVVideoCtrl avVideoCtrl = qavsdk.getAVContext().getVideoCtrl();
+            avVideoCtrl.setRotation(rotation);
         }
         switch (rotation) {
             case 0:
@@ -339,12 +339,8 @@ public class AVUIControl extends GLViewGroup {
         String tipsRoom = "";
 
         if (qavsdk != null) {
-            if (qavsdk.getAVAudioControl() != null) {
-                tipsAudio = qavsdk.getAVAudioControl().getQualityTips();
-            }
-            if (qavsdk.getAVVideoControl() != null) {
-                tipsVideo = qavsdk.getAVVideoControl().getQualityTips();
-            }
+                tipsAudio = qavsdk.getAudioQualityTips();
+                tipsVideo = qavsdk.getVideoQualityTips();
 
             if (qavsdk.getRoom() != null) {
                 tipsRoom = qavsdk.getRoom().getQualityTips();
@@ -1005,8 +1001,8 @@ public class AVUIControl extends GLViewGroup {
 
                 String selectedId = id_view.get(mTargetIndex);
                 mContext.sendBroadcast(new Intent(
-                        AvConstants.ACTION_SWITCH_VIDEO).putExtra(
-                        AvConstants.EXTRA_IDENTIFIER, selectedId));
+                        Constants.ACTION_SWITCH_VIDEO).putExtra(
+                        Constants.EXTRA_IDENTIFIER, selectedId));
 
                 switchVideo(0, mTargetIndex); //mTargetIndex 放置主屏
 
@@ -1044,8 +1040,8 @@ public class AVUIControl extends GLViewGroup {
         Log.d(TAG, "selectIdViewToBg " + identifier);
         if (identifier == null) return;
         mContext.sendBroadcast(new Intent(
-                AvConstants.ACTION_SWITCH_VIDEO).putExtra(
-                AvConstants.EXTRA_IDENTIFIER, identifier));
+                Constants.ACTION_SWITCH_VIDEO).putExtra(
+                Constants.EXTRA_IDENTIFIER, identifier));
     }
 
 
@@ -1303,84 +1299,84 @@ public class AVUIControl extends GLViewGroup {
         }
     }
 
-    void onMemberChange() {
-        Log.d(TAG, "WL_DEBUG onMemberChange start");
-
-//		ArrayList<AvMemberInfo> audioAndCameraMemberList = qavsdk.getAudioAndCameraMemberList();
+//    void onMemberChange() {
+//        Log.d(TAG, "WL_DEBUG onMemberChange start");
 //
-//		for (AvMemberInfo memberInfo : audioAndCameraMemberList) {
-//			int index = getViewIndexById(memberInfo.identifier, AVView.VIDEO_SRC_TYPE_CAMERA);
-//			if (index >= 0) {
-//				Log.d(TAG, "WL_DEBUG onMemberChange memberInfo.hasCameraVideo = " + memberInfo.hasCameraVideo);
+////		ArrayList<AvMemberInfo> audioAndCameraMemberList = qavsdk.getAudioAndCameraMemberList();
+////
+////		for (AvMemberInfo memberInfo : audioAndCameraMemberList) {
+////			int index = getViewIndexById(memberInfo.identifier, AVView.VIDEO_SRC_TYPE_CAMERA);
+////			if (index >= 0) {
+////				Log.d(TAG, "WL_DEBUG onMemberChange memberInfo.hasCameraVideo = " + memberInfo.hasCameraVideo);
+////
+////				if (!memberInfo.hasCameraVideo && !memberInfo.hasAudio) {
+////					closeVideoView(index);
+////				}
+////			}
+////		}
 //
-//				if (!memberInfo.hasCameraVideo && !memberInfo.hasAudio) {
-//					closeVideoView(index);
-//				}
-//			}
-//		}
-
-        ArrayList<AvMemberInfo> screenMemberList = qavsdk.getScreenMemberList();
-
-        for (AvMemberInfo avMemberInfo : screenMemberList) {
-            int index = getViewIndexById(avMemberInfo.identifier, AVView.VIDEO_SRC_TYPE_SCREEN);
-            if (index >= 0) {
-                Log.d(TAG, "WL_DEBUG onMemberChange avMemberInfo.hasScreenVideo = " + avMemberInfo.hasScreenVideo);
-
-                if (!avMemberInfo.hasScreenVideo) {
-                    closeVideoView(index);
-                }
-            }
-        }
-
-        ArrayList<AvMemberInfo> memberList = qavsdk.getMemberList();
-        // 去掉已经不再memberlist中的view
-        if (!memberList.isEmpty()) {
-            for (int i = 0; i < mGlVideoView.length; i++) {
-                GLVideoView view = mGlVideoView[i];
-                if (view == null)
-                    continue;
-                String viewIdentifier = view.getIdentifier();
-                int viewVideoSrcType = view.getVideoSrcType();
-
-                if (TextUtils.isEmpty(viewIdentifier) || viewVideoSrcType == AVView.VIDEO_SRC_TYPE_NONE)
-                    continue;
-
-
-                boolean memberExist = false;
-                for (int j = 0; j < memberList.size(); j++) {
-                    if (!TextUtils.isEmpty(memberList.get(j).identifier)) {
-                        int videoSrcType = AVView.VIDEO_SRC_TYPE_NONE;
-                        if (memberList.get(j).hasCameraVideo)
-                            videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
-                        else if (memberList.get(j).hasScreenVideo)
-                            videoSrcType = AVView.VIDEO_SRC_TYPE_SCREEN;
-                        else videoSrcType = AVView.VIDEO_SRC_TYPE_NONE;
-
-                        if (viewIdentifier.equals(memberList.get(j).identifier) && viewVideoSrcType == videoSrcType) {
-                            memberExist = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!memberExist) {
-                    if (null != qavsdk) {
-                        String selfIdentifier = qavsdk.getSelfIdentifier();
-                        Log.d(TAG, "self identifier : " + selfIdentifier);
-                        if (selfIdentifier != null && selfIdentifier.equals(viewIdentifier)) {
-                            return;
-                        }
-                    }
-
-                    closeVideoView(i);
-                }
-            }
-        } else {
-            for (int i = 0; i < mGlVideoView.length; i++) {
-                closeVideoView(i);
-            }
-        }
-
-        Log.d(TAG, "WL_DEBUG onMemberChange end");
-    }
+//        ArrayList<AvMemberInfo> screenMemberList = qavsdk.getScreenMemberList();
+//
+//        for (AvMemberInfo avMemberInfo : screenMemberList) {
+//            int index = getViewIndexById(avMemberInfo.identifier, AVView.VIDEO_SRC_TYPE_SCREEN);
+//            if (index >= 0) {
+//                Log.d(TAG, "WL_DEBUG onMemberChange avMemberInfo.hasScreenVideo = " + avMemberInfo.hasScreenVideo);
+//
+//                if (!avMemberInfo.hasScreenVideo) {
+//                    closeVideoView(index);
+//                }
+//            }
+//        }
+//
+//        ArrayList<AvMemberInfo> memberList = qavsdk.getMemberList();
+//        // 去掉已经不再memberlist中的view
+//        if (!memberList.isEmpty()) {
+//            for (int i = 0; i < mGlVideoView.length; i++) {
+//                GLVideoView view = mGlVideoView[i];
+//                if (view == null)
+//                    continue;
+//                String viewIdentifier = view.getIdentifier();
+//                int viewVideoSrcType = view.getVideoSrcType();
+//
+//                if (TextUtils.isEmpty(viewIdentifier) || viewVideoSrcType == AVView.VIDEO_SRC_TYPE_NONE)
+//                    continue;
+//
+//
+//                boolean memberExist = false;
+//                for (int j = 0; j < memberList.size(); j++) {
+//                    if (!TextUtils.isEmpty(memberList.get(j).identifier)) {
+//                        int videoSrcType = AVView.VIDEO_SRC_TYPE_NONE;
+//                        if (memberList.get(j).hasCameraVideo)
+//                            videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
+//                        else if (memberList.get(j).hasScreenVideo)
+//                            videoSrcType = AVView.VIDEO_SRC_TYPE_SCREEN;
+//                        else videoSrcType = AVView.VIDEO_SRC_TYPE_NONE;
+//
+//                        if (viewIdentifier.equals(memberList.get(j).identifier) && viewVideoSrcType == videoSrcType) {
+//                            memberExist = true;
+//                            break;
+//                        }
+//                    }
+//                }
+//
+//                if (!memberExist) {
+//                    if (null != qavsdk) {
+//                        String selfIdentifier = qavsdk.getSelfIdentifier();
+//                        Log.d(TAG, "self identifier : " + selfIdentifier);
+//                        if (selfIdentifier != null && selfIdentifier.equals(viewIdentifier)) {
+//                            return;
+//                        }
+//                    }
+//
+//                    closeVideoView(i);
+//                }
+//            }
+//        } else {
+//            for (int i = 0; i < mGlVideoView.length; i++) {
+//                closeVideoView(i);
+//            }
+//        }
+//
+//        Log.d(TAG, "WL_DEBUG onMemberChange end");
+//    }
 }

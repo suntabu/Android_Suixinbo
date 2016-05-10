@@ -7,6 +7,7 @@ import android.util.Log;
 import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVError;
 import com.tencent.openqq.IMSdkInt;
+import com.tencent.qcloud.suixinbo.utils.Constants;
 
 /**
  * 音视频初始化接口类
@@ -123,14 +124,6 @@ class AVContextControl {
         return mSelfIdentifier;
     }
 
-    String getPeerIdentifier() {
-        return mPeerIdentifier;
-    }
-
-    void setPeerIdentifier(String peerIdentifier) {
-        mPeerIdentifier = peerIdentifier;
-    }
-
 
     /**
      * 实际初始化AVSDK
@@ -140,7 +133,7 @@ class AVContextControl {
      */
     private void onAVSDKCreate(boolean result, long tinyId, int errorCode) {
         if (result) {
-            mAVContext = AVContext.createInstance(mContext,mConfig);
+            mAVContext = AVContext.createInstance(mContext, mConfig);
             mSelfIdentifier = mConfig.identifier;
             int ret = mAVContext.start(mStartContextCompleteCallback);
             Log.i(TAG, "onAVSDKCreate ret "+ret);
@@ -161,7 +154,7 @@ class AVContextControl {
         mIsInStopContext = false;
         isStartContext = false;
         mContext.sendBroadcast(new Intent(
-                AvConstants.ACTION_CLOSE_CONTEXT_COMPLETE));
+                Constants.ACTION_CLOSE_CONTEXT_COMPLETE));
     }
 
 

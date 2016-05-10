@@ -33,7 +33,6 @@ import com.tencent.TIMUserProfile;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.ChatMsgListAdapter;
-import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.ChatEntity;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
@@ -207,7 +206,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             //AvSurfaceView 初始化成功
-            if (action.equals(AvConstants.ACTION_SURFACE_CREATED)) {
+            if (action.equals(Constants.ACTION_SURFACE_CREATED)) {
                 //打开摄像头
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
                     mLiveHelper.openCameraAndMic();
@@ -215,7 +214,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
             }
 
-            if (action.equals(AvConstants.ACTION_CAMERA_OPEN_IN_LIVE)) {//有人打开摄像头
+            if (action.equals(Constants.ACTION_CAMERA_OPEN_IN_LIVE)) {//有人打开摄像头
                 ArrayList<String> ids = intent.getStringArrayListExtra("ids");
                 //如果是自己本地直接渲染
                 for (String id : ids) {
@@ -233,8 +232,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 //                }
             }
 
-            if (action.equals(AvConstants.ACTION_SWITCH_VIDEO)) {//点击成员
-                String backGroundId = intent.getStringExtra(AvConstants.EXTRA_IDENTIFIER);
+            if (action.equals(Constants.ACTION_SWITCH_VIDEO)) {//点击成员
+                String backGroundId = intent.getStringExtra(Constants.EXTRA_IDENTIFIER);
 
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {//自己是主播
                     if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//背景是自己
@@ -259,7 +258,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 }
 
             }
-            if (action.equals(AvConstants.ACTION_HOST_LEAVE)) {//主播结束
+            if (action.equals(Constants.ACTION_HOST_LEAVE)) {//主播结束
                 quiteLivePassively();
             }
 
@@ -269,11 +268,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     private void registerReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(AvConstants.ACTION_SURFACE_CREATED);
-        intentFilter.addAction(AvConstants.ACTION_HOST_ENTER);
-        intentFilter.addAction(AvConstants.ACTION_CAMERA_OPEN_IN_LIVE);
-        intentFilter.addAction(AvConstants.ACTION_SWITCH_VIDEO);
-        intentFilter.addAction(AvConstants.ACTION_HOST_LEAVE);
+        intentFilter.addAction(Constants.ACTION_SURFACE_CREATED);
+        intentFilter.addAction(Constants.ACTION_HOST_ENTER);
+        intentFilter.addAction(Constants.ACTION_CAMERA_OPEN_IN_LIVE);
+        intentFilter.addAction(Constants.ACTION_SWITCH_VIDEO);
+        intentFilter.addAction(Constants.ACTION_HOST_LEAVE);
         registerReceiver(mBroadcastReceiver, intentFilter);
 
     }
