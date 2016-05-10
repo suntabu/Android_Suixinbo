@@ -61,6 +61,11 @@ class AVRoomControl {
 		public void OnPrivilegeDiffNotify(int privilege) {
 			Log.d(TAG, "OnPrivilegeDiffNotify. privilege = " + privilege);
 		}
+
+		@Override
+		public void OnSemiAutoRecvCameraVideo(String[] strings) {
+
+		}
 	};
 
 
@@ -86,7 +91,18 @@ class AVRoomControl {
 		Log.d(TAG, "WL_DEBUG enterRoom relationId = " + relationId);
 		AVContext avContext =QavsdkControl.getInstance().getAVContext();
 		byte[] authBuffer = null;//权限位加密串；TODO：请业务侧填上自己的加密串
-		AVRoom.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam(relationId, AvConstants.auth_bits, authBuffer, roomRole, audioCat, isAutoCreateSDKRoom);
+		long authBits = AVRoom.AUTH_BITS_DEFAULT;//权限位；默认值是拥有所有权限。TODO：请业务侧填根据自己的情况填上权限位。
+		AVRoomMulti.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam();
+		enterRoomParam.appRoomId = relationId;
+		enterRoomParam.authBits = authBits;
+		enterRoomParam.avControlRole = "";
+		enterRoomParam.authBuffer = authBuffer;
+		enterRoomParam.audioCategory = audioCat;
+		enterRoomParam.autoCreateRoom = true;
+		enterRoomParam.videoRecvMode = AVRoom.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO;
+
+//		avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
+//		AVRoom.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam(relationId, AvConstants.auth_bits, authBuffer, roomRole, audioCat, isAutoCreateSDKRoom);
 		// create room
 		avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
 		mIsInCreateRoom = true;

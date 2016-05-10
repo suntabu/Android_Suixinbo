@@ -26,7 +26,7 @@ class AVContextControl {
     /**
      * 启动AVSDK系统的回调接口
      */
-    private AVContext.StartContextCompleteCallback mStartContextCompleteCallback = new AVContext.StartContextCompleteCallback() {
+    private AVContext.StartCallback mStartContextCompleteCallback = new AVContext.StartCallback() {
         public void OnComplete(int result) {
             mIsInStartContext = false;
 //            Toast.makeText(mContext, "SDKLogin complete : " + result, Toast.LENGTH_SHORT).show();
@@ -45,7 +45,7 @@ class AVContextControl {
     /**
      * 关闭AVSDK系统的回调接口
      */
-    private AVContext.StopContextCompleteCallback mStopContextCompleteCallback = new AVContext.StopContextCompleteCallback() {
+    private AVContext.StopCallback mStopContextCompleteCallback = new AVContext.StopCallback() {
         public void OnComplete() {
 
             avDestory(true);
@@ -81,9 +81,9 @@ class AVContextControl {
      */
     public void setAVConfig(int appid, String accountype, String identifier, String usersig) {
         mConfig = new AVContext.Config();
-        mConfig.sdk_app_id = appid;
-        mConfig.account_type = accountype;
-        mConfig.app_id_at3rd = Integer.toString(appid);
+        mConfig.sdkAppId = appid;
+        mConfig.accountType = accountype;
+        mConfig.appIdAt3rd = Integer.toString(appid);
         mConfig.identifier = identifier;
         mUserSig = usersig;
     }
@@ -94,7 +94,7 @@ class AVContextControl {
     void stopContext() {
         if (hasAVContext()) {
             Log.d(TAG, "WL_DEBUG stopContext");
-            mAVContext.stopContext(mStopContextCompleteCallback);
+            mAVContext.stop(mStopContextCompleteCallback);
             mIsInStopContext = true;
         }
     }
@@ -140,9 +140,9 @@ class AVContextControl {
      */
     private void onAVSDKCreate(boolean result, long tinyId, int errorCode) {
         if (result) {
-            mAVContext = AVContext.createContext(mConfig);
+            mAVContext = AVContext.createInstance(mContext,mConfig);
             mSelfIdentifier = mConfig.identifier;
-            int ret = mAVContext.startContext(mContext, mStartContextCompleteCallback);
+            int ret = mAVContext.start(mStartContextCompleteCallback);
             Log.i(TAG, "onAVSDKCreate ret "+ret);
             mIsInStartContext = true;
         } else {
@@ -156,7 +156,7 @@ class AVContextControl {
      * @param result
      */
     private void avDestory(boolean result) {
-        mAVContext.onDestroy();
+        mAVContext.destroy();
         mAVContext = null;
         mIsInStopContext = false;
         isStartContext = false;

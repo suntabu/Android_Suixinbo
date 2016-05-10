@@ -51,6 +51,7 @@ public class EnterLiveHelper extends Presenter {
     private static final int TYPE_MEMBER_CHANGE_NO_AUDIO = 6;//无发语音事件。
     private static final int TYPE_MEMBER_CHANGE_HAS_SCREEN_VIDEO = 7;//有发屏幕视频事件。
     private static final int TYPE_MEMBER_CHANGE_NO_SCREEN_VIDEO = 8;//无发屏幕视频事件。
+    private int audioCat = AvConstants.AUDIO_VOICE_CHAT_MODE;
 
 
     public EnterLiveHelper(Context context, EnterQuiteRoomView view) {
@@ -147,6 +148,11 @@ public class EnterLiveHelper extends Presenter {
 
         public void OnPrivilegeDiffNotify(int privilege) {
             Log.d(TAG, "OnPrivilegeDiffNotify. privilege = " + privilege);
+        }
+
+        @Override
+        public void OnSemiAutoRecvCameraVideo(String[] strings) {
+
         }
     };
 
@@ -403,7 +409,20 @@ public class EnterLiveHelper extends Presenter {
         Log.i(TAG, "createlive joinLiveRoom enterAVRoom " + roomNum);
         AVContext avContext = QavsdkControl.getInstance().getAVContext();
         byte[] authBuffer = null;//权限位加密串；TODO：请业务侧填上自己的加密串
-        AVRoom.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam(roomNum, AvConstants.auth_bits, authBuffer, "", AvConstants.AUDIO_VOICE_CHAT_MODE, true);
+
+        long authBits = AVRoom.AUTH_BITS_DEFAULT;//权限位；默认值是拥有所有权限。TODO：请业务侧填根据自己的情况填上权限位。
+        AVRoomMulti.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam();
+        enterRoomParam.appRoomId = roomNum;
+        enterRoomParam.authBits = authBits;
+        enterRoomParam.avControlRole = "";
+        enterRoomParam.authBuffer = authBuffer;
+        enterRoomParam.audioCategory = audioCat;
+        enterRoomParam.autoCreateRoom = true;
+        enterRoomParam.videoRecvMode = AVRoom.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO;
+
+
+        avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
+//        AVRoom.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam(roomNum, AvConstants.auth_bits, authBuffer, "", AvConstants.AUDIO_VOICE_CHAT_MODE, true);
         // create room
         int ret = avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
         Log.i(TAG, "EnterAVRoom " + ret);

@@ -816,7 +816,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         dialogWindow.setGravity(Gravity.CENTER);
         dialogWindow.setAttributes(lp);
-        inviteDg.show();
     }
 
 
