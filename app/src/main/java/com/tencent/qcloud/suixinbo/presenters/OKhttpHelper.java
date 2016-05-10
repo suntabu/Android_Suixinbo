@@ -52,7 +52,7 @@ public class OKhttpHelper {
             = MediaType.parse("application/json; charset=utf-8");
 
     private OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
+            .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(5, TimeUnit.SECONDS)
             .build();
 

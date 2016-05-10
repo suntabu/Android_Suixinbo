@@ -630,11 +630,21 @@ public class AVUIControl extends GLViewGroup {
      * @param identifier
      */
     public void closeMemberVideoView(String identifier) {
-        Log.i(TAG, "closeMemberVideoView "+identifier);
+        Log.i(TAG, "closeMemberVideoView " + identifier);
+
+
         if (id_view.containsValue(identifier)) {
             int index = getViewIndexById(identifier, AVView.VIDEO_SRC_TYPE_CAMERA);
             if (index == -1) return;
-            closeVideoView(index);
+            if (index == 0) {//当前关闭页面在背景页面
+                //先交换,再关闭
+                int hostIndex = getViewIndexById(CurLiveInfo.getHostID(), AVView.VIDEO_SRC_TYPE_CAMERA);
+                switchVideo(index, hostIndex);
+                closeVideoView(hostIndex);
+            }else{
+                //不在主界面上
+                closeVideoView(index);
+            }
         }
     }
 
@@ -758,6 +768,8 @@ public class AVUIControl extends GLViewGroup {
         int temp = localViewIndex;
         localViewIndex = remoteViewIndex;
         remoteViewIndex = temp;
+
+        switchMapIndex(index1, index2);
     }
 
     class Position {
@@ -990,8 +1002,13 @@ public class AVUIControl extends GLViewGroup {
             if (mTargetIndex <= 0) {
                 // 显示控制层
             } else {
-//                switchVideo(0, mTargetIndex);
-                showVideoMemberInfo(mTargetIndex);
+
+                String selectedId = id_view.get(mTargetIndex);
+                mContext.sendBroadcast(new Intent(
+                        AvConstants.ACTION_SWITCH_VIDEO).putExtra(
+                        AvConstants.EXTRA_IDENTIFIER, selectedId));
+
+                switchVideo(0, mTargetIndex); //mTargetIndex 放置主屏
 
             }
             return true;
@@ -1013,12 +1030,21 @@ public class AVUIControl extends GLViewGroup {
 //        }
     }
 
-    public void showVideoMemberInfo(int indexview) {
+
+    private void switchMapIndex(int index1, int index2) {
+        String id1 = id_view.get(index1);
+        String id2 = id_view.get(index2);
+        id_view.put(index1, id2);
+        id_view.put(index2, id1);
+    }
+
+
+    public void selectIdViewToBg(int indexview) {
         String identifier = id_view.get(indexview);
-        Log.d(TAG, "showVideoMemberInfo " + identifier);
+        Log.d(TAG, "selectIdViewToBg " + identifier);
         if (identifier == null) return;
         mContext.sendBroadcast(new Intent(
-                AvConstants.ACTION_SHOW_VIDEO_MEMBER_INFO).putExtra(
+                AvConstants.ACTION_SWITCH_VIDEO).putExtra(
                 AvConstants.EXTRA_IDENTIFIER, identifier));
     }
 

@@ -95,7 +95,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private ImageView mRecordBall;
     private int thumbUp = 0;
 
-    private String selectVideoId;
+    private String backGroundId;
 
     private TextView tvMembers;
     private TextView tvAdmires;
@@ -117,7 +117,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
         initView();
         registerReceiver();
-        selectVideoId = CurLiveInfo.getHostID();
+        backGroundId = CurLiveInfo.getHostID();
         //进入房间流程
         mEnterRoomProsscessHelper.startEnterRoom();
 
@@ -230,14 +230,29 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 //                }
             }
 
-            if (action.equals(AvConstants.ACTION_SHOW_VIDEO_MEMBER_INFO)) {//点击成员
-                selectVideoId = intent.getStringExtra(AvConstants.EXTRA_IDENTIFIER);
-                if (mHostCtrView.getVisibility() == View.VISIBLE) {
-                    mHostCtrView.setVisibility(View.INVISIBLE);
-                    mVideoMemberCtrlView.setVisibility(View.VISIBLE);
-                } else {
-                    mHostCtrView.setVisibility(View.VISIBLE);
-                    mVideoMemberCtrlView.setVisibility(View.INVISIBLE);
+            if (action.equals(AvConstants.ACTION_SWITCH_VIDEO)) {//点击成员
+                String backGroundId = intent.getStringExtra(AvConstants.EXTRA_IDENTIFIER);
+
+                if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {//自己是主播
+                    if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//背景是自己
+                        mHostCtrView.setVisibility(View.VISIBLE);
+                        mVideoMemberCtrlView.setVisibility(View.INVISIBLE);
+                    } else {//背景是其他成员
+                        mHostCtrView.setVisibility(View.INVISIBLE);
+                        mVideoMemberCtrlView.setVisibility(View.VISIBLE);
+                    }
+                } else {//自己成员方式
+                    if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//背景是自己
+                        mVideoMemberCtrlView.setVisibility(View.VISIBLE);
+                        mNomalMemberCtrView.setVisibility(View.INVISIBLE);
+                    } else if (backGroundId.equals(CurLiveInfo.getHostID())) {//主播自己
+                        mVideoMemberCtrlView.setVisibility(View.INVISIBLE);
+                        mNomalMemberCtrView.setVisibility(View.VISIBLE);
+                    } else {
+                        mVideoMemberCtrlView.setVisibility(View.INVISIBLE);
+                        mNomalMemberCtrView.setVisibility(View.INVISIBLE);
+                    }
+
                 }
 
             }
@@ -254,7 +269,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         intentFilter.addAction(AvConstants.ACTION_SURFACE_CREATED);
         intentFilter.addAction(AvConstants.ACTION_HOST_ENTER);
         intentFilter.addAction(AvConstants.ACTION_CAMERA_OPEN_IN_LIVE);
-        intentFilter.addAction(AvConstants.ACTION_SHOW_VIDEO_MEMBER_INFO);
+        intentFilter.addAction(AvConstants.ACTION_SWITCH_VIDEO);
         intentFilter.addAction(AvConstants.ACTION_HOST_LEAVE);
         registerReceiver(mBroadcastReceiver, intentFilter);
 
@@ -389,7 +404,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         public void run() {
             String host = CurLiveInfo.getHostID();
             Log.i(TAG, "HeartBeatTask " + host);
-            OKhttpHelper.getInstance().sendHeartBeat(host, CurLiveInfo.getMembers(),  CurLiveInfo.getAdmires(), 0);
+            OKhttpHelper.getInstance().sendHeartBeat(host, CurLiveInfo.getMembers(), CurLiveInfo.getAdmires(), 0);
         }
     }
 
@@ -581,7 +596,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     public void refreshUI(String id) {
         //当主播选中这个人，而他主动退出时需要恢复到正常状态
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
-            if (!selectVideoId.equals(CurLiveInfo.getHostID()) && selectVideoId.equals(id)) {
+            if (!backGroundId.equals(CurLiveInfo.getHostID()) && backGroundId.equals(id)) {
                 backToNormalCtrlView();
             }
     }
@@ -652,8 +667,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 } else {
                     mLiveHelper.closeCameraAndMic();//是自己成员关闭
                 }
-                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, selectVideoId);
-                QavsdkControl.getInstance().closeMemberView(selectVideoId);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, backGroundId);
+                QavsdkControl.getInstance().closeMemberView(backGroundId);
                 backToNormalCtrlView();
                 break;
         }
@@ -661,11 +676,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     private void backToNormalCtrlView() {
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-            selectVideoId = CurLiveInfo.getHostID();
+            backGroundId = CurLiveInfo.getHostID();
             mHostCtrView.setVisibility(View.VISIBLE);
             mVideoMemberCtrlView.setVisibility(View.GONE);
         } else {
-            selectVideoId = CurLiveInfo.getHostID();
+            backGroundId = CurLiveInfo.getHostID();
             mNomalMemberCtrView.setVisibility(View.VISIBLE);
             mVideoMemberCtrlView.setVisibility(View.GONE);
         }
@@ -701,9 +716,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         agreeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mVideoMemberCtrlView.setVisibility(View.VISIBLE);
-                mNomalMemberCtrView.setVisibility(View.INVISIBLE);
-                selectVideoId = MySelfInfo.getInstance().getId();
+//                mVideoMemberCtrlView.setVisibility(View.VISIBLE);
+//                mNomalMemberCtrView.setVisibility(View.INVISIBLE);
+                backGroundId = MySelfInfo.getInstance().getId();
                 mLiveHelper.openCameraAndMic();
                 mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, "", CurLiveInfo.getHostID());
                 inviteDg.dismiss();
