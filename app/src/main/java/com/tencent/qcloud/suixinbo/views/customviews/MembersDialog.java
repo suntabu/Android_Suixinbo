@@ -22,6 +22,7 @@ public class MembersDialog extends Dialog implements MembersDialogView {
     private LiveHelper mLiveHelper;
     private ListView mMemberList;
     private MembersAdapter mMembersAdapter;
+    private ArrayList<MemberInfo> data = new ArrayList<MemberInfo>();
 
     public MembersDialog(Context context, int theme) {
         super(context, theme);
@@ -29,11 +30,11 @@ public class MembersDialog extends Dialog implements MembersDialogView {
         mLiveHelper = new LiveHelper(mContext, this);
         setContentView(R.layout.members_layout);
         mMemberList = (ListView) findViewById(R.id.member_list);
+        mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, data);
+        mMemberList.setAdapter(mMembersAdapter);
         Window window = getWindow();
         window.setGravity(Gravity.TOP);
         setCanceledOnTouchOutside(true);
-//        mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, members);
-//        mMemberList.setAdapter(mMembersAdapter);
     }
 
     @Override
@@ -56,8 +57,10 @@ public class MembersDialog extends Dialog implements MembersDialogView {
     @Override
     public void showMembersList(ArrayList<MemberInfo> data) {
         if (data == null) return;
-        mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, data);
-        mMemberList.setAdapter(mMembersAdapter);
+        mMembersAdapter.clear();
+        for (int i = 0; i < data.size(); i++) {
+            mMembersAdapter.insert(data.get(i), i);
+        }
         mMembersAdapter.notifyDataSetChanged();
     }
 
