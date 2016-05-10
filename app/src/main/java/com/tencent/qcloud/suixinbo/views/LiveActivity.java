@@ -86,6 +86,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private HeartBeatTask mHeartBeatTask;//心跳
     private ImageView mHeadIcon;
     private TextView mHostNameTv;
+    private LinearLayout mHostLayout;
+    private String mHostIconUrl = null;        // 主播头像url
 
     private long mSecond = 0;
     private String formatTime;
@@ -291,15 +293,15 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private SeekBar mBeautyBar;
     private int mBeautyRate;
 
-    private void showHeadIcon(String avatar) {
+    private void showHeadIcon(ImageView view, String avatar) {
         if (TextUtils.isEmpty(avatar)) {
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.default_avatar);
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
-            mHeadIcon.setImageBitmap(cirBitMap);
+            view.setImageBitmap(cirBitMap);
         } else {
             Log.d(TAG, "load icon: " + avatar);
             RequestManager req = Glide.with(this);
-            req.load(avatar).transform(new GlideCircleTransform(this)).into(mHeadIcon);
+            req.load(avatar).transform(new GlideCircleTransform(this)).into(view);
         }
     }
 
@@ -307,7 +309,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 初始化界面
      */
     private void initView() {
-
         mHostCtrView = (LinearLayout) findViewById(R.id.host_bottom_layout);
         mNomalMemberCtrView = (LinearLayout) findViewById(R.id.member_bottom_layout);
         mVideoMemberCtrlView = (LinearLayout) findViewById(R.id.video_member_bottom_layout);
@@ -336,7 +337,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             BtnBeauty = (TextView) findViewById(R.id.beauty_btn);
             BtnMic = (TextView) findViewById(R.id.mic_btn);
 
-
             BtnScreen = (TextView) findViewById(R.id.fullscreen_btn);
             mVideoChat.setVisibility(View.VISIBLE);
             Btnflash.setOnClickListener(this);
@@ -346,9 +346,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             BtnScreen.setOnClickListener(this);
             mVideoChat.setOnClickListener(this);
 
+
             mMemberDg = new MembersDialog(this, R.style.dialog);
             startRecordAnimation();
-            showHeadIcon(MySelfInfo.getInstance().getAvatar());
+            showHeadIcon(mHeadIcon, MySelfInfo.getInstance().getAvatar());
             mBeautySettings = (LinearLayout) findViewById(R.id.qav_beauty_setting);
             mBeautyConfirm = (TextView) findViewById(R.id.qav_beauty_setting_finish);
             mBeautyConfirm.setOnClickListener(this);
@@ -393,8 +394,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             List<String> ids = new ArrayList<>();
             ids.add(CurLiveInfo.getHostID());
             mUserInfoHelper.getUsersInfo(ids);
-            showHeadIcon(null);
+            showHeadIcon(mHeadIcon, mHostIconUrl);
             mHostNameTv.setText(CurLiveInfo.getHostID());
+
+            mHostLayout = (LinearLayout)findViewById(R.id.head_up_layout);
+            mHostLayout.setOnClickListener(this);
         }
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
         BtnNormal.setOnClickListener(this);
@@ -639,6 +643,27 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             }
     }
 
+    private void showHostDetail(){
+        Dialog hostDlg = new Dialog(this, R.style.host_info_dlg);
+        hostDlg.setContentView(R.layout.host_info_layout);
+
+        WindowManager windowManager = getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        Window dlgwin = hostDlg.getWindow();
+        WindowManager.LayoutParams lp = dlgwin.getAttributes();
+        dlgwin.setGravity(Gravity.TOP);
+        lp.width = (int)(display.getWidth()); //设置宽度
+
+        hostDlg.getWindow().setAttributes(lp);
+        hostDlg.show();
+
+        TextView tvHost = (TextView) hostDlg.findViewById(R.id.tv_host_name);
+        tvHost.setText(CurLiveInfo.getHostID());
+        ImageView ivHostIcon = (ImageView)hostDlg.findViewById(R.id.iv_host_icon);
+        showHeadIcon(ivHostIcon, mHostIconUrl);
+        TextView tvLbs = (TextView)hostDlg.findViewById(R.id.tv_host_lbs);
+        tvLbs.setText(UIUtils.getLimitString(CurLiveInfo.getAddress(), 6));
+    }
 
     @Override
     public void onClick(View view) {
@@ -674,7 +699,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                     BtnMic.setBackgroundResource(R.drawable.icon_mic_open);
                     mLiveHelper.openMic();
                 }
-
+                break;
+            case R.id.head_up_layout:
+                showHostDetail();
                 break;
             case R.id.fullscreen_btn:
                 mFullControllerUi.setVisibility(View.INVISIBLE);
@@ -874,7 +901,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             for (TIMUserProfile user : profiles) {
                 if (user.getIdentifier().equals(CurLiveInfo.getHostID())) {
                     mHostNameTv.setText(TextUtils.isEmpty(user.getNickName()) ? CurLiveInfo.getHostID() : user.getNickName());
-                    showHeadIcon(user.getFaceUrl());
+                    mHostIconUrl = user.getFaceUrl();
+                    showHeadIcon(mHeadIcon, mHostIconUrl);
                 } else {
                     Log.w(TAG, "updateUserInfo->uid not match: " + user.getIdentifier() + "/" + CurLiveInfo.getHostID());
                 }
