@@ -69,5 +69,9 @@
     <string name="text_live">正在直播>></string>
     <string name="text_live_add_title_tips">给你的直播设置一个满意的封面</string>
 
-
+    <string name="host_sign">我的签名就是把我的世界直播给你们</string>
+    <string name="host_phone">iPhone6S Plus</string>
+    <string name="host_funs">粉丝数:9090</string>
+    <string name="host_follow">关注:7089</string>
+    <string name="host_admire">赞:11.3w</string>
 </resources>
