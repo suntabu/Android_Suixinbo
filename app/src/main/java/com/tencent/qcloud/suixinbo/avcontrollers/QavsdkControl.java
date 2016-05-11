@@ -4,13 +4,12 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
+import com.tencent.av.sdk.AVAudioCtrl;
 import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVRoom;
-import com.tencent.av.sdk.AVRoomMulti;
+import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
-import com.tencent.qcloud.suixinbo.model.AvMemberInfo;
-
-import java.util.ArrayList;
+import com.tencent.qcloud.suixinbo.utils.Constants;
 
 /**
  * AVSDK 总控制器类
@@ -18,10 +17,10 @@ import java.util.ArrayList;
 public class QavsdkControl {
     private static final String TAG = "QavsdkControl";
     private AVContextControl mAVContextControl = null;
-    private AVRoomControl mAVRoomControl = null;
+    //    private AVRoomControl mAVRoomControl = null;
     private AVUIControl mAVUIControl = null;
-    private AVVideoControl mAVVideoControl = null;
-    private AVAudioControl mAVAudioControl = null;
+    //    private AVVideoControl mAVVideoControl = null;
+//    private AVAudioControl mAVAudioControl = null;
     /* 持有私有静态实例，防止被引用，此处赋值为null，目的是实现延迟加载 */
     private static QavsdkControl instance = null;
     private static Context mContext;
@@ -41,9 +40,9 @@ public class QavsdkControl {
 
     private QavsdkControl(Context context) {
         mAVContextControl = new AVContextControl(context);
-        mAVRoomControl = new AVRoomControl(context);
-        mAVVideoControl = new AVVideoControl(context);
-        mAVAudioControl = new AVAudioControl(context);
+//        mAVRoomControl = new AVRoomControl(context);
+//        mAVVideoControl = new AVVideoControl(context);
+//        mAVAudioControl = new AVAudioControl(context);
         Log.d(TAG, "WL_DEBUG QavsdkControl");
     }
 
@@ -53,7 +52,7 @@ public class QavsdkControl {
      */
     public int startContext() {
         if (mAVContextControl == null)
-            return AvConstants.DEMO_ERROR_NULL_POINTER;
+            return Constants.DEMO_ERROR_NULL_POINTER;
         return mAVContextControl.startContext();
     }
 
@@ -93,51 +92,51 @@ public class QavsdkControl {
         return mAVContextControl.getSelfIdentifier();
     }
 
-    /**
-     * 创建房间
-     *
-     * @param relationId 讨论组号
-     */
-    public void enterRoom(int relationId, String roomRole, boolean isAutoCreateSDKRoom) {
-        if (mAVRoomControl != null) {
-            mAVRoomControl.enterRoom(relationId, roomRole, isAutoCreateSDKRoom);
-        }
-    }
-
-    public void setAudioCat(int audioCat) {
-        if (mAVRoomControl != null) {
-            mAVRoomControl.setAudioCat(audioCat);
-        }
-    }
-
-    /**
-     * 关闭房间
-     */
-    public int exitRoom() {
-        if (mAVRoomControl == null)
-            return AvConstants.DEMO_ERROR_NULL_POINTER;
-        return mAVRoomControl.exitRoom();
-    }
-
-    /**
-     * 获取成员列表
-     *
-     * @return 成员列表
-     */
-    public ArrayList<AvMemberInfo> getMemberList() {
-        if (mAVRoomControl == null) {
-            return null;
-        }
-        return mAVRoomControl.getMemberList();
-    }
-
-
-    public ArrayList<AvMemberInfo> getScreenMemberList() {
-        if (mAVRoomControl == null) {
-            return null;
-        }
-        return mAVRoomControl.getScreenMemberList();
-    }
+//    /**
+//     * 创建房间
+//     *
+//     * @param relationId 讨论组号
+//     */
+//    public void enterRoom(int relationId, String roomRole, boolean isAutoCreateSDKRoom) {
+//        if (mAVRoomControl != null) {
+//            mAVRoomControl.enterRoom(relationId, roomRole, isAutoCreateSDKRoom);
+//        }
+//    }
+//
+//    public void setAudioCat(int audioCat) {
+//        if (mAVRoomControl != null) {
+//            mAVRoomControl.setAudioCat(audioCat);
+//        }
+//    }
+//
+//    /**
+//     * 关闭房间
+//     */
+//    public int exitRoom() {
+//        if (mAVRoomControl == null)
+//            return AvConstants.DEMO_ERROR_NULL_POINTER;
+//        return mAVRoomControl.exitRoom();
+//    }
+//
+//    /**
+//     * 获取成员列表
+//     *
+//     * @return 成员列表
+//     */
+//    public ArrayList<AvMemberInfo> getMemberList() {
+//        if (mAVRoomControl == null) {
+//            return null;
+//        }
+//        return mAVRoomControl.getMemberList();
+//    }
+//
+//
+//    public ArrayList<AvMemberInfo> getScreenMemberList() {
+//        if (mAVRoomControl == null) {
+//            return null;
+//        }
+//        return mAVRoomControl.getScreenMemberList();
+//    }
 
     public AVRoom getRoom() {
         AVContext avContext = getAVContext();
@@ -167,29 +166,29 @@ public class QavsdkControl {
         }
     }
 
-    public void setCameraPreviewChangeCallback() {
-        mAVVideoControl.setCameraPreviewChangeCallback();
-    }
-
-
-    public boolean setIsInStopContext(boolean isInStopContext) {
-        if (mAVContextControl == null)
-            return false;
-
-        return mAVContextControl.setIsInStopContext(isInStopContext);
-    }
-
-    public boolean getIsInEnterRoom() {
-        if (mAVRoomControl == null)
-            return false;
-        return mAVRoomControl.getIsInEnterRoom();
-    }
-
-    public boolean getIsInCloseRoom() {
-        if (mAVRoomControl == null)
-            return false;
-        return mAVRoomControl.getIsInCloseRoom();
-    }
+//    public void setCameraPreviewChangeCallback() {
+//        mAVVideoControl.setCameraPreviewChangeCallback();
+//    }
+//
+//
+//    public boolean setIsInStopContext(boolean isInStopContext) {
+//        if (mAVContextControl == null)
+//            return false;
+//
+//        return mAVContextControl.setIsInStopContext(isInStopContext);
+//    }
+//
+//    public boolean getIsInEnterRoom() {
+//        if (mAVRoomControl == null)
+//            return false;
+//        return mAVRoomControl.getIsInEnterRoom();
+//    }
+//
+//    public boolean getIsInCloseRoom() {
+//        if (mAVRoomControl == null)
+//            return false;
+//        return mAVRoomControl.getIsInCloseRoom();
+//    }
 
     public AVContext getAVContext() {
         if (mAVContextControl == null)
@@ -213,8 +212,8 @@ public class QavsdkControl {
      */
     public void initAvUILayer(Context context, View view) {
         mAVUIControl = new AVUIControl(context, view);
-        mAVVideoControl.initAVVideoSettings();
-        mAVAudioControl.initAVAudioSettings();
+//        mAVVideoControl.initAVVideoSettings();
+//        mAVAudioControl.initAVAudioSettings();
 //		mAVEndpointControl.initMembersUI((MultiVideoMembersControlUI) contentView.findViewById(R.id.qav_gaudio_gridlayout));
     }
 
@@ -258,96 +257,96 @@ public class QavsdkControl {
         }
     }
 
-    public int toggleEnableCamera() {
-        return mAVVideoControl.toggleEnableCamera();
-    }
-
-    public int toggleSwitchCamera() {
-        return mAVVideoControl.toggleSwitchCamera();
-    }
-
-    public boolean enableUserRender(boolean isEnable) {
-        if (isEnable) {
-            if (mAVVideoControl == null) {
-                return false;
-            }
-            return mAVVideoControl.StartRecordingVideo();
-        } else {
-            if (null == mAVUIControl) {
-                return false;
-            }
-            mAVUIControl.enableDefaultRender();
-        }
-
-        return true;
-    }
-
-    public boolean enableLocalPreProcess(boolean isEnable) {
-        if (mAVVideoControl == null)
-            return false;
-
-        return mAVVideoControl.enableLocalPreProcess(isEnable);
-    }
-
-    public void setIsOpenBackCameraFirst(boolean _isOpenBackCameraFirst) {
-        mAVVideoControl.setIsOpenBackCameraFirst(_isOpenBackCameraFirst);
-    }
-
-    public boolean getIsInOnOffCamera() {
-        return mAVVideoControl.getIsInOnOffCamera();
-    }
-
-    public boolean getIsInOnOffExternalCapture() {
-        return mAVVideoControl.getIsInOnOffExternalCapture();
-    }
-
-
-    public boolean getIsInSwitchCamera() {
-        return mAVVideoControl.getIsInSwitchCamera();
-    }
-
-    public void setIsInSwitchCamera(boolean isInSwitchCamera) {
-        mAVVideoControl.setIsInSwitchCamera(isInSwitchCamera);
-    }
-
-    public boolean getIsEnableCamera() {
-        return mAVVideoControl.getIsEnableCamera();
-    }
-
-    public void setIsInOnOffCamera(boolean isInOnOffCamera) {
-        mAVVideoControl.setIsInOnOffCamera(isInOnOffCamera);
-    }
-
-    public void setIsOnOffExternalCapture(boolean isOnOffExternalCapture) {
-        mAVVideoControl.setIsOnOffExternalCapture(isOnOffExternalCapture);
-    }
-
-    public boolean getIsFrontCamera() {
-        return mAVVideoControl.getIsFrontCamera();
-    }
-
-    public boolean getIsEnableExternalCapture() {
-        return mAVVideoControl.getIsEnableExternalCapture();
-    }
-
-    public void onMemberChange() {
-        if (mAVUIControl != null) {
-            mAVUIControl.onMemberChange();
-        }
-    }
-
-    public boolean getHandfreeChecked() {
-        return mAVAudioControl.getHandfreeChecked();
-    }
-
-
-    public AVVideoControl getAVVideoControl() {
-        return mAVVideoControl;
-    }
-
-    public AVAudioControl getAVAudioControl() {
-        return mAVAudioControl;
-    }
+//    public int toggleEnableCamera() {
+//        return mAVVideoControl.toggleEnableCamera();
+//    }
+//
+//    public int toggleSwitchCamera() {
+//        return mAVVideoControl.toggleSwitchCamera();
+//    }
+//
+//    public boolean enableUserRender(boolean isEnable) {
+//        if (isEnable) {
+//            if (mAVVideoControl == null) {
+//                return false;
+//            }
+//            return mAVVideoControl.StartRecordingVideo();
+//        } else {
+//            if (null == mAVUIControl) {
+//                return false;
+//            }
+//            mAVUIControl.enableDefaultRender();
+//        }
+//
+//        return true;
+//    }
+//
+//    public boolean enableLocalPreProcess(boolean isEnable) {
+//        if (mAVVideoControl == null)
+//            return false;
+//
+//        return mAVVideoControl.enableLocalPreProcess(isEnable);
+//    }
+//
+//    public void setIsOpenBackCameraFirst(boolean _isOpenBackCameraFirst) {
+//        mAVVideoControl.setIsOpenBackCameraFirst(_isOpenBackCameraFirst);
+//    }
+//
+//    public boolean getIsInOnOffCamera() {
+//        return mAVVideoControl.getIsInOnOffCamera();
+//    }
+//
+//    public boolean getIsInOnOffExternalCapture() {
+//        return mAVVideoControl.getIsInOnOffExternalCapture();
+//    }
+//
+//
+//    public boolean getIsInSwitchCamera() {
+//        return mAVVideoControl.getIsInSwitchCamera();
+//    }
+//
+//    public void setIsInSwitchCamera(boolean isInSwitchCamera) {
+//        mAVVideoControl.setIsInSwitchCamera(isInSwitchCamera);
+//    }
+//
+//    public boolean getIsEnableCamera() {
+//        return mAVVideoControl.getIsEnableCamera();
+//    }
+//
+//    public void setIsInOnOffCamera(boolean isInOnOffCamera) {
+//        mAVVideoControl.setIsInOnOffCamera(isInOnOffCamera);
+//    }
+//
+//    public void setIsOnOffExternalCapture(boolean isOnOffExternalCapture) {
+//        mAVVideoControl.setIsOnOffExternalCapture(isOnOffExternalCapture);
+//    }
+//
+//    public boolean getIsFrontCamera() {
+//        return mAVVideoControl.getIsFrontCamera();
+//    }
+//
+//    public boolean getIsEnableExternalCapture() {
+//        return mAVVideoControl.getIsEnableExternalCapture();
+//    }
+//
+//    public void onMemberChange() {
+//        if (mAVUIControl != null) {
+//            mAVUIControl.onMemberChange();
+//        }
+//    }
+//
+//    public boolean getHandfreeChecked() {
+//        return mAVAudioControl.getHandfreeChecked();
+//    }
+//
+//
+//    public AVVideoControl getAVVideoControl() {
+//        return mAVVideoControl;
+//    }
+//
+//    public AVAudioControl getAVAudioControl() {
+//        return mAVAudioControl;
+//    }
 
     public void setRotation(int rotation) {
         if (mAVUIControl != null) {
@@ -363,30 +362,31 @@ public class QavsdkControl {
         }
     }
 
-    public void setCreateRoomStatus(boolean status) {
-        if (mAVRoomControl != null) {
-            mAVRoomControl.setCreateRoomStatus(status);
-        }
-    }
-
-    public void setCloseRoomStatus(boolean status) {
-        if (mAVRoomControl != null) {
-            mAVRoomControl.setCloseRoomStatus(status);
-        }
-    }
-
-    public int enableExternalCapture(boolean isEnable) {
-        return mAVVideoControl.enableExternalCapture(isEnable);
-    }
-
-    public void setNetType(int netType) {
-        if (mAVRoomControl == null) return;
-        mAVRoomControl.setNetType(netType);
-    }
-
-    public boolean changeAuthority(long auth_bits, byte[] auth_buffer, AVRoomMulti.ChangeAuthorityCallback callback) {
-        return mAVRoomControl.changeAuthority(auth_bits, auth_buffer, callback);
-    }
+//
+//    public void setCreateRoomStatus(boolean status) {
+//        if (mAVRoomControl != null) {
+//            mAVRoomControl.setCreateRoomStatus(status);
+//        }
+//    }
+//
+//    public void setCloseRoomStatus(boolean status) {
+//        if (mAVRoomControl != null) {
+//            mAVRoomControl.setCloseRoomStatus(status);
+//        }
+//    }
+//
+//    public int enableExternalCapture(boolean isEnable) {
+//        return mAVVideoControl.enableExternalCapture(isEnable);
+//    }
+//
+//    public void setNetType(int netType) {
+//        if (mAVRoomControl == null) return;
+//        mAVRoomControl.setNetType(netType);
+//    }
+//
+//    public boolean changeAuthority(long auth_bits, byte[] auth_buffer, AVRoomMulti.ChangeAuthorityCallback callback) {
+//        return mAVRoomControl.changeAuthority(auth_bits, auth_buffer, callback);
+//    }
 
     public void closeMemberView(String id) {
         if (null != mAVUIControl) {
@@ -401,5 +401,24 @@ public class QavsdkControl {
         }
         return false;
     }
+
+    public String getAudioQualityTips() {
+        AVAudioCtrl avAudioCtrl;
+        if (QavsdkControl.getInstance() != null) {
+            avAudioCtrl = getAVContext().getAudioCtrl();
+            return avAudioCtrl.getQualityTips();
+        }
+
+        return "";
+    }
+
+    public String getVideoQualityTips() {
+        if (QavsdkControl.getInstance() != null) {
+            AVVideoCtrl avVideoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
+            return avVideoCtrl.getQualityTips();
+        }
+        return "";
+    }
+
 
 }

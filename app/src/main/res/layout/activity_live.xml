@@ -108,6 +108,13 @@
         android:layout_marginBottom="20dp" />
 
 
+    <include
+        android:id="@+id/invite_views"
+        layout="@layout/invite_views"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent" />
+
+
     <TextView
         android:id="@+id/normal_btn"
         android:layout_width="wrap_content"
