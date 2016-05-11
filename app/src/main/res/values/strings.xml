@@ -15,6 +15,7 @@
     <string name="btn_cancel">取消</string>
     <string name="btn_refuse">拒绝</string>
     <string name="btn_agree">同意</string>
+    <string name="btn_sure">确定</string>
 
 
     <string name="error_code_prefix">错误码：</string>
@@ -36,6 +37,7 @@
 
     <!-- profile fragment-->
     <string name="btn_login_out">退出登录</string>
+    <string name="tip_force_offline">您的帐号已在其它地方登陆</string>
 
 
     <!-- fragment publish -->
@@ -68,6 +70,7 @@
     <string name="text_live_share">同步到</string>
     <string name="text_live">正在直播>></string>
     <string name="text_live_add_title_tips">给你的直播设置一个满意的封面</string>
+    <string name="text_live_admire_limit">点赞过于频繁</string>
 
     <string name="host_sign">我的签名就是把我的世界直播给你们</string>
     <string name="host_phone">iPhone6S Plus</string>

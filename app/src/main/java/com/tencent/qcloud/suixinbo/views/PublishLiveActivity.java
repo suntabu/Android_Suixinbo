@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
@@ -73,8 +74,15 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         initPhotoDialog();
         // 提前更新sig
         mPublishLivePresenter.updateSig();
+
+        QavsdkApplication.getInstance().addActivity(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        QavsdkApplication.getInstance().removeActivity(this);
+        super.onDestroy();
+    }
 
     @Override
     public void onClick(View v) {

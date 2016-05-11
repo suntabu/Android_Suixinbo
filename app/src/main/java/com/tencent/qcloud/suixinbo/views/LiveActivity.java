@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.tencent.TIMUserProfile;
 import com.tencent.av.sdk.AVView;
+import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.ChatMsgListAdapter;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
@@ -96,6 +97,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private ObjectAnimator mObjAnim;
     private ImageView mRecordBall;
     private int thumbUp = 0;
+    private long admireTime = 0;
 
     private String backGroundId;
 
@@ -125,6 +127,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
 //        QavsdkControl.getInstance().setCameraPreviewChangeCallback();
         mVideoTimer = new Timer(true);
+
+        QavsdkApplication.getInstance().addActivity(this);
     }
 
     private static class MyHandler extends Handler {
@@ -469,6 +473,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         CurLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
         QavsdkControl.getInstance().onDestroy();
+
+        QavsdkApplication.getInstance().removeActivity(this);
     }
 
 
@@ -677,6 +683,19 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         tvLbs.setText(UIUtils.getLimitString(CurLiveInfo.getAddress(), 6));
     }
 
+    private boolean checkInterval(){
+        if (0 == admireTime){
+            admireTime = System.currentTimeMillis();
+            return true;
+        }
+        long newTime = System.currentTimeMillis();
+        if (newTime >= admireTime+1000){
+            admireTime = newTime;
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -688,10 +707,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 break;
             case R.id.member_send_good:
                 // 添加飘星动画
-                mHeartLayout.addFavor();
-                mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", CurLiveInfo.getHostID());
-                CurLiveInfo.setAdmires(CurLiveInfo.getAdmires() + 1);
-                tvAdmires.setText("" + CurLiveInfo.getAdmires());
+                if (checkInterval()) {
+                    mHeartLayout.addFavor();
+                    mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", CurLiveInfo.getHostID());
+                    CurLiveInfo.setAdmires(CurLiveInfo.getAdmires() + 1);
+                    tvAdmires.setText("" + CurLiveInfo.getAdmires());
+                }else{
+                    Toast.makeText(this, getString(R.string.text_live_admire_limit), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.flash_btn:
                 if (mLiveHelper.isFrontCamera() == true) {
