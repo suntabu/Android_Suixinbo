@@ -388,6 +388,14 @@ public class QavsdkControl {
 //        return mAVRoomControl.changeAuthority(auth_bits, auth_buffer, callback);
 //    }
 
+
+    public int getAvailableViewIndex(int start){
+        if (null != mAVUIControl) {
+            return mAVUIControl.getIdleViewIndex(start);
+        }
+        return -1;
+    }
+
     public void closeMemberView(String id) {
         if (null != mAVUIControl) {
             mAVUIControl.closeMemberVideoView(id);

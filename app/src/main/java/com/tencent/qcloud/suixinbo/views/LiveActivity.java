@@ -99,6 +99,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private int thumbUp = 0;
     private long admireTime = 0;
 
+
     private String backGroundId;
 
     private TextView tvMembers;
@@ -237,7 +238,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             }
 
             if (action.equals(Constants.ACTION_SWITCH_VIDEO)) {//点击成员
-                String backGroundId = intent.getStringExtra(Constants.EXTRA_IDENTIFIER);
+                backGroundId = intent.getStringExtra(Constants.EXTRA_IDENTIFIER);
 
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {//自己是主播
                     if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//背景是自己
@@ -290,6 +291,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     private View avView;
     private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat, BtnCtrlVideo, BtnCtrlMic, BtnHungup, mBeautyConfirm;
+    private TextView inviteView1, inviteView2, inviteView3;
     private ListView mListViewMsgItems;
     private LinearLayout mHostCtrView, mNomalMemberCtrView, mVideoMemberCtrlView, mBeautySettings;
     private FrameLayout mFullControllerUi, mBackgound;
@@ -348,9 +350,12 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             BtnMic.setOnClickListener(this);
             BtnScreen.setOnClickListener(this);
             mVideoChat.setOnClickListener(this);
+            inviteView1 = (TextView) findViewById(R.id.invite_view1);
+            inviteView2 = (TextView) findViewById(R.id.invite_view2);
+            inviteView3 = (TextView) findViewById(R.id.invite_view3);
 
 
-            mMemberDg = new MembersDialog(this, R.style.dialog);
+            mMemberDg = new MembersDialog(this, R.style.dialog, this);
             startRecordAnimation();
             showHeadIcon(mHeadIcon, MySelfInfo.getInstance().getAvatar());
             mBeautySettings = (LinearLayout) findViewById(R.id.qav_beauty_setting);
@@ -467,6 +472,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mVideoTimer.cancel();
             mVideoTimer = null;
         }
+        inviteViewCount = 0;
         thumbUp = 0;
         CurLiveInfo.setMembers(0);
         CurLiveInfo.setAdmires(0);
@@ -661,6 +667,49 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             }
     }
 
+
+    private int inviteViewCount = 0;
+
+
+    @Override
+    public void showInviteView(String id) {
+        int index = QavsdkControl.getInstance().getAvailableViewIndex(1);
+        index = index + inviteViewCount;
+        switch (index) {
+            case 1:
+                inviteView1.setText(id);
+                inviteView1.setVisibility(View.VISIBLE);
+                inviteView1.setTag(id);
+                break;
+            case 2:
+                inviteView2.setText(id);
+                inviteView2.setVisibility(View.VISIBLE);
+                inviteView2.setTag(id);
+                break;
+            case 3:
+                inviteView3.setText(id);
+                inviteView3.setVisibility(View.VISIBLE);
+                inviteView3.setTag(id);
+                break;
+            default:
+                break;
+        }
+        inviteViewCount++;
+    }
+
+    @Override
+    public void cancelInviteView(String id) {
+        if ((inviteView1 != null) && (inviteView1.getTag().equals(id))) {
+            inviteView1.setVisibility(View.INVISIBLE);
+        } else if ((inviteView2 != null) && (inviteView2.getTag().equals(id))) {
+            inviteView2.setVisibility(View.INVISIBLE);
+        } else if ((inviteView3 != null) && (inviteView3.getTag().equals(id))) {
+            inviteView3.setVisibility(View.INVISIBLE);
+        }
+        inviteViewCount--;
+    }
+
+
     private void showHostDetail() {
         Dialog hostDlg = new Dialog(this, R.style.host_info_dlg);
         hostDlg.setContentView(R.layout.host_info_layout);
@@ -683,13 +732,13 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         tvLbs.setText(UIUtils.getLimitString(CurLiveInfo.getAddress(), 6));
     }
 
-    private boolean checkInterval(){
-        if (0 == admireTime){
+    private boolean checkInterval() {
+        if (0 == admireTime) {
             admireTime = System.currentTimeMillis();
             return true;
         }
         long newTime = System.currentTimeMillis();
-        if (newTime >= admireTime+1000){
+        if (newTime >= admireTime + 1000) {
             admireTime = newTime;
             return true;
         }
@@ -712,7 +761,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                     mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", CurLiveInfo.getHostID());
                     CurLiveInfo.setAdmires(CurLiveInfo.getAdmires() + 1);
                     tvAdmires.setText("" + CurLiveInfo.getAdmires());
-                }else{
+                } else {
                     Toast.makeText(this, getString(R.string.text_live_admire_limit), Toast.LENGTH_SHORT).show();
                 }
                 break;

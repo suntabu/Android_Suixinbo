@@ -402,8 +402,10 @@ public class LiveHelper extends Presenter {
                     mLiveView.showInviteDialog();
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
+                    mLiveView.cancelInviteView(sendId);
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
+                    mLiveView.cancelInviteView(sendId);
                     Toast.makeText(mContext, sendId + " refuse !", Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.AVIMCMD_Praise:
@@ -432,6 +434,9 @@ public class LiveHelper extends Presenter {
             // 异常处理代码
         }
     }
+
+
+
 
 
     public boolean isFrontCamera() {
@@ -588,7 +593,7 @@ public class LiveHelper extends Presenter {
     }
 
 
-    public void sendC2CMessage(int cmd, String Param, String sendId) {
+    public void sendC2CMessage(final int cmd, String Param, final String sendId) {
         JSONObject inviteCmd = new JSONObject();
         try {
             inviteCmd.put(Constants.CMD_KEY, cmd);
@@ -611,6 +616,9 @@ public class LiveHelper extends Presenter {
 
             @Override
             public void onSuccess(TIMMessage timMessage) {
+                if (cmd == Constants.AVIMCMD_MUlTI_HOST_INVITE) {
+                   mLiveView.showInviteView(sendId);
+                }
                 Log.i(TAG, "send praise succ !");
             }
         });

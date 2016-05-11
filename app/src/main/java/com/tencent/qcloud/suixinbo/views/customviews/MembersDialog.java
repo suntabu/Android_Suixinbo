@@ -10,6 +10,7 @@ import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.MembersAdapter;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
 import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.MembersDialogView;
 
 import java.util.ArrayList;
@@ -24,13 +25,13 @@ public class MembersDialog extends Dialog implements MembersDialogView {
     private MembersAdapter mMembersAdapter;
     private ArrayList<MemberInfo> data = new ArrayList<MemberInfo>();
 
-    public MembersDialog(Context context, int theme) {
+    public MembersDialog(Context context, int theme, LiveView view) {
         super(context, theme);
         mContext = context;
         mLiveHelper = new LiveHelper(mContext, this);
         setContentView(R.layout.members_layout);
         mMemberList = (ListView) findViewById(R.id.member_list);
-        mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, data);
+        mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, data, view);
         mMemberList.setAdapter(mMembersAdapter);
         Window window = getWindow();
         window.setGravity(Gravity.TOP);
