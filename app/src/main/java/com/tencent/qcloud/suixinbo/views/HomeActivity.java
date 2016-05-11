@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 
 import com.tencent.TIMUserProfile;
+import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
@@ -67,6 +68,8 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
             infoHelper = new ProfileInfoHelper(this);
             infoHelper.getMyProfile();
         }
+
+        QavsdkApplication.getInstance().addActivity(this);
     }
 
 
@@ -77,10 +80,10 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
         return view;
     }
 
-
     @Override
     protected void onDestroy() {
         QavsdkControl.getInstance().stopContext();
+        QavsdkApplication.getInstance().removeActivity(this);
         super.onDestroy();
     }
 

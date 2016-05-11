@@ -35,6 +35,14 @@ public class RegisterActivity extends Activity implements View.OnClickListener ,
         mBtnRegister.setOnClickListener(this);
         mMyApplication =(QavsdkApplication)getApplication();
         mLoginHeloper = new LoginHeloper(this,this);
+
+        QavsdkApplication.getInstance().addActivity(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        QavsdkApplication.getInstance().removeActivity(this);
+        super.onDestroy();
     }
 
     @Override

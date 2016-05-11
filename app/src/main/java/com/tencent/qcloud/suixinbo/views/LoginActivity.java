@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LoginHeloper;
@@ -39,9 +40,14 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
             mLoginHeloper.imLogin(MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
         }
 
-
+        QavsdkApplication.getInstance().addActivity(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        QavsdkApplication.getInstance().removeActivity(this);
+        super.onDestroy();
+    }
 
     @Override
     protected void onStart() {

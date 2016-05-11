@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.tencent.TIMUserProfile;
 import com.tencent.av.sdk.AVView;
+import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.ChatMsgListAdapter;
 import com.tencent.qcloud.suixinbo.avcontrollers.AvConstants;
@@ -127,6 +128,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
 //        QavsdkControl.getInstance().setCameraPreviewChangeCallback();
         mVideoTimer = new Timer(true);
+
+        QavsdkApplication.getInstance().addActivity(this);
     }
 
     private static class MyHandler extends Handler {
@@ -471,6 +474,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         CurLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
         QavsdkControl.getInstance().onDestroy();
+
+        QavsdkApplication.getInstance().removeActivity(this);
     }
 
 
