@@ -12,6 +12,7 @@
 
     <string name="btn_take_photo">拍照</string>
     <string name="btn_pic_photo">从手机相册选择</string>
+    <string name="btn_return_home">返回首页</string>
     <string name="btn_cancel">取消</string>
     <string name="btn_refuse">拒绝</string>
     <string name="btn_agree">同意</string>
@@ -29,6 +30,11 @@
     <!-- live play -->
     <string name="send">发送</string>
     <string name="invite_dialog_tips">主播邀请您与他进行互动直播</string>
+    <string name="live_end_ask_tips">确定结束直播?</string>
+    <string name="live_end_tips">直播结束啦</string>
+    <string name="live_time_tips">直播时长</string>
+    <string name="live_members_tips">观看人数</string>
+    <string name="live_admires_tips">获赞数量</string>
 
     <!-- msgadapter -->
     <item type="id" name="tag_first"></item>

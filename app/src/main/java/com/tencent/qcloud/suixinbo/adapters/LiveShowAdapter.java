@@ -74,6 +74,8 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
             Log.d(TAG, "load cover: " + data.getCover());
             RequestManager req = Glide.with(mActivity);
             req.load(data.getCover()).into(holder.ivCover);
+        }else{
+            holder.ivCover.setImageResource(R.drawable.cover_background);
         }
 
         if (null == data.getHost() || TextUtils.isEmpty(data.getHost().getAvatar())){

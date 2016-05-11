@@ -105,6 +105,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private TextView tvMembers;
     private TextView tvAdmires;
 
+    private Dialog mDetailDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -497,9 +499,27 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 主动退出直播
      */
     private void quiteLiveByPurpose() {
-        //如果是直播，发消息
-        mLiveHelper.unInitTIMListener();
-        mEnterRoomProsscessHelper.quiteLive();
+        final Dialog dialog = new Dialog(this, R.style.dialog);
+        dialog.setContentView(R.layout.dialog_end_live);
+
+        TextView tvSure = (TextView)dialog.findViewById(R.id.btn_sure);
+        tvSure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //如果是直播，发消息
+                mLiveHelper.unInitTIMListener();
+                mEnterRoomProsscessHelper.quiteLive();
+                dialog.dismiss();
+            }
+        });
+        TextView tvCancel = (TextView)dialog.findViewById(R.id.btn_cancel);
+        tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+            }
+        });
+        dialog.show();
     }
 
     /**
@@ -541,7 +561,21 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
 //        Toast.makeText(LiveActivity.this, "" + liveinfo.getTitle()+"end", Toast.LENGTH_SHORT).show();
-        finish();
+        if (null == mDetailDialog) {
+            mDetailDialog = new Dialog(this, R.style.dialog);
+            mDetailDialog.setContentView(R.layout.dialog_live_detail);
+            mDetailDialog.setCancelable(false);
+
+            TextView tvCancel = (TextView) mDetailDialog.findViewById(R.id.btn_cancel);
+            tvCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mDetailDialog.dismiss();
+                    finish();
+                }
+            });
+            mDetailDialog.show();
+        }
     }
 
     /**
