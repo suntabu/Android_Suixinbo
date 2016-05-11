@@ -396,7 +396,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             showHeadIcon(mHeadIcon, mHostIconUrl);
             mHostNameTv.setText(CurLiveInfo.getHostID());
 
-            mHostLayout = (LinearLayout)findViewById(R.id.head_up_layout);
+            mHostLayout = (LinearLayout) findViewById(R.id.head_up_layout);
             mHostLayout.setOnClickListener(this);
         }
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
@@ -564,6 +564,19 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         }
     }
 
+    @Override
+    public void alreadyInLive(String[] list) {
+        for (String id : list) {
+            if (id.equals(MySelfInfo.getInstance().getId())) {
+                QavsdkControl.getInstance().setSelfId(MySelfInfo.getInstance().getId());
+                QavsdkControl.getInstance().setLocalHasVideo(true, MySelfInfo.getInstance().getId());
+            } else {
+                QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_CAMERA);
+            }
+        }
+
+    }
+
     /**
      * 红点动画
      */
@@ -615,7 +628,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void showInviteDialog() {
         if (inviteDg.isShowing() != true) {
-            inviteDg.isShowing();
+            inviteDg.show();
         }
     }
 
@@ -642,7 +655,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             }
     }
 
-    private void showHostDetail(){
+    private void showHostDetail() {
         Dialog hostDlg = new Dialog(this, R.style.host_info_dlg);
         hostDlg.setContentView(R.layout.host_info_layout);
 
@@ -651,16 +664,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         Window dlgwin = hostDlg.getWindow();
         WindowManager.LayoutParams lp = dlgwin.getAttributes();
         dlgwin.setGravity(Gravity.TOP);
-        lp.width = (int)(display.getWidth()); //设置宽度
+        lp.width = (int) (display.getWidth()); //设置宽度
 
         hostDlg.getWindow().setAttributes(lp);
         hostDlg.show();
 
         TextView tvHost = (TextView) hostDlg.findViewById(R.id.tv_host_name);
         tvHost.setText(CurLiveInfo.getHostID());
-        ImageView ivHostIcon = (ImageView)hostDlg.findViewById(R.id.iv_host_icon);
+        ImageView ivHostIcon = (ImageView) hostDlg.findViewById(R.id.iv_host_icon);
         showHeadIcon(ivHostIcon, mHostIconUrl);
-        TextView tvLbs = (TextView)hostDlg.findViewById(R.id.tv_host_lbs);
+        TextView tvLbs = (TextView) hostDlg.findViewById(R.id.tv_host_lbs);
         tvLbs.setText(UIUtils.getLimitString(CurLiveInfo.getAddress(), 6));
     }
 

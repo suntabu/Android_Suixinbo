@@ -16,4 +16,8 @@ public interface EnterQuiteRoomView extends MvpView {
     void memberQuiteLive(String[] list);
 
     void memberJoinLive(String[] list);
+
+    void alreadyInLive(String[] list);
+
+
 }
