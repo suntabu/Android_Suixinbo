@@ -710,8 +710,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         index = index + inviteViewCount;
         switch (index) {
             case 1:
-                inviteView1.setText(id);
-                inviteView1.setVisibility(View.VISIBLE);
+                inviteView1.setText(id);             inviteView1.setVisibility(View.VISIBLE);
                 inviteView1.setTag(id);
                 break;
             case 2:
