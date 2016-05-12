@@ -32,12 +32,12 @@ import okhttp3.Response;
 public class OKhttpHelper {
     private static final String TAG = OKhttpHelper.class.getSimpleName();
     private static OKhttpHelper instance = null;
-    public static final String GET_MYROOMID = "http://203.195.167.34/sxb/index.php?svc=user_av_room&cmd=get";
-    public static final String NEW_ROOM_INFO = "http://203.195.167.34/sxb/index.php?svc=live&cmd=start";
-    public static final String STOP_ROOM = "http://203.195.167.34/sxb/index.php?svc=live&cmd=end";
-    public static final String GET_LIVELIST = "http://203.195.167.34/sxb/index.php?svc=live&cmd=list";
-    public static final String SEND_HEARTBEAT = "http://203.195.167.34/sxb/index.php?svc=live&cmd=host_heartbeat";
-    public static final String GET_COS_SIG = "http://203.195.167.34/sxb/index.php?svc=cos&cmd=get_sign";
+    public static final String GET_MYROOMID = "http://182.254.234.225/sxb/index.php?svc=user_av_room&cmd=get";
+    public static final String NEW_ROOM_INFO = "http://182.254.234.225/sxb/index.php?svc=live&cmd=start";
+    public static final String STOP_ROOM = "http://182.254.234.225/sxb/index.php?svc=live&cmd=end";
+    public static final String GET_LIVELIST = "http://182.254.234.225/sxb/index.php?svc=live&cmd=list";
+    public static final String SEND_HEARTBEAT = "http://182.254.234.225/sxb/index.php?svc=live&cmd=host_heartbeat";
+    public static final String GET_COS_SIG = "http://182.254.234.225/index.php?svc=cos&cmd=get_sign";
 
 
     public static OKhttpHelper getInstance() {
