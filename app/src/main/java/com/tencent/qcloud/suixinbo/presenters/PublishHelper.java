@@ -33,6 +33,7 @@ public class PublishHelper extends Presenter {
     private final static int THREAD_GETSIG_UPLOAD = 3;
 
     private final static int MAIN_CALL_BACK = 1;
+    private final static int MAIN_PROCESS = 2;
 
     private Context mContext;
     private UploadView mView;
@@ -71,6 +72,9 @@ public class PublishHelper extends Presenter {
                 switch (msg.what){
                 case MAIN_CALL_BACK:
                     mView.onUploadResult(msg.arg1, (String)msg.obj);
+                    break;
+                case MAIN_PROCESS:
+                    mView.onUploadProcess(msg.arg1);
                     break;
                 }
                 return false;
@@ -136,6 +140,11 @@ public class PublishHelper extends Presenter {
             @Override
             public void onUploadProgress(long l, long l1) {
                 SxbLog.d(TAG, "onUploadProgress: " + l + "/" + l1);
+                Message msg = new Message();
+                msg.what = MAIN_PROCESS;
+                msg.arg1 = (int)(l*100/l1);
+
+                mMainHandler.sendMessage(msg);
             }
 
             @Override

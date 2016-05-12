@@ -52,6 +52,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
 
     private static final int CROP_CHOOSE = 10;
     private boolean bUploading = false;
+    private int uploadPercent = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +93,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 break;
             case R.id.btn_publish:
                 if (bUploading){
-                    Toast.makeText(this, getString(R.string.publish_wait_uploading), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.publish_wait_uploading)+" "+uploadPercent+"%", Toast.LENGTH_SHORT).show();
                 }else {
                     Intent intent = new Intent(this, LiveActivity.class);
                     intent.putExtra(Constants.ID_STATUS, Constants.HOST);
@@ -289,5 +290,10 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
             Toast.makeText(this, getString(R.string.publish_upload_cover_failed), Toast.LENGTH_SHORT).show();
         }
         bUploading = false;
+    }
+
+    @Override
+    public void onUploadProcess(int percent) {
+        uploadPercent = percent;
     }
 }
