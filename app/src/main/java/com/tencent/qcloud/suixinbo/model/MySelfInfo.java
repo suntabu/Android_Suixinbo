@@ -15,6 +15,7 @@ public class MySelfInfo {
     private String userSig;
     private String nickName;    // 呢称
     private String avatar;      // 头像
+    private String sign;      // 签名
     private String CosSig;
     private long sigExpire;
 
@@ -52,6 +53,14 @@ public class MySelfInfo {
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
     }
 
     public String getAvatar() {
@@ -93,6 +102,7 @@ public class MySelfInfo {
         editor.putString(Constants.USER_SIG, userSig);
         editor.putString(Constants.USER_NICK, nickName);
         editor.putString(Constants.USER_AVATAR, avatar);
+        editor.putString(Constants.USER_SIGN, sign);
         editor.putInt(Constants.USER_ROOM_NUM, myRoomNum);
         editor.commit();
     }
@@ -111,6 +121,7 @@ public class MySelfInfo {
         myRoomNum = sharedata.getInt(Constants.USER_ROOM_NUM, -1);
         nickName = sharedata.getString(Constants.USER_NICK, null);
         avatar = sharedata.getString(Constants.USER_AVATAR, null);
+        sign = sharedata.getString(Constants.USER_SIGN, null);
         Log.i(TAG, " getCache id: " + id);
     }
 
@@ -121,7 +132,4 @@ public class MySelfInfo {
     public void setIdStatus(int id_status) {
         this.id_status = id_status;
     }
-
-
-
 }

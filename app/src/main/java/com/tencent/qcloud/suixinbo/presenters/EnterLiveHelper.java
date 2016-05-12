@@ -171,7 +171,7 @@ public class EnterLiveHelper extends Presenter {
         final ArrayList<String> list = new ArrayList<String>();
         final String roomName = "this is a  test";
         Log.i(TAG, "createlive createIMChatRoom " + MySelfInfo.getInstance().getMyRoomNum());
-        TIMGroupManager.getInstance().createGroup("ChatRoom", list, roomName, "" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<String>() {
+        TIMGroupManager.getInstance().createGroup("AVChatRoom", list, roomName, "" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<String>() {
             @Override
             public void onError(int i, String s) {
                 Log.i(TAG, "onError " + i + "   " + s);

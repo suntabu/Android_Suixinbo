@@ -48,6 +48,8 @@
         <activity android:name=".views.PublishLiveActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize" /> <!-- 避免部分机器调用摄像头时自动横竖屏切换造成Activity重建 -->
         <activity android:name=".views.LiveActivity" />
+        <activity android:name=".views.EditProfileActivity" />
+        <activity android:name=".views.EditActivity" />
 
         <service
             android:name="com.tencent.qalsdk.service.QalService"

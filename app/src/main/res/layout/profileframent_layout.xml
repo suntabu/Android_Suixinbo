@@ -7,7 +7,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="250dp"
         android:background="@color/colorRed">
 
         <ImageView
@@ -24,16 +24,29 @@
             android:layout_below="@id/profile_avatar"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
+            android:textColor="@color/colorTextWhite"
             android:text="美空Girls团"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/profile_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profile_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorTextWhite"
+            android:text="ID:80808807"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/profile_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/profile_name"
+            android:layout_below="@id/profile_id"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
+            android:textColor="@color/colorTextWhite"
             android:text="把我的世界直播给你们"
             android:textSize="16sp" />
 
@@ -46,9 +59,10 @@
             android:layout_marginTop="10dp"
             android:drawableLeft="@drawable/icon_hearts"
             android:drawablePadding="5dp"
+            android:textColor="@color/colorTextWhite"
             android:text="12333" />
 
-        <TextView
+        <ImageView
             android:id="@+id/edit_profile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -56,23 +70,13 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="15dp"
             android:layout_marginTop="15dp"
-            android:text="编辑" />
+            android:src="@drawable/edit" />
     </RelativeLayout>
-
-
-    <com.tencent.qcloud.suixinbo.views.customviews.LineControllerView
-        android:id="@+id/friendConfirm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:name="我的直播"
-        app:content="100"
-        app:isBottom="true"
-        app:canNav="true"/>
 
     <com.tencent.qcloud.suixinbo.views.customviews.LineControllerView
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        app:name="设置"
+        app:name="@string/profile_set"
         app:isBottom="true"
         app:canNav="true"
         />
@@ -80,7 +84,7 @@
     <com.tencent.qcloud.suixinbo.views.customviews.LineControllerView
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        app:name="关于随心播"
+        app:name="@string/profile_about"
         app:isBottom="true"
         app:canNav="true"/>
 
