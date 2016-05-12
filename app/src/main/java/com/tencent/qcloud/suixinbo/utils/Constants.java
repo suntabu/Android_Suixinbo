@@ -33,6 +33,8 @@ public class Constants {
 
     public static final int MEMBER = 0;
 
+    public static final int VIDEO_VIEW_MAX = 4;
+
     public static final int LOCATION_PERMISSION_REQ_CODE = 1;
 
 

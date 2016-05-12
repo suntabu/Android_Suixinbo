@@ -339,8 +339,8 @@ public class AVUIControl extends GLViewGroup {
         String tipsRoom = "";
 
         if (qavsdk != null) {
-                tipsAudio = qavsdk.getAudioQualityTips();
-                tipsVideo = qavsdk.getVideoQualityTips();
+            tipsAudio = qavsdk.getAudioQualityTips();
+            tipsVideo = qavsdk.getVideoQualityTips();
 
             if (qavsdk.getRoom() != null) {
                 tipsRoom = qavsdk.getRoom().getQualityTips();
@@ -363,6 +363,7 @@ public class AVUIControl extends GLViewGroup {
 
         return tipsAll;
     }
+
 
     public void setOffset(int topOffset, int bottomOffset) {
         if (QLog.isColorLevel()) {
@@ -437,7 +438,7 @@ public class AVUIControl extends GLViewGroup {
         return count;
     }
 
-    int getIdleViewIndex(int start) {
+    public int getIdleViewIndex(int start) {
         int index = -1;
         for (int i = start; i < mGlVideoView.length; i++) {
             GLVideoView view = mGlVideoView[i];
@@ -542,17 +543,17 @@ public class AVUIControl extends GLViewGroup {
 //                top = bottom;
 //                bottom =top+areaH;
 //            }
-            mGlVideoView[4].layout(0, 0, 0, 0);
+//            mGlVideoView[4].layout(0, 0, 0, 0);
             //
             mGlVideoView[1].setBackgroundColor(Color.WHITE);
             mGlVideoView[2].setBackgroundColor(Color.WHITE);
             mGlVideoView[3].setBackgroundColor(Color.WHITE);
-            mGlVideoView[4].setBackgroundColor(Color.WHITE);
+//            mGlVideoView[4].setBackgroundColor(Color.WHITE);
             //
             mGlVideoView[1].setPaddings(2, 3, 3, 3);
             mGlVideoView[2].setPaddings(2, 3, 2, 3);
             mGlVideoView[3].setPaddings(2, 3, 2, 3);
-            mGlVideoView[4].setPaddings(3, 3, 2, 3);
+//            mGlVideoView[4].setPaddings(3, 3, 2, 3);
         } else {
             int wRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_width);
             int hRemote = mContext.getResources().getDimensionPixelSize(R.dimen.video_small_view_height);
@@ -585,9 +586,8 @@ public class AVUIControl extends GLViewGroup {
         if (QLog.isColorLevel()) {
             QLog.d(TAG, QLog.CLR, "closeVideoView index: " + index);
         }
-
-
-        GLVideoView view = mGlVideoView[index];
+        int ajIndex = uppderViews(index);
+        GLVideoView view = mGlVideoView[ajIndex];
         view.setVisibility(GLView.INVISIBLE);
         view.setNeedRenderVideo(true);
         view.enableLoading(false);
@@ -621,6 +621,29 @@ public class AVUIControl extends GLViewGroup {
 
 
     /**
+     * 次序上移算法
+     *
+     * @param index 本来要删除的位置
+     * @return 返回最终删除位置
+     */
+    private int uppderViews(int index) {
+        if (index == 1 && getViewCount() == 4) {//删除1,count＝4；
+            switchVideo(1, 2);
+            switchVideo(2, 3);
+            return 3;
+        }
+        if (index == 2 && getViewCount() == 4) {
+            switchVideo(2, 3);
+            return 3;
+        }
+        if (index == 1 && getViewCount() == 3) {
+            switchVideo(1, 2);
+            return 2;
+        }
+        return index;
+    }
+
+    /**
      * 关闭小窗口
      *
      * @param identifier
@@ -637,19 +660,20 @@ public class AVUIControl extends GLViewGroup {
                 int hostIndex = getViewIndexById(CurLiveInfo.getHostID(), AVView.VIDEO_SRC_TYPE_CAMERA);
                 switchVideo(index, hostIndex);
                 closeVideoView(hostIndex);
-            }else{
+            } else {
                 //不在主界面上
                 closeVideoView(index);
             }
         }
     }
 
+
     void initQQGlView() {
         if (QLog.isColorLevel()) {
             QLog.d(TAG, QLog.CLR, "initQQGlView");
         }
         mGlRootView = (GLRootView) mRootView.findViewById(R.id.av_video_glview);
-        mGlVideoView = new GLVideoView[AVView.MAX_VIEW_COUNT];
+        mGlVideoView = new GLVideoView[Constants.VIDEO_VIEW_MAX];
         // for (int i = 0; i < mGlVideoView.length; i++) {
         // mGlVideoView[i] = new GLVideoView(mVideoController, mContext.getApplicationContext());
         // mGlVideoView[i].setVisibility(GLView.INVISIBLE);
@@ -658,7 +682,7 @@ public class AVUIControl extends GLViewGroup {
         mGlVideoView[0] = new GLVideoView(mContext.getApplicationContext(), mGraphicRenderMgr);
         mGlVideoView[0].setVisibility(GLView.INVISIBLE);
         addView(mGlVideoView[0]);
-        for (int i = AVView.MAX_VIEW_COUNT - 1; i >= 1; i--) {
+        for (int i = Constants.VIDEO_VIEW_MAX - 1; i >= 1; i--) {
             mGlVideoView[i] = new GLVideoView(mContext.getApplicationContext(), mGraphicRenderMgr);
             mGlVideoView[i].setVisibility(GLView.INVISIBLE);
             addView(mGlVideoView[i]);
@@ -966,8 +990,6 @@ public class AVUIControl extends GLViewGroup {
                 mTargetIndex = 2;
             } else if (view == mGlVideoView[3]) {
                 mTargetIndex = 3;
-            } else if (view == mGlVideoView[4]) {
-                mTargetIndex = 4;
             } else {
                 mTargetIndex = -1;
             }
@@ -1072,7 +1094,7 @@ public class AVUIControl extends GLViewGroup {
             if (mTargetIndex == 0) {
                 mGlVideoView[0].setOffset(deltaX, deltaY, false);
             } else if (mTargetIndex == 1) {
-                if (Math.abs(deltaX) > AVView.MAX_VIEW_COUNT || Math.abs(deltaY) > AVView.MAX_VIEW_COUNT) {
+                if (Math.abs(deltaX) > Constants.VIDEO_VIEW_MAX || Math.abs(deltaY) > Constants.VIDEO_VIEW_MAX) {
                     mDragMoving = true;
                 }
                 // 修改拖动窗口的位置

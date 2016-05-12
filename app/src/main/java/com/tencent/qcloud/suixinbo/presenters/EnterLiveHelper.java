@@ -151,7 +151,7 @@ public class EnterLiveHelper extends Presenter {
 
         @Override
         public void OnSemiAutoRecvCameraVideo(String[] strings) {
-
+            mStepInOutView.alreadyInLive(strings);
         }
     };
 
@@ -227,9 +227,9 @@ public class EnterLiveHelper extends Presenter {
                 JSONObject liveInfo = null;
                 try {
                     liveInfo = new JSONObject();
-                    if (TextUtils.isEmpty(CurLiveInfo.getTitle())){
+                    if (TextUtils.isEmpty(CurLiveInfo.getTitle())) {
                         liveInfo.put("title", mContext.getString(R.string.text_live_default_title));
-                    }else {
+                    } else {
                         liveInfo.put("title", CurLiveInfo.getTitle());
                     }
                     liveInfo.put("cover", CurLiveInfo.getCoverurl());
@@ -243,9 +243,9 @@ public class EnterLiveHelper extends Presenter {
                     JSONObject lbs = new JSONObject();
                     lbs.put("longitude", CurLiveInfo.getLong1());
                     lbs.put("latitude", CurLiveInfo.getLat1());
-                    if (TextUtils.isEmpty(CurLiveInfo.getAddress())){
+                    if (TextUtils.isEmpty(CurLiveInfo.getAddress())) {
                         lbs.put("address", mContext.getString(R.string.text_live_lbs_unknown));
-                    }else {
+                    } else {
                         lbs.put("address", CurLiveInfo.getAddress());
                     }
                     liveInfo.put("lbs", lbs);

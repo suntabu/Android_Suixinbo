@@ -12,6 +12,7 @@ import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
 import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 
 import java.util.ArrayList;
@@ -25,10 +26,10 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
     private LiveHelper liveHelper;
     private static final String TAG = MembersAdapter.class.getSimpleName();
 
-    public MembersAdapter(Context context, int resource, ArrayList<MemberInfo> objects) {
+    public MembersAdapter(Context context, int resource, ArrayList<MemberInfo> objects,LiveView liveView) {
         super(context, resource, objects);
         mContext = context;
-        liveHelper = new LiveHelper(mContext);
+        liveHelper = new LiveHelper(mContext,liveView);
     }
 
 
