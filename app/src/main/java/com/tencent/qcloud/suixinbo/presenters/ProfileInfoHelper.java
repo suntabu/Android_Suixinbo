@@ -63,8 +63,8 @@ public class ProfileInfoHelper {
         });
     }
 
-    public void getUsersInfo(List<String> users){
-        TIMFriendshipManager.getInstance().getFriendsProfile(users, new TIMValueCallBack<List<TIMUserProfile>>() {
+    public void getUsersInfo(final int requestCode, List<String> users){
+        TIMFriendshipManager.getInstance().getUsersProfile(users, new TIMValueCallBack<List<TIMUserProfile>>() {
             @Override
             public void onError(int i, String s) {
                 Log.w(TAG, "getUsersInfo->error:"+i+","+s);
@@ -72,7 +72,7 @@ public class ProfileInfoHelper {
 
             @Override
             public void onSuccess(List<TIMUserProfile> profiles) {
-                mView.updateUserInfo(profiles);
+                mView.updateUserInfo(requestCode, profiles);
             }
         });
     }

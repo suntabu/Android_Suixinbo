@@ -146,7 +146,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
     }
 
     @Override
-    public void updateUserInfo(List<TIMUserProfile> profiles) {
+    public void updateUserInfo(int reqid, List<TIMUserProfile> profiles) {
 
     }
 }

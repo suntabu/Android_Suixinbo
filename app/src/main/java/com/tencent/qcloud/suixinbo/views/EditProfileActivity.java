@@ -130,6 +130,6 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
     }
 
     @Override
-    public void updateUserInfo(List<TIMUserProfile> profiles) {
+    public void updateUserInfo(int reqid, List<TIMUserProfile> profiles) {
     }
 }

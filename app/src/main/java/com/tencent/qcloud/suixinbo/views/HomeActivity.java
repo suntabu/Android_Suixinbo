@@ -91,11 +91,15 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
     public void updateProfileInfo(TIMUserProfile profile) {
         if (null != profile) {
             MySelfInfo.getInstance().setAvatar(profile.getFaceUrl());
-            MySelfInfo.getInstance().setNickName(profile.getNickName());
+            if (!TextUtils.isEmpty(profile.getNickName())){
+                MySelfInfo.getInstance().setNickName(profile.getNickName());
+            }else{
+                MySelfInfo.getInstance().setNickName(profile.getIdentifier());
+            }
         }
     }
 
     @Override
-    public void updateUserInfo(List<TIMUserProfile> profiles) {
+    public void updateUserInfo(int reqid, List<TIMUserProfile> profiles) {
     }
 }

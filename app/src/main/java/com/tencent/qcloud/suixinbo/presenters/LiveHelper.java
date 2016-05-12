@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.tencent.TIMManager;
 import com.tencent.TIMMessage;
 import com.tencent.TIMMessageListener;
 import com.tencent.TIMTextElem;
+import com.tencent.TIMUserProfile;
 import com.tencent.TIMValueCallBack;
 import com.tencent.av.sdk.AVAudioCtrl;
 import com.tencent.av.sdk.AVEndpoint;
@@ -228,8 +230,13 @@ public class LiveHelper extends Presenter {
                     //发送成回显示消息内容
                     for (int j = 0; j < timMessage.getElementCount(); j++) {
                         TIMElem elem = (TIMElem) timMessage.getElement(0);
-                        String sendId = timMessage.getSender();
-                        handleTextMessage(elem, sendId);
+                        if (timMessage.isSelf()){
+                            handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
+                        }else {
+                            TIMUserProfile sendUser = timMessage.getSenderProfile();
+                            //String sendId = timMessage.getSender();
+                            handleTextMessage(elem, sendUser.getNickName());
+                        }
                     }
                     Log.i(TAG, "Send text Msg ok");
 
@@ -357,14 +364,20 @@ public class LiveHelper extends Presenter {
 
                 //最后处理文本消息
                 if (type == TIMElemType.Text) {
-                    String sendid = currMsg.getSender();
-                    handleTextMessage(elem, sendid);
+                    if (currMsg.isSelf()){
+                        handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
+                    }else {
+                        TIMUserProfile sendUser = currMsg.getSenderProfile();
+                        //String sendid = currMsg.getSender();
+                        if (!TextUtils.isEmpty(sendUser.getNickName())){
+                            handleTextMessage(elem, sendUser.getNickName());
+                        }else {
+                            handleTextMessage(elem, sendUser.getIdentifier());
+                        }
+                    }
                 }
-
-
             }
         }
-
     }
 
     /**

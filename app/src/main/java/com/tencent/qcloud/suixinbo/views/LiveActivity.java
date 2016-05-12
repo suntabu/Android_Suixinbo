@@ -55,6 +55,7 @@ import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -64,10 +65,13 @@ import java.util.TimerTask;
  * Live直播类
  */
 public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener, ProfileView {
+    private static final String TAG = LiveActivity.class.getSimpleName();
+    private static final int GETPROFILE_HOST = 0x100;
+    private static final int GETPROFILE_JOIN = 0x200;
+
     private EnterLiveHelper mEnterRoomProsscessHelper;
     private ProfileInfoHelper mUserInfoHelper;
     private LiveHelper mLiveHelper;
-    private static final String TAG = LiveActivity.class.getSimpleName();
 
     private ArrayList<ChatEntity> mArrayListChatEntity;
     private ChatMsgListAdapter mChatMsgListAdapter;
@@ -403,7 +407,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
             List<String> ids = new ArrayList<>();
             ids.add(CurLiveInfo.getHostID());
-            mUserInfoHelper.getUsersInfo(ids);
+            mUserInfoHelper.getUsersInfo(GETPROFILE_HOST, ids);
             showHeadIcon(mHeadIcon, mHostIconUrl);
             mHostNameTv.setText(CurLiveInfo.getHostID());
 
@@ -499,6 +503,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 主动退出直播
      */
     private void quiteLiveByPurpose() {
+        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
+            finish();
+            return;
+        }
         final Dialog dialog = new Dialog(this, R.style.dialog);
         dialog.setContentView(R.layout.dialog_end_live);
 
@@ -603,11 +611,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void memberJoinLive(final String[] list) {
+        List<String> joinList = new LinkedList<>();
         for (String id : list) {
             CurLiveInfo.setMembers(CurLiveInfo.getMembers() + 1);
-            tvMembers.setText("" + CurLiveInfo.getMembers());
-            refreshTextListView(id, "join live", Constants.MEMBER_ENTER);
+            joinList.add(id);
+            //tvMembers.setText("" + CurLiveInfo.getMembers());
+            //refreshTextListView(id, "join live", Constants.MEMBER_ENTER);
         }
+        mUserInfoHelper.getUsersInfo(GETPROFILE_JOIN, joinList);
     }
 
     @Override
@@ -1051,17 +1062,35 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     }
 
     @Override
-    public void updateUserInfo(List<TIMUserProfile> profiles) {
+    public void updateUserInfo(int requestCode, List<TIMUserProfile> profiles) {
         if (null != profiles) {
-            for (TIMUserProfile user : profiles) {
-                if (user.getIdentifier().equals(CurLiveInfo.getHostID())) {
-                    mHostNameTv.setText(TextUtils.isEmpty(user.getNickName()) ? CurLiveInfo.getHostID() : user.getNickName());
-                    mHostIconUrl = user.getFaceUrl();
-                    showHeadIcon(mHeadIcon, mHostIconUrl);
-                } else {
-                    Log.w(TAG, "updateUserInfo->uid not match: " + user.getIdentifier() + "/" + CurLiveInfo.getHostID());
+            switch (requestCode){
+            case GETPROFILE_HOST:
+                for (TIMUserProfile user : profiles) {
+                    if (user.getIdentifier().equals(CurLiveInfo.getHostID())) {
+                        mHostNameTv.setText(TextUtils.isEmpty(user.getNickName()) ? CurLiveInfo.getHostID() : user.getNickName());
+                        mHostIconUrl = user.getFaceUrl();
+                        showHeadIcon(mHeadIcon, mHostIconUrl);
+                    } else {
+                        Log.w(TAG, "updateUserInfo->uid not match: " + user.getIdentifier() + "/" + CurLiveInfo.getHostID());
+                    }
                 }
+            break;
+            case GETPROFILE_JOIN:
+                for (TIMUserProfile user : profiles) {
+                    tvMembers.setText("" + CurLiveInfo.getMembers());
+                    Log.w(TAG, "get nick name:" + user.getNickName());
+                    Log.w(TAG, "get remark name:"+user.getRemark());
+                    Log.w(TAG, "get avatar:"+user.getFaceUrl());
+                    if (!TextUtils.isEmpty(user.getNickName())){
+                        refreshTextListView(user.getNickName(), "join live", Constants.MEMBER_ENTER);
+                    }else{
+                        refreshTextListView(user.getIdentifier(), "join live", Constants.MEMBER_ENTER);
+                    }
+                }
+                break;
             }
+
         }
     }
 }
