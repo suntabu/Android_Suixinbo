@@ -480,8 +480,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         CurLiveInfo.setAdmires(0);
         CurLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
+        QavsdkControl.getInstance().clearVideoMembers();
         QavsdkControl.getInstance().onDestroy();
-
         QavsdkApplication.getInstance().removeActivity(this);
     }
 
@@ -659,6 +659,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 mHearBeatTimer.schedule(mHeartBeatTask, 1000, 3 * 1000);
             }
         } else {
+//            QavsdkControl.getInstance().addRemoteVideoMembers(id);
             QavsdkControl.getInstance().setRemoteHasVideo(true, id, AVView.VIDEO_SRC_TYPE_CAMERA);
         }
 
@@ -733,10 +734,13 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void cancelInviteView(String id) {
         if ((inviteView1 != null) && (inviteView1.getTag().equals(id))) {
+            Log.i(TAG, "cancelInviteView "+inviteView1.getTag());
             inviteView1.setVisibility(View.INVISIBLE);
         } else if ((inviteView2 != null) && (inviteView2.getTag().equals(id))) {
+            Log.i(TAG, "cancelInviteView "+inviteView2.getTag());
             inviteView2.setVisibility(View.INVISIBLE);
         } else if ((inviteView3 != null) && (inviteView3.getTag().equals(id))) {
+            Log.i(TAG, "cancelInviteView "+inviteView3.getTag());
             inviteView3.setVisibility(View.INVISIBLE);
         }
         inviteViewCount--;

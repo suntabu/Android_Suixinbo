@@ -177,9 +177,13 @@ public class LiveHelper extends Presenter {
         AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifiers.get(0));
         Log.d(TAG, "RequestViewList hostIdentifier " + identifiers + " endpoint " + endpoint);
         if (endpoint != null) {
+            ArrayList<String> alreadyIds = QavsdkControl.getInstance().getRemoteVideoIds();//已经存在的IDs
 
+            for (String id : identifiers) {//把新加入的添加到后面
+                alreadyIds.add(id);
+            }
             int viewindex = 0;
-            for (String id : identifiers) {
+            for (String id : alreadyIds) {//一并请求
                 AVView view = new AVView();
                 view.videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
                 view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
@@ -188,7 +192,7 @@ public class LiveHelper extends Presenter {
                 mRequestIdentifierList[viewindex] = id;
                 viewindex++;
             }
-            int ret = AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, identifiers.size(), mRequestViewListCompleteCallback);
+            int ret = AVEndpoint.requestViewList(mRequestIdentifierList, mRequestViewList, alreadyIds.size(), mRequestViewListCompleteCallback);
 
 
         } else {
@@ -202,7 +206,6 @@ public class LiveHelper extends Presenter {
     private AVEndpoint.RequestViewListCompleteCallback mRequestViewListCompleteCallback = new AVEndpoint.RequestViewListCompleteCallback() {
         protected void OnComplete(String identifierList[], AVView viewList[], int count, int result) {
             for (String id : identifierList) {
-
                 mLiveView.showVideoView(REMOTE, id);
             }
             // TODO
@@ -436,9 +439,6 @@ public class LiveHelper extends Presenter {
     }
 
 
-
-
-
     public boolean isFrontCamera() {
         return mIsFrontCamera;
     }
@@ -617,7 +617,7 @@ public class LiveHelper extends Presenter {
             @Override
             public void onSuccess(TIMMessage timMessage) {
                 if (cmd == Constants.AVIMCMD_MUlTI_HOST_INVITE) {
-                   mLiveView.showInviteView(sendId);
+                    mLiveView.showInviteView(sendId);
                 }
                 Log.i(TAG, "send praise succ !");
             }
