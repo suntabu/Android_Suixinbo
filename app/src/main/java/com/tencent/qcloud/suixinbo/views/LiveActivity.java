@@ -682,6 +682,39 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             }
     }
 
+    private void showReportDialog(){
+        final Dialog reportDialog = new Dialog(this, R.style.report_dlg);
+        reportDialog.setContentView(R.layout.dialog_live_report);
+
+        TextView tvReportDirty = (TextView)reportDialog.findViewById(R.id.btn_dirty);
+        TextView tvReportFalse = (TextView)reportDialog.findViewById(R.id.btn_false);
+        TextView tvReportVirus = (TextView)reportDialog.findViewById(R.id.btn_virus);
+        TextView tvReportIllegal = (TextView)reportDialog.findViewById(R.id.btn_illegal);
+        TextView tvReportYellow = (TextView)reportDialog.findViewById(R.id.btn_yellow);
+        TextView tvReportCancel = (TextView)reportDialog.findViewById(R.id.btn_cancel);
+
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                default:
+                    reportDialog.cancel();
+                    break;
+                }
+            }
+        };
+
+        tvReportDirty.setOnClickListener(listener);
+        tvReportFalse.setOnClickListener(listener);
+        tvReportVirus.setOnClickListener(listener);
+        tvReportIllegal.setOnClickListener(listener);
+        tvReportYellow.setOnClickListener(listener);
+        tvReportCancel.setOnClickListener(listener);
+
+        reportDialog.setCanceledOnTouchOutside(true);
+        reportDialog.show();
+    }
+
     private void showHostDetail(){
         Dialog hostDlg = new Dialog(this, R.style.host_info_dlg);
         hostDlg.setContentView(R.layout.host_info_layout);
@@ -702,6 +735,13 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         showHeadIcon(ivHostIcon, mHostIconUrl);
         TextView tvLbs = (TextView)hostDlg.findViewById(R.id.tv_host_lbs);
         tvLbs.setText(UIUtils.getLimitString(CurLiveInfo.getAddress(), 6));
+        ImageView ivReport = (ImageView)hostDlg.findViewById(R.id.iv_report);
+        ivReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showReportDialog();
+            }
+        });
     }
 
     private boolean checkInterval(){
