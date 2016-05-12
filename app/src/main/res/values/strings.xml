@@ -36,6 +36,13 @@
     <string name="live_members_tips">观看人数</string>
     <string name="live_admires_tips">获赞数量</string>
 
+    <string name="live_report_tips">请选择您的举报原因</string>
+    <string name="live_report_dirty">垃圾营销</string>
+    <string name="live_report_false">不实信息</string>
+    <string name="live_report_virus">有害信息</string>
+    <string name="live_report_illegal">违法信息</string>
+    <string name="live_report_yellow">淫秽信息</string>
+
     <!-- msgadapter -->
     <item type="id" name="tag_first"></item>
     <item type="id" name="tag_second"></item>
