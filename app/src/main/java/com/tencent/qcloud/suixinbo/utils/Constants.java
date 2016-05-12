@@ -133,6 +133,9 @@ public class Constants {
     public static final String ACTION_CAMERA_OPEN_IN_LIVE = PACKAGE
             + ".ACTION_CAMERA_OPEN_IN_LIVE";
 
+    private static final boolean LOCAL = true;
+    private static final boolean REMOTE = false;
+
     public static final String EXTRA_RELATION_ID = "relationId";
     public static final String EXTRA_AV_ERROR_RESULT = "av_error_result";
     public static final String EXTRA_VIDEO_SRC_TYPE = "videoSrcType";

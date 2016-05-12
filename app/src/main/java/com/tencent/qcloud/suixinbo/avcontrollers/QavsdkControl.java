@@ -11,6 +11,8 @@ import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 
+import java.util.ArrayList;
+
 /**
  * AVSDK 总控制器类
  */
@@ -33,6 +35,13 @@ public class QavsdkControl {
     }
 
 
+    public ArrayList<String> getRemoteVideoIds() {
+        return remoteVideoIds;
+    }
+
+    private ArrayList<String> remoteVideoIds = new ArrayList<String>();
+
+
     public static void initQavsdk(Context context) {
         mContext = context;
     }
@@ -44,6 +53,20 @@ public class QavsdkControl {
 //        mAVVideoControl = new AVVideoControl(context);
 //        mAVAudioControl = new AVAudioControl(context);
         Log.d(TAG, "WL_DEBUG QavsdkControl");
+    }
+
+
+    public void addRemoteVideoMembers(String id) {
+        remoteVideoIds.add(id);
+    }
+
+    public void removeRemoteVideoMembers(String id) {
+        if (remoteVideoIds.contains(id))
+            remoteVideoIds.remove(id);
+    }
+
+    public void clearVideoMembers() {
+        remoteVideoIds.clear();
     }
 
 
@@ -389,7 +412,7 @@ public class QavsdkControl {
 //    }
 
 
-    public int getAvailableViewIndex(int start){
+    public int getAvailableViewIndex(int start) {
         if (null != mAVUIControl) {
             return mAVUIControl.getIdleViewIndex(start);
         }
@@ -398,6 +421,7 @@ public class QavsdkControl {
 
     public void closeMemberView(String id) {
         if (null != mAVUIControl) {
+            removeRemoteVideoMembers(id);
             mAVUIControl.closeMemberVideoView(id);
         }
     }

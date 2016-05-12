@@ -151,6 +151,7 @@ public class EnterLiveHelper extends Presenter {
 
         @Override
         public void OnSemiAutoRecvCameraVideo(String[] strings) {
+
             mStepInOutView.alreadyInLive(strings);
         }
     };

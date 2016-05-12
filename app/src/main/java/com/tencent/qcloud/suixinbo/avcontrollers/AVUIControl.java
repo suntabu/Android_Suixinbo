@@ -910,6 +910,8 @@ public class AVUIControl extends GLViewGroup {
         }
 
 
+
+
 //		if (null != mGlVideoView[1].getOpenId()) {
 //			mGlVideoView[1].clearRender();
 //		}
