@@ -18,6 +18,7 @@ import com.bumptech.glide.RequestManager;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
 
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
 
         LiveInfoJson data = getItem(position);
         if (!TextUtils.isEmpty(data.getCover())){
-            Log.d(TAG, "load cover: " + data.getCover());
+            SxbLog.d(TAG, "load cover: " + data.getCover());
             RequestManager req = Glide.with(mActivity);
             req.load(data.getCover()).into(holder.ivCover);
         }else{
@@ -84,7 +85,7 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
             holder.ivAvatar.setImageBitmap(cirBitMap);
         }else{
-            Log.d(TAG, "user avator: " + data.getHost().getAvatar());
+            SxbLog.d(TAG, "user avator: " + data.getHost().getAvatar());
             RequestManager req = Glide.with(mActivity);
             req.load(data.getHost().getAvatar()).transform(new GlideCircleTransform(mActivity)).into(holder.ivAvatar);
         }

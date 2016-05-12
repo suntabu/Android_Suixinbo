@@ -19,6 +19,7 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
 import com.tencent.qcloud.suixinbo.views.customviews.TemplateTitle;
@@ -47,7 +48,7 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
             ivIcon.setImageBitmap(cirBitMap);
         }else{
-            Log.d(TAG, "profile avator: " + MySelfInfo.getInstance().getAvatar());
+            SxbLog.d(TAG, "profile avator: " + MySelfInfo.getInstance().getAvatar());
             RequestManager req = Glide.with(this);
             req.load(MySelfInfo.getInstance().getAvatar()).transform(new GlideCircleTransform(this)).into(ivIcon);
         }
@@ -104,7 +105,7 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK){
-            Log.e(TAG, "onActivityResult->failed for request: " + requestCode + "/" + resultCode);
+            SxbLog.e(TAG, "onActivityResult->failed for request: " + requestCode + "/" + resultCode);
             return;
         }
         switch (requestCode){

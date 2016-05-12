@@ -25,6 +25,7 @@ import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
 
@@ -137,7 +138,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
             mAvatar.setImageBitmap(cirBitMap);
         }else{
-            Log.d(TAG, "profile avator: " + profile.getFaceUrl());
+            SxbLog.d(TAG, "profile avator: " + profile.getFaceUrl());
             MySelfInfo.getInstance().setAvatar(profile.getFaceUrl());
             RequestManager req = Glide.with(getActivity());
             req.load(profile.getFaceUrl()).transform(new GlideCircleTransform(getActivity())).into(mAvatar);

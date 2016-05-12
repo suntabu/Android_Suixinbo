@@ -31,6 +31,7 @@ import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.util.HashMap;
 
@@ -75,7 +76,7 @@ public class AVUIControl extends GLViewGroup {
                 qavsdk.getAVContext().setRenderMgrAndHolder(mGraphicRenderMgr, holder);
             }
             mContext.sendBroadcast(new Intent(Constants.ACTION_SURFACE_CREATED));
-            Log.e(TAG, " surfaceCreated");
+            SxbLog.e(TAG, " surfaceCreated");
         }
 
         @Override
@@ -84,12 +85,12 @@ public class AVUIControl extends GLViewGroup {
                 return;
             }
             holder.setFixedSize(width, height);
-            Log.e(TAG, "memoryLeak surfaceChanged");
+            SxbLog.e(TAG, "memoryLeak surfaceChanged");
         }
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-            Log.e(TAG, "memoryLeak surfaceDestroyed");
+            SxbLog.e(TAG, "memoryLeak surfaceDestroyed");
         }
     };
 
@@ -149,7 +150,7 @@ public class AVUIControl extends GLViewGroup {
     }
 
     public void onDestroy() {
-        Log.e("memoryLeak", "memoryLeak AVUIControl onDestroy");
+        SxbLog.e("memoryLeak", "memoryLeak AVUIControl onDestroy");
         unInitCameraaPreview();
         mContext = null;
         mRootView = null;
@@ -481,7 +482,7 @@ public class AVUIControl extends GLViewGroup {
         int width = getWidth();
         int height = getHeight();
 
-        Log.d(TAG, "width: " + getWidth() + "height: " + getHeight());
+        SxbLog.d(TAG, "width: " + getWidth() + "height: " + getHeight());
 
         mGlVideoView[0].layout(0, 0, width, height);
         mGlVideoView[0].setBackgroundColor(Color.BLACK);
@@ -649,7 +650,7 @@ public class AVUIControl extends GLViewGroup {
      * @param identifier
      */
     public void closeMemberVideoView(String identifier) {
-        Log.i(TAG, "closeMemberVideoView " + identifier);
+        SxbLog.i(TAG, "closeMemberVideoView " + identifier);
 
 
         if (id_view.containsValue(identifier)) {
@@ -737,7 +738,7 @@ public class AVUIControl extends GLViewGroup {
                 QLog.d(TAG, QLog.CLR, "add camera surface view fail." + e);
             }
         }
-        Log.e("memoryLeak", "memoryLeak initCameraPreview");
+        SxbLog.e("memoryLeak", "memoryLeak initCameraPreview");
     }
 
     void unInitCameraaPreview() {
@@ -761,7 +762,7 @@ public class AVUIControl extends GLViewGroup {
         }
 
         if (GLView.INVISIBLE == mGlVideoView[index1].getVisibility() || GLView.INVISIBLE == mGlVideoView[index2].getVisibility()) {
-            Log.d("switchVideo", "can not switchVideo");
+            SxbLog.d("switchVideo", "can not switchVideo");
             return;
         }
 
@@ -1061,7 +1062,7 @@ public class AVUIControl extends GLViewGroup {
 
     public void selectIdViewToBg(int indexview) {
         String identifier = id_view.get(indexview);
-        Log.d(TAG, "selectIdViewToBg " + identifier);
+        SxbLog.d(TAG, "selectIdViewToBg " + identifier);
         if (identifier == null) return;
         mContext.sendBroadcast(new Intent(
                 Constants.ACTION_SWITCH_VIDEO).putExtra(
@@ -1324,14 +1325,14 @@ public class AVUIControl extends GLViewGroup {
     }
 
 //    void onMemberChange() {
-//        Log.d(TAG, "WL_DEBUG onMemberChange start");
+//        SxbLog.d(TAG, "WL_DEBUG onMemberChange start");
 //
 ////		ArrayList<AvMemberInfo> audioAndCameraMemberList = qavsdk.getAudioAndCameraMemberList();
 ////
 ////		for (AvMemberInfo memberInfo : audioAndCameraMemberList) {
 ////			int index = getViewIndexById(memberInfo.identifier, AVView.VIDEO_SRC_TYPE_CAMERA);
 ////			if (index >= 0) {
-////				Log.d(TAG, "WL_DEBUG onMemberChange memberInfo.hasCameraVideo = " + memberInfo.hasCameraVideo);
+////				SxbLog.d(TAG, "WL_DEBUG onMemberChange memberInfo.hasCameraVideo = " + memberInfo.hasCameraVideo);
 ////
 ////				if (!memberInfo.hasCameraVideo && !memberInfo.hasAudio) {
 ////					closeVideoView(index);
@@ -1344,7 +1345,7 @@ public class AVUIControl extends GLViewGroup {
 //        for (AvMemberInfo avMemberInfo : screenMemberList) {
 //            int index = getViewIndexById(avMemberInfo.identifier, AVView.VIDEO_SRC_TYPE_SCREEN);
 //            if (index >= 0) {
-//                Log.d(TAG, "WL_DEBUG onMemberChange avMemberInfo.hasScreenVideo = " + avMemberInfo.hasScreenVideo);
+//                SxbLog.d(TAG, "WL_DEBUG onMemberChange avMemberInfo.hasScreenVideo = " + avMemberInfo.hasScreenVideo);
 //
 //                if (!avMemberInfo.hasScreenVideo) {
 //                    closeVideoView(index);
@@ -1386,7 +1387,7 @@ public class AVUIControl extends GLViewGroup {
 //                if (!memberExist) {
 //                    if (null != qavsdk) {
 //                        String selfIdentifier = qavsdk.getSelfIdentifier();
-//                        Log.d(TAG, "self identifier : " + selfIdentifier);
+//                        SxbLog.d(TAG, "self identifier : " + selfIdentifier);
 //                        if (selfIdentifier != null && selfIdentifier.equals(viewIdentifier)) {
 //                            return;
 //                        }
@@ -1401,6 +1402,6 @@ public class AVUIControl extends GLViewGroup {
 //            }
 //        }
 //
-//        Log.d(TAG, "WL_DEBUG onMemberChange end");
+//        SxbLog.d(TAG, "WL_DEBUG onMemberChange end");
 //    }
 }

@@ -8,6 +8,7 @@ import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVError;
 import com.tencent.openqq.IMSdkInt;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 /**
  * 音视频初始化接口类
@@ -31,7 +32,7 @@ class AVContextControl {
         public void OnComplete(int result) {
             mIsInStartContext = false;
 //            Toast.makeText(mContext, "SDKLogin complete : " + result, Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "keypath AVSDK startContext  result "+result);
+            SxbLog.i(TAG, "keypath AVSDK startContext  result " + result);
 //            mContext.sendBroadcast(new Intent(
 //                    AvConstants.ACTION_START_CONTEXT_COMPLETE).putExtra(
 //                    AvConstants.EXTRA_AV_ERROR_RESULT, result));
@@ -65,7 +66,7 @@ class AVContextControl {
     int startContext() {
         int result = AVError.AV_OK;
         if (!hasAVContext()) {
-            Log.i(TAG, "AVSDKLogin startContext hasAVContext ");
+            SxbLog.i(TAG, "AVSDKLogin startContext hasAVContext ");
             onAVSDKCreate(true, IMSdkInt.get().getTinyId(), 0);
         } else {
             return AVError.AV_ERR_FAILED;
@@ -94,7 +95,7 @@ class AVContextControl {
      */
     void stopContext() {
         if (hasAVContext()) {
-            Log.d(TAG, "WL_DEBUG stopContext");
+            SxbLog.d(TAG, "WL_DEBUG stopContext");
             mAVContext.stop(mStopContextCompleteCallback);
             mIsInStopContext = true;
         }
@@ -136,7 +137,7 @@ class AVContextControl {
             mAVContext = AVContext.createInstance(mContext, mConfig);
             mSelfIdentifier = mConfig.identifier;
             int ret = mAVContext.start(mStartContextCompleteCallback);
-            Log.i(TAG, "onAVSDKCreate ret "+ret);
+            SxbLog.i(TAG, "onAVSDKCreate ret "+ret);
             mIsInStartContext = true;
         } else {
             mStartContextCompleteCallback.OnComplete(errorCode);

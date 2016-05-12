@@ -14,6 +14,7 @@ import com.tencent.qcloud.suixinbo.model.MemberInfo;
 import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.util.ArrayList;
 
@@ -53,7 +54,7 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
             holder.videoCtrl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.i(TAG, "select item:  " + selectId);
+                    SxbLog.i(TAG, "select item:  " + selectId);
                     QavsdkControl.getInstance().closeMemberView(selectId);
                     liveHelper.sendC2CMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT,selectId, selectId);
                 }
@@ -63,7 +64,7 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
             holder.videoCtrl.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.i(TAG, "select item:  " + selectId);
+                    SxbLog.i(TAG, "select item:  " + selectId);
                     liveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, "", selectId);
                 }
             });

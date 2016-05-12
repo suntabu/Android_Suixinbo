@@ -17,6 +17,7 @@ import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.CrashHandler;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import tencent.tls.platform.TLSAccountHelper;
 import tencent.tls.platform.TLSLoginHelper;
@@ -57,7 +58,7 @@ public class InitBusinessHelper {
         TIMManager.getInstance().setUserStatusListener(new TIMUserStatusListener() {
             @Override
             public void onForceOffline() {
-                Log.w(TAG, "onForceOffline->entered!");
+                SxbLog.w(TAG, "onForceOffline->entered!");
                 Activity topActivity = QavsdkApplication.getTopActivity();
                 if (null != topActivity) {
                     AlertDialog.Builder adBuilder = new AlertDialog.Builder(topActivity);

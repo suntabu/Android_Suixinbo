@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 /**
  * 用户数据
@@ -122,7 +123,7 @@ public class MySelfInfo {
         nickName = sharedata.getString(Constants.USER_NICK, null);
         avatar = sharedata.getString(Constants.USER_AVATAR, null);
         sign = sharedata.getString(Constants.USER_SIGN, null);
-        Log.i(TAG, " getCache id: " + id);
+        SxbLog.i(TAG, " getCache id: " + id);
     }
 
     public int getIdStatus() {
