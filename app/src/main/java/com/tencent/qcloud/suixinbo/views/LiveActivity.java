@@ -67,7 +67,6 @@ import java.util.TimerTask;
  */
 public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener, ProfileView {
     private static final String TAG = LiveActivity.class.getSimpleName();
-    private static final int GETPROFILE_HOST = 0x100;
     private static final int GETPROFILE_JOIN = 0x200;
 
     private EnterLiveHelper mEnterRoomProsscessHelper;
@@ -92,7 +91,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private ImageView mHeadIcon;
     private TextView mHostNameTv;
     private LinearLayout mHostLayout;
-    private String mHostIconUrl = null;        // 主播头像url
 
     private long mSecond = 0;
     private String formatTime;
@@ -363,7 +361,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
             initBackDialog();
             initDetailDailog();
-            mMemberDg = new MembersDialog(this, R.style.dialog, this);
+            mMemberDg = new MembersDialog(this, R.style.floag_dialog, this);
             startRecordAnimation();
             showHeadIcon(mHeadIcon, MySelfInfo.getInstance().getAvatar());
             mBeautySettings = (LinearLayout) findViewById(R.id.qav_beauty_setting);
@@ -409,9 +407,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
             List<String> ids = new ArrayList<>();
             ids.add(CurLiveInfo.getHostID());
-            mUserInfoHelper.getUsersInfo(GETPROFILE_HOST, ids);
-            showHeadIcon(mHeadIcon, mHostIconUrl);
-            mHostNameTv.setText(CurLiveInfo.getHostID());
+            showHeadIcon(mHeadIcon, CurLiveInfo.getHostAvator());
+            mHostNameTv.setText(CurLiveInfo.getHostName());
 
             mHostLayout = (LinearLayout) findViewById(R.id.head_up_layout);
             mHostLayout.setOnClickListener(this);
@@ -857,9 +854,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         hostDlg.show();
 
         TextView tvHost = (TextView) hostDlg.findViewById(R.id.tv_host_name);
-        tvHost.setText(CurLiveInfo.getHostID());
+        tvHost.setText(CurLiveInfo.getHostName());
         ImageView ivHostIcon = (ImageView) hostDlg.findViewById(R.id.iv_host_icon);
-        showHeadIcon(ivHostIcon, mHostIconUrl);
+        showHeadIcon(ivHostIcon, CurLiveInfo.getHostAvator());
         TextView tvLbs = (TextView) hostDlg.findViewById(R.id.tv_host_lbs);
         tvLbs.setText(UIUtils.getLimitString(CurLiveInfo.getAddress(), 6));
         ImageView ivReport = (ImageView) hostDlg.findViewById(R.id.iv_report);
@@ -895,13 +892,13 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 break;
             case R.id.member_send_good:
                 // 添加飘星动画
+                mHeartLayout.addFavor();
                 if (checkInterval()) {
-                    mHeartLayout.addFavor();
                     mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", CurLiveInfo.getHostID());
                     CurLiveInfo.setAdmires(CurLiveInfo.getAdmires() + 1);
                     tvAdmires.setText("" + CurLiveInfo.getAdmires());
                 } else {
-                    Toast.makeText(this, getString(R.string.text_live_admire_limit), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, getString(R.string.text_live_admire_limit), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.flash_btn:
