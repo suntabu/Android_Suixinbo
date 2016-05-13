@@ -412,6 +412,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mLikeTv = (TextView) findViewById(R.id.member_send_good);
             mLikeTv.setOnClickListener(this);
             mVideoChat.setVisibility(View.GONE);
+            BtnScreen = (TextView) findViewById(R.id.clean_screen);
 
             List<String> ids = new ArrayList<>();
             ids.add(CurLiveInfo.getHostID());
@@ -420,6 +421,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
             mHostLayout = (LinearLayout) findViewById(R.id.head_up_layout);
             mHostLayout.setOnClickListener(this);
+            BtnScreen.setOnClickListener(this);
         }
         BtnNormal = (TextView) findViewById(R.id.normal_btn);
         BtnNormal.setOnClickListener(this);
@@ -632,8 +634,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     public void memberQuit(String id, String name) {
         refreshTextListView(TextUtils.isEmpty(name) ? id : name, "quite live", Constants.MEMBER_EXIT);
 
-        CurLiveInfo.setMembers(CurLiveInfo.getMembers() - 1);
-        tvMembers.setText("" + CurLiveInfo.getMembers());
+        if (CurLiveInfo.getMembers() > 1) {
+            CurLiveInfo.setMembers(CurLiveInfo.getMembers() - 1);
+            tvMembers.setText("" + CurLiveInfo.getMembers());
+        }
 
         //如果存在视频互动，取消
         QavsdkControl.getInstance().closeMemberView(id);
@@ -969,6 +973,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case R.id.head_up_layout:
                 showHostDetail();
                 break;
+            case R.id.clean_screen:
             case R.id.fullscreen_btn:
                 mFullControllerUi.setVisibility(View.INVISIBLE);
                 BtnNormal.setVisibility(View.VISIBLE);

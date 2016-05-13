@@ -3,6 +3,7 @@ package com.tencent.qcloud.suixinbo.views.customviews;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
@@ -15,6 +16,7 @@ import com.tencent.TIMMessage;
 import com.tencent.TIMTextElem;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.views.LiveActivity;
 
 import java.io.UnsupportedEncodingException;
@@ -51,14 +53,6 @@ public class InputTextMsgDialog extends Dialog {
             @Override
             public void onClick(View view) {
                 if (messageTextView.getText().length() > 0) {
-                    /*
-                    // 过滤特殊字符和表情
-                    Matcher matcher = pattern.matcher(messageTextView.getText());
-                    if (matcher.find()){
-                        Toast.makeText(mContext, mContext.getString(R.string.common_send_invalid), Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    */
                     sendText("" + messageTextView.getText());
                     imm.showSoftInput(messageTextView, InputMethodManager.SHOW_FORCED);
                     imm.hideSoftInputFromWindow(messageTextView.getWindowToken(), 0);
@@ -66,13 +60,29 @@ public class InputTextMsgDialog extends Dialog {
                 } else {
                     Toast.makeText(mContext, "input can not be empty!", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+        messageTextView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() != KeyEvent.ACTION_UP){   // 忽略其它事件
+                    return false;
+                }
 
-//                if (imm.isActive()) {
-//                    imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-//                }
-//                imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-//                imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
-//                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_ENTER:
+                        if (messageTextView.getText().length() > 0) {
+                            sendText("" + messageTextView.getText());
+                            imm.showSoftInput(messageTextView, InputMethodManager.SHOW_FORCED);
+                            imm.hideSoftInputFromWindow(messageTextView.getWindowToken(), 0);
+                            dismiss();
+                        } else {
+                            Toast.makeText(mContext, "input can not be empty!", Toast.LENGTH_LONG).show();
+                        }
+                        return true;
+                    default:
+                        return false;
+                }
             }
         });
 

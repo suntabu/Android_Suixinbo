@@ -257,10 +257,11 @@ public class LiveHelper extends Presenter {
             e.printStackTrace();
         }
         String cmds = inviteCmd.toString();
-        SxbLog.i(TAG, "send cmd : " + cmd);
+        SxbLog.i(TAG, "send cmd : " + cmd + "|" + cmds);
         TIMMessage Gmsg = new TIMMessage();
         TIMCustomElem elem = new TIMCustomElem();
         elem.setData(cmds.getBytes());
+        elem.setDesc("");
         Gmsg.addElement(elem);
 
         if (mGroupConversation != null)
@@ -639,6 +640,7 @@ public class LiveHelper extends Presenter {
         TIMMessage msg = new TIMMessage();
         TIMCustomElem elem = new TIMCustomElem();
         elem.setData(cmds.getBytes());
+        elem.setDesc("");
         msg.addElement(elem);
         mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, sendId);
         mC2CConversation.sendMessage(msg, new TIMValueCallBack<TIMMessage>() {

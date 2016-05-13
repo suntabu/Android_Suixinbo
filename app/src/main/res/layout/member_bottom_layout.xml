@@ -17,20 +17,11 @@
 
 
     <TextView
-        android:id="@+id/repass"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center"
-        android:background="@drawable/icon_share"
-        android:layout_marginLeft="55dp"
-        />
-
-    <TextView
         android:id="@+id/clean_screen"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:layout_marginLeft="55dp"
+        android:layout_marginLeft="102dp"
         android:background="@drawable/icon_nomal"
         />
 
@@ -39,7 +30,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:layout_marginLeft="55dp"
+        android:layout_marginLeft="102dp"
         android:background="@drawable/icon_like"
         />
 
