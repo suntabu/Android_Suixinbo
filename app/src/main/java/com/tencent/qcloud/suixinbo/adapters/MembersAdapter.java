@@ -1,7 +1,6 @@
 package com.tencent.qcloud.suixinbo.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +10,7 @@ import android.widget.TextView;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
-import com.tencent.qcloud.suixinbo.presenters.LiveHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
-import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.util.ArrayList;
@@ -24,13 +21,13 @@ import java.util.ArrayList;
  */
 public class MembersAdapter extends ArrayAdapter<MemberInfo> {
     private Context mContext;
-    private LiveHelper liveHelper;
     private static final String TAG = MembersAdapter.class.getSimpleName();
+    private LiveView mLiveView;
 
-    public MembersAdapter(Context context, int resource, ArrayList<MemberInfo> objects,LiveView liveView) {
+    public MembersAdapter(Context context, int resource, ArrayList<MemberInfo> objects, LiveView liveView) {
         super(context, resource, objects);
         mContext = context;
-        liveHelper = new LiveHelper(mContext,liveView);
+        mLiveView = liveView;
     }
 
 
@@ -46,29 +43,33 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        MemberInfo data = getItem(position);
+        final MemberInfo data = getItem(position);
         final String selectId = data.getUserId();
         holder.id.setText(selectId);
         if (data.isOnVideoChat() == true) {
             holder.videoCtrl.setBackgroundResource(R.drawable.btn_video_disconnect);
-            holder.videoCtrl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    SxbLog.i(TAG, "select item:  " + selectId);
-                    QavsdkControl.getInstance().closeMemberView(selectId);
-                    liveHelper.sendC2CMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT,selectId, selectId);
-                }
-            });
+
         } else {
             holder.videoCtrl.setBackgroundResource(R.drawable.btn_video_connection);
-            holder.videoCtrl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    SxbLog.i(TAG, "select item:  " + selectId);
-                    liveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, "", selectId);
-                }
-            });
+
         }
+        holder.videoCtrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SxbLog.i(TAG, "select item:  " + selectId);
+                if (data.isOnVideoChat() == false) {
+                    mLiveView.showInviteView(selectId);
+                    data.setIsOnVideoChat(true);
+                    view.setBackgroundResource(R.drawable.btn_video_disconnect);
+                } else {
+                    mLiveView.cancelInviteView(selectId,true);
+                    QavsdkControl.getInstance().closeMemberView(selectId);
+                    data.setIsOnVideoChat(false);
+                    view.setBackgroundResource(R.drawable.btn_video_connection);
+                }
+
+            }
+        });
 
 
         return convertView;

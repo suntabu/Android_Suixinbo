@@ -361,7 +361,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             inviteView2 = (TextView) findViewById(R.id.invite_view2);
             inviteView3 = (TextView) findViewById(R.id.invite_view3);
 
-
+            initBackDialog();
             mMemberDg = new MembersDialog(this, R.style.dialog, this);
             startRecordAnimation();
             showHeadIcon(mHeadIcon, MySelfInfo.getInstance().getAvatar());
@@ -504,31 +504,42 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 主动退出直播
      */
     private void quiteLiveByPurpose() {
-        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
-            finish();
-            return;
-        }
-        final Dialog dialog = new Dialog(this, R.style.dialog);
-        dialog.setContentView(R.layout.dialog_end_live);
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            if (backDialog.isShowing() == false)
+                backDialog.show();
 
-        TextView tvSure = (TextView) dialog.findViewById(R.id.btn_sure);
+        } else {
+            mLiveHelper.unInitTIMListener();
+            mEnterRoomProsscessHelper.quiteLive();
+        }
+
+    }
+
+
+    private Dialog backDialog;
+
+    private void initBackDialog() {
+        backDialog = new Dialog(this, R.style.dialog);
+        backDialog.setContentView(R.layout.dialog_end_live);
+
+        TextView tvSure = (TextView) backDialog.findViewById(R.id.btn_sure);
         tvSure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //如果是直播，发消息
                 mLiveHelper.unInitTIMListener();
                 mEnterRoomProsscessHelper.quiteLive();
-                dialog.dismiss();
+                backDialog.dismiss();
             }
         });
-        TextView tvCancel = (TextView) dialog.findViewById(R.id.btn_cancel);
+        TextView tvCancel = (TextView) backDialog.findViewById(R.id.btn_cancel);
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.cancel();
+                backDialog.cancel();
             }
         });
-        dialog.show();
+//        backDialog.show();
     }
 
     /**
@@ -569,23 +580,32 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     @Override
     public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
-//        Toast.makeText(LiveActivity.this, "" + liveinfo.getTitle()+"end", Toast.LENGTH_SHORT).show();
-        if (null == mDetailDialog) {
-            mDetailDialog = new Dialog(this, R.style.dialog);
-            mDetailDialog.setContentView(R.layout.dialog_live_detail);
-            mDetailDialog.setCancelable(false);
-
-            TextView tvCancel = (TextView) mDetailDialog.findViewById(R.id.btn_cancel);
-            tvCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mDetailDialog.dismiss();
-                    finish();
-                }
-            });
-            mDetailDialog.show();
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            if ((null == mDetailDialog) && (mDetailDialog.isShowing() == false)) {
+                mDetailDialog.show();
+            }
+        }else{
+            finish();
         }
+
     }
+
+    private void initDetailDailog() {
+        mDetailDialog = new Dialog(this, R.style.dialog);
+        mDetailDialog.setContentView(R.layout.dialog_live_detail);
+        mDetailDialog.setCancelable(false);
+
+        TextView tvCancel = (TextView) mDetailDialog.findViewById(R.id.btn_cancel);
+        tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDetailDialog.dismiss();
+                finish();
+            }
+        });
+        mDetailDialog.show();
+    }
+
 
     /**
      * 有成员退群
@@ -720,8 +740,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void showInviteView(String id) {
         int index = QavsdkControl.getInstance().getAvailableViewIndex(1);
-        index = index + inviteViewCount;
-        switch (index) {
+        if (index == -1) {
+            Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int requetCount = index + inviteViewCount;
+        if (requetCount > 3) {
+            Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        switch (requetCount) {
             case 1:
                 inviteView1.setText(id);
                 inviteView1.setVisibility(View.VISIBLE);
@@ -740,12 +768,12 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             default:
                 break;
         }
+        mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, "", id);
         inviteViewCount++;
     }
 
     @Override
-    public void cancelInviteView(String id) {
-
+    public void cancelInviteView(String id, boolean cancelInvite) {
         if ((inviteView1 != null) && (inviteView1.getTag() != null)) {
             if (inviteView1.getTag().equals(id)) {
                 Log.i(TAG, "cancelInviteView " + inviteView1.getTag());
@@ -774,6 +802,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         } else {
             Log.i(TAG, "cancelInviteView inviteView3 is null");
         }
+        if (cancelInvite == true)
+            mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id, id);
         inviteViewCount--;
     }
 
@@ -1089,31 +1119,31 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void updateUserInfo(int requestCode, List<TIMUserProfile> profiles) {
         if (null != profiles) {
-            switch (requestCode){
-            case GETPROFILE_HOST:
-                for (TIMUserProfile user : profiles) {
-                    if (user.getIdentifier().equals(CurLiveInfo.getHostID())) {
-                        mHostNameTv.setText(TextUtils.isEmpty(user.getNickName()) ? CurLiveInfo.getHostID() : user.getNickName());
-                        mHostIconUrl = user.getFaceUrl();
-                        showHeadIcon(mHeadIcon, mHostIconUrl);
-                    } else {
-                        SxbLog.w(TAG, "updateUserInfo->uid not match: " + user.getIdentifier() + "/" + CurLiveInfo.getHostID());
+            switch (requestCode) {
+                case GETPROFILE_HOST:
+                    for (TIMUserProfile user : profiles) {
+                        if (user.getIdentifier().equals(CurLiveInfo.getHostID())) {
+                            mHostNameTv.setText(TextUtils.isEmpty(user.getNickName()) ? CurLiveInfo.getHostID() : user.getNickName());
+                            mHostIconUrl = user.getFaceUrl();
+                            showHeadIcon(mHeadIcon, mHostIconUrl);
+                        } else {
+                            SxbLog.w(TAG, "updateUserInfo->uid not match: " + user.getIdentifier() + "/" + CurLiveInfo.getHostID());
+                        }
                     }
-                }
-            break;
-            case GETPROFILE_JOIN:
-                for (TIMUserProfile user : profiles) {
-                    tvMembers.setText("" + CurLiveInfo.getMembers());
-                    SxbLog.w(TAG, "get nick name:" + user.getNickName());
-                    SxbLog.w(TAG, "get remark name:"+user.getRemark());
-                    SxbLog.w(TAG, "get avatar:"+user.getFaceUrl());
-                    if (!TextUtils.isEmpty(user.getNickName())){
-                        refreshTextListView(user.getNickName(), "join live", Constants.MEMBER_ENTER);
-                    }else{
-                        refreshTextListView(user.getIdentifier(), "join live", Constants.MEMBER_ENTER);
+                    break;
+                case GETPROFILE_JOIN:
+                    for (TIMUserProfile user : profiles) {
+                        tvMembers.setText("" + CurLiveInfo.getMembers());
+                        SxbLog.w(TAG, "get nick name:" + user.getNickName());
+                        SxbLog.w(TAG, "get remark name:" + user.getRemark());
+                        SxbLog.w(TAG, "get avatar:" + user.getFaceUrl());
+                        if (!TextUtils.isEmpty(user.getNickName())) {
+                            refreshTextListView(user.getNickName(), "join live", Constants.MEMBER_ENTER);
+                        } else {
+                            refreshTextListView(user.getIdentifier(), "join live", Constants.MEMBER_ENTER);
+                        }
                     }
-                }
-                break;
+                    break;
             }
 
         }

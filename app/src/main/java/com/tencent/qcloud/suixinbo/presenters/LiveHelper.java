@@ -58,7 +58,7 @@ public class LiveHelper extends Presenter {
     private static final int CAMERA_NONE = -1;
     private static final int FRONT_CAMERA = 0;
     private static final int BACK_CAMERA = 1;
-    private static final int MAX_REQUEST_VIEW_COUNT = 3;//当前最大支持请求画面个数
+    private static final int MAX_REQUEST_VIEW_COUNT = 4;//当前最大支持请求画面个数
     private static final boolean LOCAL = true;
     private static final boolean REMOTE = false;
     private TIMConversation mGroupConversation;
@@ -420,10 +420,10 @@ public class LiveHelper extends Presenter {
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
                     Log.i(TAG, "handleCustomMsg " + sendId);
-                    mLiveView.cancelInviteView(sendId);
+                    mLiveView.cancelInviteView(sendId,false);
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
-                    mLiveView.cancelInviteView(sendId);
+                    mLiveView.cancelInviteView(sendId,false);
                     Toast.makeText(mContext, sendId + " refuse !", Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.AVIMCMD_Praise:
@@ -631,9 +631,6 @@ public class LiveHelper extends Presenter {
 
             @Override
             public void onSuccess(TIMMessage timMessage) {
-                if (cmd == Constants.AVIMCMD_MUlTI_HOST_INVITE) {
-                    mLiveView.showInviteView(sendId);
-                }
                 SxbLog.i(TAG, "send praise succ !");
             }
         });
