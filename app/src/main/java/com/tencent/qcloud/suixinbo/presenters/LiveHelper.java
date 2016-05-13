@@ -155,6 +155,7 @@ public class LiveHelper extends Presenter {
                     } else {
                         mIsFrontCamera = false;
                     }
+                    QavsdkControl.getInstance().setMirror(mIsFrontCamera);
 
                     //如果是主播直接本地渲染
                     if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
@@ -499,8 +500,8 @@ public class LiveHelper extends Presenter {
 
             if (result == AVError.AV_OK) {
                 mIsFrontCamera = !mIsFrontCamera;
+                QavsdkControl.getInstance().setMirror(mIsFrontCamera);
             }
-
         }
     };
 

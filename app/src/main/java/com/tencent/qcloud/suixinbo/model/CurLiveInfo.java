@@ -9,7 +9,7 @@ public class CurLiveInfo {
     private static String title;
     private static double lat1;
     private static double long1;
-    private static String address;
+    private static String address = "";
     private static String coverurl = "";
 
     public static int RoomNum;

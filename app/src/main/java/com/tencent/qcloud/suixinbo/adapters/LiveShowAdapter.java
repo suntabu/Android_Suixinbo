@@ -98,7 +98,11 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
         }
         holder.tvMembers.setText(""+data.getWatchCount());
         holder.tvAdmires.setText(""+data.getAdmireCount());
-        holder.tvLbs.setText(UIUtils.getLimitString(data.getLbs().getAddress(), 9));
+        if (!TextUtils.isEmpty(data.getLbs().getAddress())) {
+            holder.tvLbs.setText(UIUtils.getLimitString(data.getLbs().getAddress(), 9));
+        }else{
+            holder.tvLbs.setText(getContext().getString(R.string.live_unknown));
+        }
 
         return convertView;
     }

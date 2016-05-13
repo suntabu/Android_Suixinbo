@@ -245,11 +245,7 @@ public class EnterLiveHelper extends Presenter {
                     JSONObject lbs = new JSONObject();
                     lbs.put("longitude", CurLiveInfo.getLong1());
                     lbs.put("latitude", CurLiveInfo.getLat1());
-                    if (TextUtils.isEmpty(CurLiveInfo.getAddress())) {
-                        lbs.put("address", mContext.getString(R.string.text_live_lbs_unknown));
-                    } else {
-                        lbs.put("address", CurLiveInfo.getAddress());
-                    }
+                    lbs.put("address", CurLiveInfo.getAddress());
                     liveInfo.put("lbs", lbs);
 
                 } catch (JSONException e) {
