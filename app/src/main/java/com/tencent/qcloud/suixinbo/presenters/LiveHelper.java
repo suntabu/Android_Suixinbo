@@ -454,7 +454,7 @@ public class LiveHelper extends Presenter {
                     //mLiveView.refreshText("quite live", sendId);
                     mLiveView.memberQuit(sender.getIdentifier(), sender.getNickName());
                     break;
-                case Constants.AVIMCMD_MULT_CANCEL_INTERACT://主播关闭摄像头命令
+                case Constants.AVIMCMD_MULTI_CANCEL_INTERACT://主播关闭摄像头命令
                     //如果是自己关闭Camera和Mic
                     String closeId = json.getString(Constants.CMD_PARAM);
                     if (closeId.equals(MySelfInfo.getInstance().getId()))//是自己
@@ -463,6 +463,9 @@ public class LiveHelper extends Presenter {
                     QavsdkControl.getInstance().closeMemberView(closeId);
                     mLiveView.hideInviteDialog();
                     mLiveView.refreshUI(closeId);
+                    break;
+                case Constants.AVIMCMD_MULTI_HOST_CANCELINVITE:
+                    mLiveView.hideInviteDialog();
                     break;
             }
 

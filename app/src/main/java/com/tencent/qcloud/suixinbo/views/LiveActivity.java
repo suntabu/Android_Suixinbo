@@ -207,7 +207,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case TIMEOUT_INVITE:
                 String id = "" + msg.obj;
                 cancelInviteView(id);
-//                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_HOST_CANCELINVITE, id);
                 break;
         }
         return;
@@ -851,7 +851,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         } else {
             mLiveHelper.closeCameraAndMic();//是自己成员关闭
         }
-        mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id);
+        mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, id);
         QavsdkControl.getInstance().closeMemberView(id);
         backToNormalCtrlView();
     }
@@ -1018,15 +1018,15 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 break;
             case R.id.invite_view1:
                 inviteView1.setVisibility(View.INVISIBLE);
-                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, "" + inviteView1.getTag());
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView1.getTag());
                 break;
             case R.id.invite_view2:
                 inviteView2.setVisibility(View.INVISIBLE);
-                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, "" + inviteView2.getTag());
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView2.getTag());
                 break;
             case R.id.invite_view3:
                 inviteView3.setVisibility(View.INVISIBLE);
-                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, "" + inviteView3.getTag());
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView3.getTag());
                 break;
         }
     }
