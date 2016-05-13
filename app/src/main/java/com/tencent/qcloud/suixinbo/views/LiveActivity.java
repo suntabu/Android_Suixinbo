@@ -101,6 +101,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private ImageView mRecordBall;
     private int thumbUp = 0;
     private long admireTime = 0;
+    private int watchCount = 0;
 
 
     private String backGroundId;
@@ -479,6 +480,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     @Override
     protected void onDestroy() {
+        watchCount = 0;
         super.onDestroy();
         if (null != mHearBeatTimer) {
             mHearBeatTimer.cancel();
@@ -593,6 +595,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             if ((null != mDetailDialog) && (mDetailDialog.isShowing() == false)) {
+                mDetailTime.setText(formatTime);
+                mDetailAdmires.setText("" + CurLiveInfo.getAdmires());
+                mDetailWatchCount.setText("" + watchCount);
                 mDetailDialog.show();
             }
         } else {
@@ -601,9 +606,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     }
 
+
+    private TextView mDetailTime, mDetailAdmires, mDetailWatchCount;
+
     private void initDetailDailog() {
         mDetailDialog = new Dialog(this, R.style.dialog);
         mDetailDialog.setContentView(R.layout.dialog_live_detail);
+        mDetailTime = (TextView) mDetailDialog.findViewById(R.id.tv_time);
+        mDetailAdmires = (TextView) mDetailDialog.findViewById(R.id.tv_admires);
+        mDetailWatchCount = (TextView) mDetailDialog.findViewById(R.id.tv_members);
+
         mDetailDialog.setCancelable(false);
 
         TextView tvCancel = (TextView) mDetailDialog.findViewById(R.id.btn_cancel);
@@ -625,6 +637,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void memberJoin(String id, String name) {
+        watchCount++;
         refreshTextListView(TextUtils.isEmpty(name) ? id : name, "join live", Constants.MEMBER_ENTER);
 
         CurLiveInfo.setMembers(CurLiveInfo.getMembers() + 1);

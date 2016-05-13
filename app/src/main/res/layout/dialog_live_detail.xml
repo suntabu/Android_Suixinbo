@@ -18,7 +18,7 @@
         android:gravity="center"
         android:textSize="@dimen/h10"
         android:textColor="@color/colorTextWhite"
-        android:text="01:20:29"
+        android:text="00:00"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
