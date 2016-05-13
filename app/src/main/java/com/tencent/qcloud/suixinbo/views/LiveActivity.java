@@ -206,7 +206,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case TIMEOUT_INVITE:
                 String id = "" + msg.obj;
                 cancelInviteView(id);
-                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id);
+//                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id);
                 break;
         }
         return;
