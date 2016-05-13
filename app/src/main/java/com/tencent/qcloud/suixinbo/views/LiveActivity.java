@@ -115,6 +115,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // 不锁屏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
         setContentView(R.layout.activity_live);
 
@@ -131,7 +132,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         //进入房间流程
         mEnterRoomProsscessHelper.startEnterRoom();
 
-//        QavsdkControl.getInstance().setCameraPreviewChangeCallback();
+        //QavsdkControl.getInstance().setCameraPreviewChangeCallback();
         mVideoTimer = new Timer(true);
 
         QavsdkApplication.getInstance().addActivity(this);
