@@ -91,7 +91,11 @@ public class LiveShowAdapter extends ArrayAdapter<LiveInfoJson> {
         }
 
         holder.tvTitle.setText(UIUtils.getLimitString(data.getTitle(), 10));
-        holder.tvHost.setText("@" + data.getHost().getUid());
+        if (!TextUtils.isEmpty(data.getHost().getUsername())){
+            holder.tvHost.setText("@" + data.getHost().getUsername());
+        }else{
+            holder.tvHost.setText("@" + data.getHost().getUid());
+        }
         holder.tvMembers.setText(""+data.getWatchCount());
         holder.tvAdmires.setText(""+data.getAdmireCount());
         holder.tvLbs.setText(UIUtils.getLimitString(data.getLbs().getAddress(), 9));

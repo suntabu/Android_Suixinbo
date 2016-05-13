@@ -15,6 +15,8 @@ public class CurLiveInfo {
     public static int RoomNum;
 
     public static String hostID;
+    public static String hostName;
+    public static String hostAvator;
 
     public static int currentRequestCount = 0;
 
@@ -42,6 +44,22 @@ public class CurLiveInfo {
 
     public static void setHostID(String hostID) {
         CurLiveInfo.hostID = hostID;
+    }
+
+    public static String getHostName() {
+        return hostName;
+    }
+
+    public static void setHostName(String hostName) {
+        CurLiveInfo.hostName = hostName;
+    }
+
+    public static String getHostAvator() {
+        return hostAvator;
+    }
+
+    public static void setHostAvator(String hostAvator) {
+        CurLiveInfo.hostAvator = hostAvator;
     }
 
     public static int getMembers() {

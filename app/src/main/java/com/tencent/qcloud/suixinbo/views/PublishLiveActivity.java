@@ -130,7 +130,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
      * 图片选择对话框
      */
     private void initPhotoDialog() {
-        mPicChsDialog = new Dialog(this, R.style.dialog);
+        mPicChsDialog = new Dialog(this, R.style.floag_dialog);
         mPicChsDialog.setContentView(R.layout.pic_choose);
 
         WindowManager windowManager = getWindowManager();

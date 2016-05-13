@@ -239,8 +239,8 @@ public class EnterLiveHelper extends Presenter {
                     liveInfo.put("avRoomId", CurLiveInfo.getRoomNum());
                     JSONObject hostinfo = new JSONObject();
                     hostinfo.put("uid", MySelfInfo.getInstance().getId());
-                    hostinfo.put("avatar", "");
-                    hostinfo.put("username", "");
+                    hostinfo.put("avatar", MySelfInfo.getInstance().getAvatar());
+                    hostinfo.put("username", MySelfInfo.getInstance().getNickName());
                     liveInfo.put("host", hostinfo);
                     JSONObject lbs = new JSONObject();
                     lbs.put("longitude", CurLiveInfo.getLong1());

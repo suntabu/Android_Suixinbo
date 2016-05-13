@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.ChatEntity;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.views.customviews.CustomTextView;
@@ -67,7 +68,6 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
     private LinkedList<AnimatorSet> mAnimatorSetList;
     private LinkedList<AnimatorInfo> mAnimatorInfoList;
     private boolean mScrolling = false;
-    private boolean mNeedAnimator = true;
     private boolean mCreateAnimator = false;
 
     public ChatMsgListAdapter(Context context, ListView listview, List<ChatEntity> objects) {
@@ -80,10 +80,6 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         mAnimatorInfoList = new LinkedList<AnimatorInfo>();
 
         mListView.setOnScrollListener(this);
-
-        //间歇
-//        mNeedAnimator = !MySelfInfo.instance().getIsHost();
-        mNeedAnimator = false;
     }
 
 
@@ -145,7 +141,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
 
         ChatEntity item = listMessage.get(position);
 
-        if (mCreateAnimator && mNeedAnimator) {
+        if (mCreateAnimator && MySelfInfo.getInstance().isbLiveAnimator()) {
             playViewAnimator(convertView, position, item);
         }
 
@@ -400,7 +396,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         // 删除多余项
         clearFinishItem();
 
-        if (mNeedAnimator) {
+        if (MySelfInfo.getInstance().isbLiveAnimator()) {
             // 停止之前动画
             stopAnimator();
 
@@ -413,7 +409,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         // 重置ListView高度
         redrawListViewHeight();
 
-        if (mNeedAnimator && listMessage.size() >= MAXITEMCOUNT){
+        if (MySelfInfo.getInstance().isbLiveAnimator() && listMessage.size() >= MAXITEMCOUNT){
             continueAllAnimator();
         }
 
@@ -432,7 +428,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         case SCROLL_STATE_FLING:
             break;
         case SCROLL_STATE_TOUCH_SCROLL:
-            if (mNeedAnimator) {
+            if (MySelfInfo.getInstance().isbLiveAnimator()) {
                 // 开始滚动时停止所有属性动画
                 stopAnimator();
                 resetAlpha();
@@ -441,7 +437,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
             break;
         case SCROLL_STATE_IDLE:
             mScrolling = false;
-            if (mNeedAnimator) {
+            if (MySelfInfo.getInstance().isbLiveAnimator()) {
                 // 停止滚动时播放渐消动画
                 playDisappearAnimator();
             }

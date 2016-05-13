@@ -2,7 +2,6 @@ package com.tencent.qcloud.suixinbo.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
@@ -18,7 +17,9 @@ public class MySelfInfo {
     private String avatar;      // 头像
     private String sign;      // 签名
     private String CosSig;
-    private long sigExpire;
+
+    private boolean bLiveAnimator;  // 渐隐动画
+    private SxbLog.SxbLogLevel logLevel;           // 日志等级
 
 
     private int id_status;
@@ -88,12 +89,20 @@ public class MySelfInfo {
         CosSig = cosSig;
     }
 
-    public long getSigExpire() {
-        return sigExpire;
+    public boolean isbLiveAnimator() {
+        return bLiveAnimator;
     }
 
-    public void setSigExpire(long sigExpire) {
-        this.sigExpire = sigExpire;
+    public void setbLiveAnimator(boolean bLiveAnimator) {
+        this.bLiveAnimator = bLiveAnimator;
+    }
+
+    public SxbLog.SxbLogLevel getLogLevel() {
+        return logLevel;
+    }
+
+    public void setLogLevel(SxbLog.SxbLogLevel logLevel) {
+        this.logLevel = logLevel;
     }
 
     public void writeToCache(Context context) {
@@ -105,6 +114,8 @@ public class MySelfInfo {
         editor.putString(Constants.USER_AVATAR, avatar);
         editor.putString(Constants.USER_SIGN, sign);
         editor.putInt(Constants.USER_ROOM_NUM, myRoomNum);
+        editor.putBoolean(Constants.LIVE_ANIMATOR, bLiveAnimator);
+        editor.putInt(Constants.LOG_LEVEL, logLevel.ordinal());
         editor.commit();
     }
 
@@ -123,6 +134,14 @@ public class MySelfInfo {
         nickName = sharedata.getString(Constants.USER_NICK, null);
         avatar = sharedata.getString(Constants.USER_AVATAR, null);
         sign = sharedata.getString(Constants.USER_SIGN, null);
+        bLiveAnimator = sharedata.getBoolean(Constants.LIVE_ANIMATOR, false);
+        int level = sharedata.getInt(Constants.LOG_LEVEL, SxbLog.SxbLogLevel.INFO.ordinal());
+        if (level < SxbLog.SxbLogLevel.ERROR.ordinal() || level > SxbLog.SxbLogLevel.INFO.ordinal()){
+            logLevel = SxbLog.SxbLogLevel.INFO;
+        }else{
+            logLevel = SxbLog.SxbLogLevel.values()[level];
+        }
+        SxbLog.setLogLevel(logLevel);
         SxbLog.i(TAG, " getCache id: " + id);
     }
 

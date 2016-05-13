@@ -45,6 +45,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
     private LoginHeloper mLoginHeloper;
     private ProfileInfoHelper mProfileHelper;
     private LineControllerView mBtnLogout;
+    private LineControllerView mBtnSet;
 
     public FragmentProfile() {
     }
@@ -64,7 +65,9 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         mProfileId = (TextView) view.findViewById(R.id.profile_id);
         mEditProfile = (ImageView) view.findViewById(R.id.edit_profile);
         mProfileInfo = (TextView) view.findViewById(R.id.profile_info);
+        mBtnSet = (LineControllerView) view.findViewById(R.id.profile_set);
         mBtnLogout = (LineControllerView) view.findViewById(R.id.logout);
+        mBtnSet.setOnClickListener(this);
         mBtnLogout.setOnClickListener(this);
         mEditProfile.setOnClickListener(this);
 
@@ -91,6 +94,11 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         super.onStop();
     }
 
+    private void enterSetProfile(){
+        Intent intent = new Intent(getContext(), SetActivity.class);
+        startActivity(intent);
+    }
+
     private void enterEditProfile(){
         Intent intent = new Intent(getContext(), EditProfileActivity.class);
         startActivity(intent);
@@ -99,6 +107,9 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
     @Override
     public void onClick(View view) {
         switch (view.getId()){
+        case R.id.profile_set:
+            enterSetProfile();
+            break;
         case R.id.edit_profile:
             enterEditProfile();
             break;

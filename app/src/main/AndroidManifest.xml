@@ -50,6 +50,7 @@
         <activity android:name=".views.LiveActivity" />
         <activity android:name=".views.EditProfileActivity" />
         <activity android:name=".views.EditActivity" />
+        <activity android:name=".views.SetActivity" />
 
         <service
             android:name="com.tencent.qalsdk.service.QalService"

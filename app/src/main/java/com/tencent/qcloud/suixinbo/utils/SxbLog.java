@@ -7,14 +7,23 @@ import android.util.Log;
  */
 public class SxbLog {
 	public enum SxbLogLevel {
-		eOff,
-		eError,
-		eWarn,
-		eDebug,
-		eInfo
+        OFF,
+        ERROR,
+        WARN,
+        DEBUG,
+        INFO
 	}
 	
-	static private SxbLogLevel level = SxbLogLevel.eInfo;
+	static private SxbLogLevel level = SxbLogLevel.INFO;
+
+    static public String[] getStringValues(){
+        SxbLogLevel [] levels = SxbLogLevel.values();
+        String[] stringValuse = new String[levels.length];
+        for (int i=0; i< levels.length; i++){
+            stringValuse[i] = levels[i].toString();
+        }
+        return stringValuse;
+    }
 	
 	static public void setLogLevel(SxbLogLevel newLevel){
 		level = newLevel;
@@ -22,7 +31,7 @@ public class SxbLog {
 	}
     public static void v(String strTag, String strInfo){
         Log.v(strTag, strInfo);
-        if (level.ordinal() >= SxbLogLevel.eInfo.ordinal()){
+        if (level.ordinal() >= SxbLogLevel.INFO.ordinal()){
             SxbLogImpl.writeLog("I", strTag, strInfo, null);
         }
     }
@@ -33,7 +42,7 @@ public class SxbLog {
 
     public static void d(String strTag, String strInfo){
         Log.d(strTag, strInfo);
-        if (level.ordinal() >= SxbLogLevel.eDebug.ordinal()){
+        if (level.ordinal() >= SxbLogLevel.DEBUG.ordinal()){
             SxbLogImpl.writeLog("D", strTag, strInfo, null);
         }
     }
@@ -41,14 +50,14 @@ public class SxbLog {
 
     public static void w(String strTag, String strInfo){
         Log.w(strTag, strInfo);
-        if (level.ordinal() >= SxbLogLevel.eWarn.ordinal()){
+        if (level.ordinal() >= SxbLogLevel.WARN.ordinal()){
             SxbLogImpl.writeLog("W", strTag, strInfo, null);
         }
     }
 
     public static void e(String strTag, String strInfo){
         Log.e(strTag, strInfo);
-        if (level.ordinal() >= SxbLogLevel.eError.ordinal()){
+        if (level.ordinal() >= SxbLogLevel.ERROR.ordinal()){
             SxbLogImpl.writeLog("E", strTag, strInfo, null);
         }
     }

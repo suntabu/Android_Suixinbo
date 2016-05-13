@@ -60,6 +60,11 @@
     <string name="btn_login_out">退出登录</string>
     <string name="tip_force_offline">您的帐号已在其它地方登陆</string>
 
+    <!-- set -->
+    <string name="set_live_animator">渐隐动画</string>
+    <string name="set_log_level">日志等级</string>
+    <string name="set_sdk_version">SDK版本</string>
+
     <!-- edit -->
     <string name="edit_error">修改失败</string>
 
