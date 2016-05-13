@@ -362,6 +362,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             inviteView3 = (TextView) findViewById(R.id.invite_view3);
 
             initBackDialog();
+            initDetailDailog();
             mMemberDg = new MembersDialog(this, R.style.dialog, this);
             startRecordAnimation();
             showHeadIcon(mHeadIcon, MySelfInfo.getInstance().getAvatar());
@@ -581,10 +582,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-            if ((null == mDetailDialog) && (mDetailDialog.isShowing() == false)) {
+            if ((null != mDetailDialog) && (mDetailDialog.isShowing() == false)) {
                 mDetailDialog.show();
             }
-        }else{
+        } else {
             finish();
         }
 
@@ -603,7 +604,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 finish();
             }
         });
-        mDetailDialog.show();
+//        mDetailDialog.show();
     }
 
 
