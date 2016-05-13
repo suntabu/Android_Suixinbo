@@ -67,6 +67,7 @@ import java.util.TimerTask;
  */
 public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener, ProfileView {
     private static final String TAG = LiveActivity.class.getSimpleName();
+    private static final int GETPROFILE_HOST = 0x100;
     private static final int GETPROFILE_JOIN = 0x200;
 
     private EnterLiveHelper mEnterRoomProsscessHelper;
@@ -91,6 +92,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private ImageView mHeadIcon;
     private TextView mHostNameTv;
     private LinearLayout mHostLayout;
+    private String mHostIconUrl = null;        // 主播头像url
 
     private long mSecond = 0;
     private String formatTime;
@@ -359,8 +361,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             inviteView2 = (TextView) findViewById(R.id.invite_view2);
             inviteView3 = (TextView) findViewById(R.id.invite_view3);
 
-
-            mMemberDg = new MembersDialog(this, R.style.floag_dialog, this);
+            initBackDialog();
+            mMemberDg = new MembersDialog(this, R.style.dialog, this);
             startRecordAnimation();
             showHeadIcon(mHeadIcon, MySelfInfo.getInstance().getAvatar());
             mBeautySettings = (LinearLayout) findViewById(R.id.qav_beauty_setting);
@@ -406,8 +408,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
             List<String> ids = new ArrayList<>();
             ids.add(CurLiveInfo.getHostID());
-            showHeadIcon(mHeadIcon, CurLiveInfo.getHostAvator());
-            mHostNameTv.setText(CurLiveInfo.getHostName());
+            mUserInfoHelper.getUsersInfo(GETPROFILE_HOST, ids);
+            showHeadIcon(mHeadIcon, mHostIconUrl);
+            mHostNameTv.setText(CurLiveInfo.getHostID());
 
             mHostLayout = (LinearLayout) findViewById(R.id.head_up_layout);
             mHostLayout.setOnClickListener(this);
@@ -501,31 +504,42 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 主动退出直播
      */
     private void quiteLiveByPurpose() {
-        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
-            finish();
-            return;
-        }
-        final Dialog dialog = new Dialog(this, R.style.dialog);
-        dialog.setContentView(R.layout.dialog_end_live);
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            if (backDialog.isShowing() == false)
+                backDialog.show();
 
-        TextView tvSure = (TextView)dialog.findViewById(R.id.btn_sure);
+        } else {
+            mLiveHelper.unInitTIMListener();
+            mEnterRoomProsscessHelper.quiteLive();
+        }
+
+    }
+
+
+    private Dialog backDialog;
+
+    private void initBackDialog() {
+        backDialog = new Dialog(this, R.style.dialog);
+        backDialog.setContentView(R.layout.dialog_end_live);
+
+        TextView tvSure = (TextView) backDialog.findViewById(R.id.btn_sure);
         tvSure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //如果是直播，发消息
                 mLiveHelper.unInitTIMListener();
                 mEnterRoomProsscessHelper.quiteLive();
-                dialog.dismiss();
+                backDialog.dismiss();
             }
         });
-        TextView tvCancel = (TextView)dialog.findViewById(R.id.btn_cancel);
+        TextView tvCancel = (TextView) backDialog.findViewById(R.id.btn_cancel);
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.cancel();
+                backDialog.cancel();
             }
         });
-        dialog.show();
+//        backDialog.show();
     }
 
     /**
@@ -566,23 +580,32 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     @Override
     public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
-//        Toast.makeText(LiveActivity.this, "" + liveinfo.getTitle()+"end", Toast.LENGTH_SHORT).show();
-        if (null == mDetailDialog) {
-            mDetailDialog = new Dialog(this, R.style.dialog);
-            mDetailDialog.setContentView(R.layout.dialog_live_detail);
-            mDetailDialog.setCancelable(false);
-
-            TextView tvCancel = (TextView) mDetailDialog.findViewById(R.id.btn_cancel);
-            tvCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mDetailDialog.dismiss();
-                    finish();
-                }
-            });
-            mDetailDialog.show();
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            if ((null == mDetailDialog) && (mDetailDialog.isShowing() == false)) {
+                mDetailDialog.show();
+            }
+        }else{
+            finish();
         }
+
     }
+
+    private void initDetailDailog() {
+        mDetailDialog = new Dialog(this, R.style.dialog);
+        mDetailDialog.setContentView(R.layout.dialog_live_detail);
+        mDetailDialog.setCancelable(false);
+
+        TextView tvCancel = (TextView) mDetailDialog.findViewById(R.id.btn_cancel);
+        tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDetailDialog.dismiss();
+                finish();
+            }
+        });
+        mDetailDialog.show();
+    }
+
 
     /**
      * 有成员退群
@@ -717,10 +740,19 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void showInviteView(String id) {
         int index = QavsdkControl.getInstance().getAvailableViewIndex(1);
-        index = index + inviteViewCount;
-        switch (index) {
+        if (index == -1) {
+            Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int requetCount = index + inviteViewCount;
+        if (requetCount > 3) {
+            Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        switch (requetCount) {
             case 1:
-                inviteView1.setText(id);             inviteView1.setVisibility(View.VISIBLE);
+                inviteView1.setText(id);
+                inviteView1.setVisibility(View.VISIBLE);
                 inviteView1.setTag(id);
                 break;
             case 2:
@@ -736,43 +768,64 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             default:
                 break;
         }
+        mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, "", id);
         inviteViewCount++;
     }
 
     @Override
-    public void cancelInviteView(String id) {
-        if ((inviteView1 != null) && (inviteView1.getTag().equals(id))) {
-            SxbLog.i(TAG, "cancelInviteView "+inviteView1.getTag());
+    public void cancelInviteView(String id, boolean cancelInvite) {
+        if ((inviteView1 != null) && (inviteView1.getTag() != null)) {
+            if (inviteView1.getTag().equals(id)) {
+                Log.i(TAG, "cancelInviteView " + inviteView1.getTag());
+            }
             inviteView1.setVisibility(View.INVISIBLE);
-        } else if ((inviteView2 != null) && (inviteView2.getTag().equals(id))) {
-            SxbLog.i(TAG, "cancelInviteView "+inviteView2.getTag());
-            inviteView2.setVisibility(View.INVISIBLE);
-        } else if ((inviteView3 != null) && (inviteView3.getTag().equals(id))) {
-            SxbLog.i(TAG, "cancelInviteView "+inviteView3.getTag());
-            inviteView3.setVisibility(View.INVISIBLE);
         }
+
+        if (inviteView2 != null && inviteView2.getTag() != null) {
+            if (inviteView2.getTag().equals(id)) {
+                Log.i(TAG, "cancelInviteView " + inviteView2.getTag());
+                inviteView2.setVisibility(View.INVISIBLE);
+            } else {
+                Log.i(TAG, "cancelInviteView inviteView2 is null");
+            }
+        } else {
+            Log.i(TAG, "cancelInviteView inviteView2 is null");
+        }
+
+        if (inviteView3 != null && inviteView3.getTag() != null) {
+            if (inviteView3.getTag().equals(id)) {
+                Log.i(TAG, "cancelInviteView " + inviteView3.getTag());
+                inviteView3.setVisibility(View.INVISIBLE);
+            } else {
+                Log.i(TAG, "cancelInviteView inviteView3 is null");
+            }
+        } else {
+            Log.i(TAG, "cancelInviteView inviteView3 is null");
+        }
+        if (cancelInvite == true)
+            mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id, id);
         inviteViewCount--;
     }
 
 
-    private void showReportDialog(){
+    private void showReportDialog() {
         final Dialog reportDialog = new Dialog(this, R.style.report_dlg);
         reportDialog.setContentView(R.layout.dialog_live_report);
 
-        TextView tvReportDirty = (TextView)reportDialog.findViewById(R.id.btn_dirty);
-        TextView tvReportFalse = (TextView)reportDialog.findViewById(R.id.btn_false);
-        TextView tvReportVirus = (TextView)reportDialog.findViewById(R.id.btn_virus);
-        TextView tvReportIllegal = (TextView)reportDialog.findViewById(R.id.btn_illegal);
-        TextView tvReportYellow = (TextView)reportDialog.findViewById(R.id.btn_yellow);
-        TextView tvReportCancel = (TextView)reportDialog.findViewById(R.id.btn_cancel);
+        TextView tvReportDirty = (TextView) reportDialog.findViewById(R.id.btn_dirty);
+        TextView tvReportFalse = (TextView) reportDialog.findViewById(R.id.btn_false);
+        TextView tvReportVirus = (TextView) reportDialog.findViewById(R.id.btn_virus);
+        TextView tvReportIllegal = (TextView) reportDialog.findViewById(R.id.btn_illegal);
+        TextView tvReportYellow = (TextView) reportDialog.findViewById(R.id.btn_yellow);
+        TextView tvReportCancel = (TextView) reportDialog.findViewById(R.id.btn_cancel);
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
-                default:
-                    reportDialog.cancel();
-                    break;
+                switch (v.getId()) {
+                    default:
+                        reportDialog.cancel();
+                        break;
                 }
             }
         };
@@ -805,10 +858,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         TextView tvHost = (TextView) hostDlg.findViewById(R.id.tv_host_name);
         tvHost.setText(CurLiveInfo.getHostID());
         ImageView ivHostIcon = (ImageView) hostDlg.findViewById(R.id.iv_host_icon);
-        showHeadIcon(ivHostIcon, CurLiveInfo.getHostAvator());
+        showHeadIcon(ivHostIcon, mHostIconUrl);
         TextView tvLbs = (TextView) hostDlg.findViewById(R.id.tv_host_lbs);
         tvLbs.setText(UIUtils.getLimitString(CurLiveInfo.getAddress(), 6));
-        ImageView ivReport = (ImageView)hostDlg.findViewById(R.id.iv_report);
+        ImageView ivReport = (ImageView) hostDlg.findViewById(R.id.iv_report);
         ivReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -841,13 +894,13 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 break;
             case R.id.member_send_good:
                 // 添加飘星动画
-                mHeartLayout.addFavor();
                 if (checkInterval()) {
+                    mHeartLayout.addFavor();
                     mLiveHelper.sendC2CMessage(Constants.AVIMCMD_Praise, "", CurLiveInfo.getHostID());
                     CurLiveInfo.setAdmires(CurLiveInfo.getAdmires() + 1);
                     tvAdmires.setText("" + CurLiveInfo.getAdmires());
                 } else {
-                    //Toast.makeText(this, getString(R.string.text_live_admire_limit), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.text_live_admire_limit), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.flash_btn:
