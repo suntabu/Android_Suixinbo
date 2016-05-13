@@ -248,8 +248,7 @@ public class LiveHelper extends Presenter {
             });
     }
 
-
-    public void sendGroupMessage(int cmd, String param) {
+    public void sendGroupMessage(int cmd, String param, TIMValueCallBack<TIMMessage> callback) {
         JSONObject inviteCmd = new JSONObject();
         try {
             inviteCmd.put(Constants.CMD_KEY, cmd);
@@ -265,30 +264,26 @@ public class LiveHelper extends Presenter {
         Gmsg.addElement(elem);
 
         if (mGroupConversation != null)
-            mGroupConversation.sendMessage(Gmsg, new TIMValueCallBack<TIMMessage>() {
-                @Override
-                public void onError(int i, String s) {
-                    if (i == 85) { //消息体太长
-                        Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
-                    } else if (i == 6011) {//群主不存在
-                        Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
-                    }
-                    SxbLog.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
-                }
+            mGroupConversation.sendMessage(Gmsg, callback);
+    }
 
-                @Override
-                public void onSuccess(TIMMessage timMessage) {
-                    SxbLog.i(TAG, "onSuccess ");
-                    //发送成回显示消息内容
-//                    for (int j = 0; j < timMessage.getElementCount(); j++) {
-//                        TIMElem elem = (TIMElem) timMessage.getElement(0);
-//                        String sendId = timMessage.getSender();
-//                        handleTextMessage(elem, sendId);
-//                    }
-//                    SxbLog.i(TAG, "Send text Msg ok");
-
+    public void sendGroupMessage(int cmd, String param) {
+        sendGroupMessage(cmd, param, new TIMValueCallBack<TIMMessage>() {
+            @Override
+            public void onError(int i, String s) {
+                if (i == 85) { //消息体太长
+                    Toast.makeText(mContext, "Text too long ", Toast.LENGTH_SHORT).show();
+                } else if (i == 6011) {//群主不存在
+                    Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
                 }
-            });
+                SxbLog.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
+            }
+
+            @Override
+            public void onSuccess(TIMMessage timMessage) {
+                SxbLog.i(TAG, "onSuccess ");
+            }
+        });
     }
 
     /**
@@ -301,8 +296,27 @@ public class LiveHelper extends Presenter {
         mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, chatRoomId);
     }
 
-    public void unInitTIMListener() {
+    private void notifyQuitReady() {
         TIMManager.getInstance().removeMessageListener(msgListener);
+        mLiveView.readyToQuit();
+    }
+
+    public void perpareQuitRoom(boolean bPurpose) {
+        if (bPurpose) {
+            sendGroupMessage(Constants.AVIMCMD_ExitLive, "", new TIMValueCallBack<TIMMessage>() {
+                @Override
+                public void onError(int i, String s) {
+                    notifyQuitReady();
+                }
+
+                @Override
+                public void onSuccess(TIMMessage timMessage) {
+                    notifyQuitReady();
+                }
+            });
+        } else {
+            notifyQuitReady();
+        }
     }
 
 
@@ -347,6 +361,7 @@ public class LiveHelper extends Presenter {
                 TIMElem elem = currMsg.getElement(j);
                 TIMElemType type = elem.getType();
                 String sendId = currMsg.getSender();
+
                 //系统消息
                 if (type == TIMElemType.GroupSystem) {
                     if (TIMGroupSystemElemType.TIM_GROUP_SYSTEM_DELETE_GROUP_TYPE == ((TIMGroupSystemElem) elem).getSubtype()) {
@@ -357,7 +372,7 @@ public class LiveHelper extends Presenter {
                 }
                 //定制消息
                 if (type == TIMElemType.Custom) {
-                    handleCustomMsg(elem, sendId);
+                    handleCustomMsg(elem, currMsg.getSenderProfile());
                     continue;
                 }
 
@@ -404,7 +419,7 @@ public class LiveHelper extends Presenter {
      *
      * @param elem
      */
-    private void handleCustomMsg(TIMElem elem, String sendId) {
+    private void handleCustomMsg(TIMElem elem, TIMUserProfile sender) {
         try {
             String customText = new String(((TIMCustomElem) elem).getData(), "UTF-8");
             SxbLog.i(TAG, "cumstom msg  " + customText);
@@ -419,21 +434,23 @@ public class LiveHelper extends Presenter {
                     mLiveView.showInviteDialog();
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
-                    Log.i(TAG, "handleCustomMsg " + sendId);
-                    mLiveView.cancelInviteView(sendId);
+                    Log.i(TAG, "handleCustomMsg " + sender.getIdentifier());
+                    mLiveView.cancelInviteView(sender.getIdentifier());
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
-                    mLiveView.cancelInviteView(sendId);
-                    Toast.makeText(mContext, sendId + " refuse !", Toast.LENGTH_SHORT).show();
+                    mLiveView.cancelInviteView(sender.getIdentifier());
+                    Toast.makeText(mContext, sender.getIdentifier() + " refuse !", Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.AVIMCMD_Praise:
                     mLiveView.refreshThumbUp();
                     break;
                 case Constants.AVIMCMD_EnterLive:
-//                    mLiveView.refreshText("Step in live", sendId);
+                    //mLiveView.refreshText("Step in live", sendId);
+                    mLiveView.memberJoin(sender.getIdentifier(), sender.getNickName());
                     break;
                 case Constants.AVIMCMD_ExitLive:
-                    mLiveView.refreshText("quite live", sendId);
+                    //mLiveView.refreshText("quite live", sendId);
+                    mLiveView.memberQuit(sender.getIdentifier(), sender.getNickName());
                     break;
                 case Constants.AVIMCMD_MULT_CANCEL_INTERACT://主播关闭摄像头命令
                     //如果是自己关闭Camera和Mic
@@ -442,6 +459,7 @@ public class LiveHelper extends Presenter {
                         closeCameraAndMic();
                     //其他人关闭小窗口
                     QavsdkControl.getInstance().closeMemberView(closeId);
+                    mLiveView.hideInviteDialog();
                     mLiveView.refreshUI(closeId);
                     break;
             }
@@ -617,7 +635,7 @@ public class LiveHelper extends Presenter {
             e.printStackTrace();
         }
         String cmds = inviteCmd.toString();
-        SxbLog.i(TAG, "send cmd : " + cmd);
+        SxbLog.i(TAG, "send cmd : " + cmd + "|" + cmds);
         TIMMessage msg = new TIMMessage();
         TIMCustomElem elem = new TIMCustomElem();
         elem.setData(cmds.getBytes());

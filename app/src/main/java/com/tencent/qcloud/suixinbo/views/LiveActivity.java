@@ -56,7 +56,6 @@ import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -78,6 +77,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private static final int MINFRESHINTERVAL = 500;
     private static final int UPDAT_WALL_TIME_TIMER_TASK = 1;
     private static final int ClOSE_IMSDK = 2;
+    private static final int TIMEOUT_INVITE = 3;
     private boolean mBoolRefreshLock = false;
     private boolean mBoolNeedRefresh = false;
     private final Timer mTimer = new Timer();
@@ -200,8 +200,13 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 doRefreshListView();
                 break;
             case ClOSE_IMSDK:
-                mLiveHelper.unInitTIMListener();
+                mLiveHelper.perpareQuitRoom(false);
                 mEnterRoomProsscessHelper.quiteLive();
+                break;
+            case TIMEOUT_INVITE:
+                String id = "" + msg.obj;
+                cancelInviteView(id);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id);
                 break;
         }
         return;
@@ -358,6 +363,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             inviteView1 = (TextView) findViewById(R.id.invite_view1);
             inviteView2 = (TextView) findViewById(R.id.invite_view2);
             inviteView3 = (TextView) findViewById(R.id.invite_view3);
+            inviteView1.setOnClickListener(this);
+            inviteView2.setOnClickListener(this);
+            inviteView3.setOnClickListener(this);
 
             initBackDialog();
             initDetailDailog();
@@ -507,10 +515,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 backDialog.show();
 
         } else {
-            mLiveHelper.unInitTIMListener();
+            mLiveHelper.perpareQuitRoom(true);
             mEnterRoomProsscessHelper.quiteLive();
         }
-
     }
 
 
@@ -525,8 +532,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             @Override
             public void onClick(View v) {
                 //如果是直播，发消息
-                mLiveHelper.unInitTIMListener();
-                mEnterRoomProsscessHelper.quiteLive();
+                mLiveHelper.perpareQuitRoom(true);
                 backDialog.dismiss();
             }
         });
@@ -545,10 +551,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 被动退出直播
      */
     private void quiteLivePassively() {
-        mLiveHelper.unInitTIMListener();
+        mLiveHelper.perpareQuitRoom(false);
         mEnterRoomProsscessHelper.quiteLive();
     }
 
+    @Override
+    public void readyToQuit() {
+        mEnterRoomProsscessHelper.quiteLive();
+    }
 
     /**
      * 完成进出房间流程
@@ -604,6 +614,30 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 //        mDetailDialog.show();
     }
 
+    /**
+     * 成员状态变更
+     *
+     * @param id
+     * @param name
+     */
+    @Override
+    public void memberJoin(String id, String name) {
+        refreshTextListView(TextUtils.isEmpty(name) ? id : name, "join live", Constants.MEMBER_ENTER);
+
+        CurLiveInfo.setMembers(CurLiveInfo.getMembers() + 1);
+        tvMembers.setText("" + CurLiveInfo.getMembers());
+    }
+
+    @Override
+    public void memberQuit(String id, String name) {
+        refreshTextListView(TextUtils.isEmpty(name) ? id : name, "quite live", Constants.MEMBER_EXIT);
+
+        CurLiveInfo.setMembers(CurLiveInfo.getMembers() - 1);
+        tvMembers.setText("" + CurLiveInfo.getMembers());
+
+        //如果存在视频互动，取消
+        QavsdkControl.getInstance().closeMemberView(id);
+    }
 
     /**
      * 有成员退群
@@ -612,15 +646,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void memberQuiteLive(String[] list) {
-        for (String id : list) {
-            CurLiveInfo.setMembers(CurLiveInfo.getMembers() - 1);
-            tvMembers.setText("" + CurLiveInfo.getMembers());
-            refreshTextListView(id, "quite live", Constants.MEMBER_EXIT);
-        }
-        //如果存在视频互动，取消
-        for (String id : list) {
-            QavsdkControl.getInstance().closeMemberView(id);
-        }
     }
 
     /**
@@ -630,14 +655,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void memberJoinLive(final String[] list) {
-        List<String> joinList = new LinkedList<>();
-        for (String id : list) {
-            CurLiveInfo.setMembers(CurLiveInfo.getMembers() + 1);
-            joinList.add(id);
-            //tvMembers.setText("" + CurLiveInfo.getMembers());
-            //refreshTextListView(id, "join live", Constants.MEMBER_ENTER);
-        }
-        mUserInfoHelper.getUsersInfo(GETPROFILE_JOIN, joinList);
     }
 
     @Override
@@ -710,6 +727,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     }
 
     @Override
+    public void hideInviteDialog() {
+        if ((inviteDg != null) && (inviteDg.isShowing() == true)) {
+            inviteDg.dismiss();
+        }
+    }
+
+
+    @Override
     public void refreshText(String text, String name) {
         if (text != null) {
             refreshTextListView(name, text, Constants.TEXT_TYPE);
@@ -736,22 +761,23 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private int inviteViewCount = 0;
 
     @Override
-    public void showInviteView(String id) {
+    public boolean showInviteView(String id) {
         int index = QavsdkControl.getInstance().getAvailableViewIndex(1);
         if (index == -1) {
             Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
-            return;
+            return false;
         }
         int requetCount = index + inviteViewCount;
         if (requetCount > 3) {
             Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
-            return;
+            return false;
         }
         switch (requetCount) {
             case 1:
                 inviteView1.setText(id);
                 inviteView1.setVisibility(View.VISIBLE);
                 inviteView1.setTag(id);
+
                 break;
             case 2:
                 inviteView2.setText(id);
@@ -763,11 +789,15 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 inviteView3.setVisibility(View.VISIBLE);
                 inviteView3.setTag(id);
                 break;
-            default:
-                break;
         }
         mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, "", id);
         inviteViewCount++;
+        //30s超时取消
+        Message msg = new Message();
+        msg.what = TIMEOUT_INVITE;
+        msg.obj = id;
+        mHandler.sendMessageDelayed(msg, 30 * 1000);
+        return true;
     }
 
     @Override
@@ -979,6 +1009,18 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case R.id.qav_beauty_setting_finish:
                 mBeautySettings.setVisibility(View.GONE);
                 mFullControllerUi.setVisibility(View.VISIBLE);
+                break;
+            case R.id.invite_view1:
+                inviteView1.setVisibility(View.INVISIBLE);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, "" + inviteView1.getTag());
+                break;
+            case R.id.invite_view2:
+                inviteView2.setVisibility(View.INVISIBLE);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, "" + inviteView2.getTag());
+                break;
+            case R.id.invite_view3:
+                inviteView3.setVisibility(View.INVISIBLE);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, "" + inviteView3.getTag());
                 break;
         }
     }

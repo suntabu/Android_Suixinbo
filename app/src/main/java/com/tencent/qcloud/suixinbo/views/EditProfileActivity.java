@@ -1,14 +1,22 @@
 package com.tencent.qcloud.suixinbo.views;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -17,28 +25,39 @@ import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
+import com.tencent.qcloud.suixinbo.presenters.UploadHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
+import com.tencent.qcloud.suixinbo.presenters.viewinface.UploadView;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
 import com.tencent.qcloud.suixinbo.views.customviews.TemplateTitle;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
  * Created by xkazerzhang on 2016/5/12.
  */
-public class EditProfileActivity extends Activity implements View.OnClickListener, ProfileView{
+public class EditProfileActivity extends Activity implements View.OnClickListener, ProfileView, UploadView{
     private final static int REQ_EDIT_NICKNAME = 0x100;
     private final static int REQ_EDIT_SIGN  = 0x200;
 
-    private ProfileInfoHelper profileInfoHelper;
+    private static final int CROP_CHOOSE = 10;
+    private static final int CAPTURE_IMAGE_CAMERA = 100;
+    private static final int IMAGE_STORE = 200;
+
+    private UploadHelper mUploadHelper;
+    private ProfileInfoHelper mProfileInfoHelper;
     private String TAG = "EditProfileActivity";
     private ImageView ivIcon;
     private TemplateTitle ttEdit;
     private LineControllerView lcvNickName;
     private LineControllerView lcvSign;
+
+    private Uri iconUrl, iconCrop;
 
     private void updateView(){
         lcvNickName.setContent(MySelfInfo.getInstance().getNickName());
@@ -77,7 +96,8 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
 
         initView();
 
-        profileInfoHelper = new ProfileInfoHelper(this);
+        mProfileInfoHelper = new ProfileInfoHelper(this);
+        mUploadHelper = new UploadHelper(this, this);
 
         QavsdkApplication.getInstance().addActivity(this);
     }
@@ -88,9 +108,93 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
         super.onDestroy();
     }
 
+    private Uri createCoverUri(String type) {
+        String filename = MySelfInfo.getInstance().getId()+ type + ".jpg";
+        File outputImage = new File(Environment.getExternalStorageDirectory(), filename);
+        try {
+            if (outputImage.exists()) {
+                outputImage.delete();
+            }
+            outputImage.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Uri.fromFile(outputImage);
+    }
+
+    /**
+     * 获取图片资源
+     *
+     * @param type
+     */
+    private void getPicFrom(int type) {
+        switch (type) {
+            case CAPTURE_IMAGE_CAMERA:
+                Intent intent_photo = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                iconUrl = createCoverUri("_icon");
+                intent_photo.putExtra(MediaStore.EXTRA_OUTPUT, iconUrl);
+                startActivityForResult(intent_photo, CAPTURE_IMAGE_CAMERA);
+                break;
+            case IMAGE_STORE:
+                Intent intent_album = new Intent("android.intent.action.GET_CONTENT");
+                intent_album.setType("image/*");
+                startActivityForResult(intent_album, IMAGE_STORE);
+                break;
+
+        }
+    }
+
+    /**
+     * 图片选择对话框
+     */
+    private void showPhotoDialog() {
+        final Dialog pickDialog = new Dialog(this, R.style.floag_dialog);
+        pickDialog.setContentView(R.layout.pic_choose);
+
+        WindowManager windowManager = getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        Window dlgwin = pickDialog.getWindow();
+        WindowManager.LayoutParams lp = dlgwin.getAttributes();
+        dlgwin.setGravity(Gravity.BOTTOM);
+        lp.width = (int)(display.getWidth()); //设置宽度
+
+        pickDialog.getWindow().setAttributes(lp);
+
+        TextView camera = (TextView) pickDialog.findViewById(R.id.chos_camera);
+        TextView picLib = (TextView) pickDialog.findViewById(R.id.pic_lib);
+        TextView cancel = (TextView) pickDialog.findViewById(R.id.btn_cancel);
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getPicFrom(CAPTURE_IMAGE_CAMERA);
+                pickDialog.dismiss();
+            }
+        });
+
+        picLib.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getPicFrom(IMAGE_STORE);
+                pickDialog.dismiss();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickDialog.dismiss();
+            }
+        });
+
+        pickDialog.show();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+        case R.id.rl_ep_icon:
+            showPhotoDialog();
+            break;
         case R.id.lcv_ep_nickname:
             EditActivity.navToEdit(this, getString(R.string.profile_nickname), MySelfInfo.getInstance().getNickName(), REQ_EDIT_NICKNAME);
             break;
@@ -102,6 +206,22 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
         }
     }
 
+    public void startPhotoZoom(Uri uri) {
+        iconCrop = createCoverUri("_icon_crop");
+
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", "true");
+        intent.putExtra("aspectX", 300);
+        intent.putExtra("aspectY", 300);
+        intent.putExtra("outputX", 300);
+        intent.putExtra("outputY", 300);
+        intent.putExtra("return-data", false);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, iconCrop);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        startActivityForResult(intent, CROP_CHOOSE);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK){
@@ -110,10 +230,19 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
         }
         switch (requestCode){
         case REQ_EDIT_NICKNAME:
-            profileInfoHelper.setMyNickName(data.getStringExtra(EditActivity.RETURN_EXTRA));
+            mProfileInfoHelper.setMyNickName(data.getStringExtra(EditActivity.RETURN_EXTRA));
             break;
         case REQ_EDIT_SIGN:
-            profileInfoHelper.setMySign(data.getStringExtra(EditActivity.RETURN_EXTRA));
+            mProfileInfoHelper.setMySign(data.getStringExtra(EditActivity.RETURN_EXTRA));
+            break;
+        case CAPTURE_IMAGE_CAMERA:
+            startPhotoZoom(iconUrl);
+            break;
+        case IMAGE_STORE:
+            startPhotoZoom(data.getData());
+            break;
+        case CROP_CHOOSE:
+            mUploadHelper.uploadCover(iconCrop.getPath());
             break;
         }
     }
@@ -132,5 +261,17 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
 
     @Override
     public void updateUserInfo(int reqid, List<TIMUserProfile> profiles) {
+    }
+
+    @Override
+    public void onUploadProcess(int percent) {}
+
+    @Override
+    public void onUploadResult(int code, String url) {
+        if (0 == code) {
+            mProfileInfoHelper.setMyAvator(url);
+        }else{
+            SxbLog.w(TAG, "onUploadResult->failed: "+code);
+        }
     }
 }

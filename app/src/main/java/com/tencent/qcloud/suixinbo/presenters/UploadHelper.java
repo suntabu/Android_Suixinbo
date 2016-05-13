@@ -23,7 +23,7 @@ import java.util.Calendar;
 /**
  * Created by admin on 16/4/21.
  */
-public class PublishHelper extends Presenter {
+public class UploadHelper extends Presenter {
     private final String TAG = "PublishHelper";
     private final String bucket = "sxbbucket";
     private final String appid = "10022853";
@@ -41,7 +41,7 @@ public class PublishHelper extends Presenter {
     private Handler mHandler;
     private Handler mMainHandler;
 
-    public PublishHelper(Context context, UploadView view) {
+    public UploadHelper(Context context, UploadView view) {
         mContext = context;
         mView = view;
         mThread = new HandlerThread("upload");
@@ -54,11 +54,11 @@ public class PublishHelper extends Presenter {
                         doUpdateSig();
                         break;
                     case THREAD_UPLAOD:
-                        doUploadCover((String)msg.obj);
+                        doUploadCover((String)msg.obj, true);
                         break;
                     case THREAD_GETSIG_UPLOAD:
                         doUpdateSig();
-                        doUploadCover((String) msg.obj);
+                        doUploadCover((String) msg.obj, false);
                         break;
                 }
                 return false;
@@ -89,17 +89,19 @@ public class PublishHelper extends Presenter {
     private void doUpdateSig(){
         String sig = OKhttpHelper.getInstance().getCosSig();
         MySelfInfo.getInstance().setCosSig(sig);
-        SxbLog.d(TAG, "doUpdateSig->get sig: "+sig);
+        SxbLog.d(TAG, "doUpdateSig->get sig: " + sig);
     }
 
-    private void doUploadCover(final String path){
+    private void doUploadCover(final String path, boolean bRetry){
         String sig = MySelfInfo.getInstance().getCosSig();
         if (TextUtils.isEmpty(sig)){
-            Message msg = new Message();
-            msg.what = THREAD_GETSIG_UPLOAD;
-            msg.obj = path;
+            if (bRetry) {
+                Message msg = new Message();
+                msg.what = THREAD_GETSIG_UPLOAD;
+                msg.obj = path;
 
-            mHandler.sendMessage(msg);
+                mHandler.sendMessage(msg);
+            }
             return;
         }
 

@@ -57,12 +57,13 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
             public void onClick(View view) {
                 SxbLog.i(TAG, "select item:  " + selectId);
                 if (data.isOnVideoChat() == false) {//不在房间中，发起邀请
-                    mLiveView.showInviteView(selectId);
-                    data.setIsOnVideoChat(true);
-                    view.setBackgroundResource(R.drawable.btn_video_disconnect);
+                    if (mLiveView.showInviteView(selectId)) {
+//                        data.setIsOnVideoChat(true);
+                        view.setBackgroundResource(R.drawable.btn_video_disconnect);
+                    }
                 } else {
                     mLiveView.cancelInviteView(selectId);
-                    data.setIsOnVideoChat(false);
+//                    data.setIsOnVideoChat(false);
                     view.setBackgroundResource(R.drawable.btn_video_connection);
                     mLiveView.cancelMemberView(selectId);
                 }
