@@ -15,6 +15,7 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.views.customviews.CustomSwitch;
 import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
+import com.tencent.qcloud.suixinbo.views.customviews.TemplateTitle;
 
 /**
  * Created by admin on 2016/5/13.
@@ -24,6 +25,7 @@ public class SetActivity extends Activity implements View.OnClickListener{
     private CustomSwitch csAnimator;
     private LineControllerView lcvLog;
     private LineControllerView lcvVersion;
+    private TemplateTitle ttHead;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class SetActivity extends Activity implements View.OnClickListener{
     }
 
     private void initView(){
+        ttHead = (TemplateTitle)findViewById(R.id.tt_head);
         csAnimator = (CustomSwitch)findViewById(R.id.cs_animator);
         lcvLog = (LineControllerView)findViewById(R.id.lcv_set_log_level);
         lcvVersion = (LineControllerView)findViewById(R.id.lcv_set_version);
@@ -49,6 +52,13 @@ public class SetActivity extends Activity implements View.OnClickListener{
         lcvLog.setContent(MySelfInfo.getInstance().getLogLevel().toString());
 
         csAnimator.setChecked(MySelfInfo.getInstance().isbLiveAnimator(), false);
+
+        ttHead.setReturnListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void changeLogLevel(){

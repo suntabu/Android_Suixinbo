@@ -38,7 +38,7 @@ public class OKhttpHelper {
     public static final String STOP_ROOM = "http://182.254.234.225/sxb/index.php?svc=live&cmd=end";
     public static final String GET_LIVELIST = "http://182.254.234.225/sxb/index.php?svc=live&cmd=list";
     public static final String SEND_HEARTBEAT = "http://182.254.234.225/sxb/index.php?svc=live&cmd=host_heartbeat";
-    public static final String GET_COS_SIG = "http://182.254.234.225/index.php?svc=cos&cmd=get_sign";
+    public static final String GET_COS_SIG = "http://182.254.234.225/sxb/index.php?svc=cos&cmd=get_sign";
 
 
     public static OKhttpHelper getInstance() {

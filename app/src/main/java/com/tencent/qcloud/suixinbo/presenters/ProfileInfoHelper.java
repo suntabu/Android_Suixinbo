@@ -64,6 +64,20 @@ public class ProfileInfoHelper {
         });
     }
 
+    public void setMyAvator(String url){
+        TIMFriendshipManager.getInstance().setFaceUrl(url, new TIMCallBack() {
+            @Override
+            public void onError(int i, String s) {
+                SxbLog.w(TAG, "setMyAvator->error:" + i + "," + s);
+            }
+
+            @Override
+            public void onSuccess() {
+                getMyProfile();
+            }
+        });
+    }
+
     public void getUsersInfo(final int requestCode, List<String> users){
         TIMFriendshipManager.getInstance().getUsersProfile(users, new TIMValueCallBack<List<TIMUserProfile>>() {
             @Override

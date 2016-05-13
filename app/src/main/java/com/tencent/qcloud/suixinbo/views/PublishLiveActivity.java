@@ -23,7 +23,7 @@ import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
 import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
-import com.tencent.qcloud.suixinbo.presenters.PublishHelper;
+import com.tencent.qcloud.suixinbo.presenters.UploadHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LocationView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.UploadView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -36,7 +36,7 @@ import java.io.IOException;
  * Created by admin on 16/4/21.
  */
 public class PublishLiveActivity extends Activity implements View.OnClickListener, LocationView, UploadView {
-    private PublishHelper mPublishLivePresenter;
+    private UploadHelper mPublishLivePresenter;
     private LocationHelper mLocationHelper;
     private TextView BtnBack, BtnPublish;
     private Dialog mPicChsDialog;
@@ -58,7 +58,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_publish);
-        mPublishLivePresenter = new PublishHelper(this, this);
+        mPublishLivePresenter = new UploadHelper(this, this);
         mLocationHelper = new LocationHelper(this);
         tvTitle = (TextView) findViewById(R.id.live_title);
         BtnBack = (TextView) findViewById(R.id.btn_cancel);
