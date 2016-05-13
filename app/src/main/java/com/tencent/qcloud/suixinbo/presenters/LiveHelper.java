@@ -234,9 +234,9 @@ public class LiveHelper extends Presenter {
                     //发送成回显示消息内容
                     for (int j = 0; j < timMessage.getElementCount(); j++) {
                         TIMElem elem = (TIMElem) timMessage.getElement(0);
-                        if (timMessage.isSelf()){
+                        if (timMessage.isSelf()) {
                             handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
-                        }else {
+                        } else {
                             TIMUserProfile sendUser = timMessage.getSenderProfile();
                             //String sendId = timMessage.getSender();
                             handleTextMessage(elem, sendUser.getNickName());
@@ -368,14 +368,14 @@ public class LiveHelper extends Presenter {
 
                 //最后处理文本消息
                 if (type == TIMElemType.Text) {
-                    if (currMsg.isSelf()){
+                    if (currMsg.isSelf()) {
                         handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
-                    }else {
+                    } else {
                         TIMUserProfile sendUser = currMsg.getSenderProfile();
                         //String sendid = currMsg.getSender();
-                        if (!TextUtils.isEmpty(sendUser.getNickName())){
+                        if (!TextUtils.isEmpty(sendUser.getNickName())) {
                             handleTextMessage(elem, sendUser.getNickName());
-                        }else {
+                        } else {
                             handleTextMessage(elem, sendUser.getIdentifier());
                         }
                     }
@@ -420,10 +420,10 @@ public class LiveHelper extends Presenter {
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
                     Log.i(TAG, "handleCustomMsg " + sendId);
-                    mLiveView.cancelInviteView(sendId,false);
+                    mLiveView.cancelInviteView(sendId);
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
-                    mLiveView.cancelInviteView(sendId,false);
+                    mLiveView.cancelInviteView(sendId);
                     Toast.makeText(mContext, sendId + " refuse !", Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.AVIMCMD_Praise:
