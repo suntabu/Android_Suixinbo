@@ -62,7 +62,7 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
                 CurLiveInfo.setHostName(item.getHost().getUsername());
                 CurLiveInfo.setHostAvator(item.getHost().getAvatar());
                 CurLiveInfo.setRoomNum(item.getAvRoomId());
-                CurLiveInfo.setMembers(item.getWatchCount());
+                CurLiveInfo.setMembers(item.getWatchCount()+1); // 添加自己
                 CurLiveInfo.setAdmires(item.getAdmireCount());
                 CurLiveInfo.setAddress(item.getLbs().getAddress());
                 startActivity(intent);
