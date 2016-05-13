@@ -56,7 +56,6 @@ import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -200,7 +199,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 doRefreshListView();
                 break;
             case ClOSE_IMSDK:
-                mLiveHelper.unInitTIMListener();
+                mLiveHelper.perpareQuitRoom(false);
                 mEnterRoomProsscessHelper.quiteLive();
                 break;
         }
@@ -507,10 +506,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 backDialog.show();
 
         } else {
-            mLiveHelper.unInitTIMListener();
+            mLiveHelper.perpareQuitRoom(true);
             mEnterRoomProsscessHelper.quiteLive();
         }
-
     }
 
 
@@ -525,8 +523,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             @Override
             public void onClick(View v) {
                 //如果是直播，发消息
-                mLiveHelper.unInitTIMListener();
-                mEnterRoomProsscessHelper.quiteLive();
+                mLiveHelper.perpareQuitRoom(true);
                 backDialog.dismiss();
             }
         });
@@ -545,10 +542,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 被动退出直播
      */
     private void quiteLivePassively() {
-        mLiveHelper.unInitTIMListener();
+        mLiveHelper.perpareQuitRoom(false);
         mEnterRoomProsscessHelper.quiteLive();
     }
 
+    @Override
+    public void readyToQuit() {
+        mEnterRoomProsscessHelper.quiteLive();
+    }
 
     /**
      * 完成进出房间流程
@@ -604,6 +605,29 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 //        mDetailDialog.show();
     }
 
+    /**
+     * 成员状态变更
+     * @param id
+     * @param name
+     */
+    @Override
+    public void memberJoin(String id, String name) {
+        refreshTextListView(TextUtils.isEmpty(name) ? id : name, "join live", Constants.MEMBER_ENTER);
+
+        CurLiveInfo.setMembers(CurLiveInfo.getMembers() + 1);
+        tvMembers.setText("" + CurLiveInfo.getMembers());
+    }
+
+    @Override
+    public void memberQuit(String id, String name) {
+        refreshTextListView(TextUtils.isEmpty(name) ? id : name, "quite live", Constants.MEMBER_EXIT);
+
+        CurLiveInfo.setMembers(CurLiveInfo.getMembers() - 1);
+        tvMembers.setText("" + CurLiveInfo.getMembers());
+
+        //如果存在视频互动，取消
+        QavsdkControl.getInstance().closeMemberView(id);
+    }
 
     /**
      * 有成员退群
@@ -612,15 +636,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void memberQuiteLive(String[] list) {
-        for (String id : list) {
-            CurLiveInfo.setMembers(CurLiveInfo.getMembers() - 1);
-            tvMembers.setText("" + CurLiveInfo.getMembers());
-            refreshTextListView(id, "quite live", Constants.MEMBER_EXIT);
-        }
-        //如果存在视频互动，取消
-        for (String id : list) {
-            QavsdkControl.getInstance().closeMemberView(id);
-        }
     }
 
     /**
@@ -630,14 +645,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void memberJoinLive(final String[] list) {
-        List<String> joinList = new LinkedList<>();
-        for (String id : list) {
-            CurLiveInfo.setMembers(CurLiveInfo.getMembers() + 1);
-            joinList.add(id);
-            //tvMembers.setText("" + CurLiveInfo.getMembers());
-            //refreshTextListView(id, "join live", Constants.MEMBER_ENTER);
-        }
-        mUserInfoHelper.getUsersInfo(GETPROFILE_JOIN, joinList);
     }
 
     @Override

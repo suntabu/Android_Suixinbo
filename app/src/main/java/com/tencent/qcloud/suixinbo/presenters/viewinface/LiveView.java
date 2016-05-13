@@ -19,4 +19,9 @@ public interface LiveView extends MvpView {
 
     void cancelInviteView(String id,boolean cancelInvite);
 
+    void memberJoin(String id, String name);
+
+    void memberQuit(String id, String name);
+
+    void readyToQuit();
 }
