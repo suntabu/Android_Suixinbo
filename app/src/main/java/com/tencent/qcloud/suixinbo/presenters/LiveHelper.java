@@ -70,6 +70,7 @@ public class LiveHelper extends Presenter {
     private int requestCount = 1;
     private AVView mRequestViewList[] = new AVView[MAX_REQUEST_VIEW_COUNT];
     private String mRequestIdentifierList[] = new String[MAX_REQUEST_VIEW_COUNT];
+    private Boolean isOpenCamera = false;
 
 
     public LiveHelper(Context context, LiveView liveview) {
@@ -105,11 +106,22 @@ public class LiveHelper extends Presenter {
      * 开启摄像头和MIC
      */
     public void openCameraAndMic() {
-        enableCamera(FRONT_CAMERA, true);
+        openCamera();
         AVAudioCtrl avAudioCtrl = QavsdkControl.getInstance().getAVContext().getAudioCtrl();//开启Mic
         avAudioCtrl.enableMic(true);
         isMicOpen = true;
 
+    }
+
+    /**
+     * 打开摄像头
+     */
+    private void openCamera() {
+        if (mIsFrontCamera) {
+            enableCamera(FRONT_CAMERA, true);
+        } else {
+            enableCamera(BACK_CAMERA, true);
+        }
     }
 
 
@@ -118,12 +130,23 @@ public class LiveHelper extends Presenter {
         closeMic();
     }
 
+    /**
+     * 开关摄像头
+     */
+    public void toggleCamera(){
+        if (isOpenCamera) {
+            closeCamera();
+        }else{
+            openCamera();
+        }
+    }
+
 
     public void closeCamera() {
         if (mIsFrontCamera) {
             enableCamera(FRONT_CAMERA, false);
         } else {
-            enableCamera(FRONT_CAMERA, false);
+            enableCamera(BACK_CAMERA, false);
         }
     }
 
@@ -141,6 +164,11 @@ public class LiveHelper extends Presenter {
      * @param isEnable
      */
     private void enableCamera(final int camera, boolean isEnable) {
+        if (isEnable) {
+            isOpenCamera = true;
+        } else {
+            isOpenCamera = false;
+        }
         SxbLog.i(TAG, "createlive enableCamera camera " + camera + "  isEnable " + isEnable);
         AVVideoCtrl avVideoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
         //打开摄像头
@@ -149,7 +177,7 @@ public class LiveHelper extends Presenter {
                 super.onComplete(enable, result);
                 SxbLog.i(TAG, "createlive enableCamera result " + result);
                 if (result == AVError.AV_OK) {//开启成功
-//                    mIsEnableCamera = enable;
+
                     if (camera == FRONT_CAMERA) {
                         mIsFrontCamera = true;
                     } else {
@@ -200,7 +228,7 @@ public class LiveHelper extends Presenter {
 
 
         } else {
-            Toast.makeText(mContext, "request remoteView empty !!!!! endpoint = null", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Wrong Room!!!! Live maybe close already!", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -467,6 +495,10 @@ public class LiveHelper extends Presenter {
                 case Constants.AVIMCMD_MULTI_HOST_CANCELINVITE:
                     mLiveView.hideInviteDialog();
                     break;
+                case Constants.AVIMCMD_MULTI_HOST_CONTROLL_CAMERA:
+                    toggleCamera();
+                    break;
+
             }
 
         } catch (UnsupportedEncodingException e) {

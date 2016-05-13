@@ -66,6 +66,7 @@ public class Constants {
     public static final int AVIMCMD_Multi_Host_EnableInteractCamera = AVIMCMD_Multi_Host_DisableInteractMic + 1; // 主播打开互动者Camera，C2C消息
     public static final int AVIMCMD_Multi_Host_DisableInteractCamera = AVIMCMD_Multi_Host_EnableInteractCamera + 1; // 主播打开互动者Camera，C2C消息
     public static final int AVIMCMD_MULTI_HOST_CANCELINVITE = AVIMCMD_Multi_Host_DisableInteractCamera + 1;
+    public static final int AVIMCMD_MULTI_HOST_CONTROLL_CAMERA = AVIMCMD_MULTI_HOST_CANCELINVITE + 1;
 
     public static final int AVIMCMD_Text = -1;         // 普通的聊天消息
 

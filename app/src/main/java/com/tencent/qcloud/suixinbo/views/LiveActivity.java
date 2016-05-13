@@ -993,6 +993,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 mMemberDg.show();
                 break;
             case R.id.camera_controll:
+                if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//自己关闭自己
+                    mLiveHelper.toggleCamera();
+                } else {
+                    mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MULTI_HOST_CONTROLL_CAMERA, backGroundId, backGroundId);//主播关闭自己
+                }
                 break;
             case R.id.mic_controll:
                 break;
