@@ -10,6 +10,7 @@ import com.tencent.av.sdk.AVRoom;
 import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.util.ArrayList;
 
@@ -52,7 +53,7 @@ public class QavsdkControl {
 //        mAVRoomControl = new AVRoomControl(context);
 //        mAVVideoControl = new AVVideoControl(context);
 //        mAVAudioControl = new AVAudioControl(context);
-        Log.d(TAG, "WL_DEBUG QavsdkControl");
+        SxbLog.d(TAG, "WL_DEBUG QavsdkControl");
     }
 
 
@@ -182,7 +183,7 @@ public class QavsdkControl {
     }
 
     public void setMirror(boolean isMirror) {
-        Log.d(TAG, "setMirror SelfIdentifier:" + getSelfIdentifier());
+        SxbLog.d(TAG, "setMirror SelfIdentifier:" + getSelfIdentifier());
 
         if (null != mAVUIControl) {
             mAVUIControl.setMirror(isMirror, getSelfIdentifier());
@@ -267,7 +268,7 @@ public class QavsdkControl {
     }
 
     public void setRemoteHasVideo(boolean isRemoteHasVideo, String identifier, int videoSrcType) {
-        Log.i(TAG, "setRemoteHasVideo : " + identifier);
+        SxbLog.i(TAG, "setRemoteHasVideo : " + identifier);
         if (null != mAVUIControl) {
             mAVUIControl.setSmallVideoViewLayout(isRemoteHasVideo, identifier, videoSrcType);
         }

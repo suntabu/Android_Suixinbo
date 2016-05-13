@@ -48,6 +48,7 @@ import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.HeartLayout;
 import com.tencent.qcloud.suixinbo.views.customviews.InputTextMsgDialog;
@@ -55,6 +56,7 @@ import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -64,10 +66,13 @@ import java.util.TimerTask;
  * Live直播类
  */
 public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener, ProfileView {
+    private static final String TAG = LiveActivity.class.getSimpleName();
+    private static final int GETPROFILE_HOST = 0x100;
+    private static final int GETPROFILE_JOIN = 0x200;
+
     private EnterLiveHelper mEnterRoomProsscessHelper;
     private ProfileInfoHelper mUserInfoHelper;
     private LiveHelper mLiveHelper;
-    private static final String TAG = LiveActivity.class.getSimpleName();
 
     private ArrayList<ChatEntity> mArrayListChatEntity;
     private ChatMsgListAdapter mChatMsgListAdapter;
@@ -306,7 +311,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
             view.setImageBitmap(cirBitMap);
         } else {
-            Log.d(TAG, "load icon: " + avatar);
+            SxbLog.d(TAG, "load icon: " + avatar);
             RequestManager req = Glide.with(this);
             req.load(avatar).transform(new GlideCircleTransform(this)).into(view);
         }
@@ -369,14 +374,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     // TODO Auto-generated method stub
-                    Log.d("SeekBar", "onStopTrackingTouch");
+                    SxbLog.d("SeekBar", "onStopTrackingTouch");
                     Toast.makeText(LiveActivity.this, "beauty " + mBeautyRate + "%", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
                     // TODO Auto-generated method stub
-                    Log.d("SeekBar", "onStartTrackingTouch");
+                    SxbLog.d("SeekBar", "onStartTrackingTouch");
                 }
 
                 @Override
@@ -403,7 +408,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
             List<String> ids = new ArrayList<>();
             ids.add(CurLiveInfo.getHostID());
-            mUserInfoHelper.getUsersInfo(ids);
+            mUserInfoHelper.getUsersInfo(GETPROFILE_HOST, ids);
             showHeadIcon(mHeadIcon, mHostIconUrl);
             mHostNameTv.setText(CurLiveInfo.getHostID());
 
@@ -447,7 +452,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         @Override
         public void run() {
             String host = CurLiveInfo.getHostID();
-            Log.i(TAG, "HeartBeatTask " + host);
+            SxbLog.i(TAG, "HeartBeatTask " + host);
             OKhttpHelper.getInstance().sendHeartBeat(host, CurLiveInfo.getMembers(), CurLiveInfo.getAdmires(), 0);
         }
     }
@@ -499,6 +504,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      * 主动退出直播
      */
     private void quiteLiveByPurpose() {
+        if (MySelfInfo.getInstance().getIdStatus() != Constants.HOST) {
+            finish();
+            return;
+        }
         final Dialog dialog = new Dialog(this, R.style.dialog);
         dialog.setContentView(R.layout.dialog_end_live);
 
@@ -550,7 +559,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
             if (id_status == Constants.HOST) {//主播方式加入房间成功
                 //开启摄像头渲染画面
-                Log.i(TAG, "createlive EnterRoomComplete isSucc" + isSucc);
+                SxbLog.i(TAG, "createlive EnterRoomComplete isSucc" + isSucc);
             } else {//以成员方式加入房间成功
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_EnterLive, "");
             }
@@ -603,11 +612,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void memberJoinLive(final String[] list) {
+        List<String> joinList = new LinkedList<>();
         for (String id : list) {
             CurLiveInfo.setMembers(CurLiveInfo.getMembers() + 1);
-            tvMembers.setText("" + CurLiveInfo.getMembers());
-            refreshTextListView(id, "join live", Constants.MEMBER_ENTER);
+            joinList.add(id);
+            //tvMembers.setText("" + CurLiveInfo.getMembers());
+            //refreshTextListView(id, "join live", Constants.MEMBER_ENTER);
         }
+        mUserInfoHelper.getUsersInfo(GETPROFILE_JOIN, joinList);
     }
 
     @Override
@@ -643,12 +655,12 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     @Override
     public void showVideoView(boolean isLocal, String id) {
-        Log.i(TAG, "showVideoView " + id);
+        SxbLog.i(TAG, "showVideoView " + id);
         mVideoTimerTask = new VideoTimerTask();
         mVideoTimer.schedule(mVideoTimerTask, 1000, 1000);
         //渲染本地Camera
         if (isLocal == true) {
-            Log.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
+            SxbLog.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
             QavsdkControl.getInstance().setSelfId(MySelfInfo.getInstance().getId());
             QavsdkControl.getInstance().setLocalHasVideo(true, MySelfInfo.getInstance().getId());
             //主播通知用户服务器
@@ -667,7 +679,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
 
     private float getBeautyProgress(int progress) {
-        Log.d("shixu", "progress: " + progress);
+        SxbLog.d("shixu", "progress: " + progress);
         return (9.0f * progress / 100.0f);
     }
 
@@ -923,7 +935,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                         mFullControllerUi.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    Log.i(TAG, "beauty_btn mTopBar  is null ");
+                    SxbLog.i(TAG, "beauty_btn mTopBar  is null ");
                 }
                 break;
             case R.id.qav_beauty_setting_finish:
@@ -1016,7 +1028,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         //mChatMsgListAdapter.notifyDataSetChanged();
 
         mListViewMsgItems.setVisibility(View.VISIBLE);
-        Log.d(TAG, "refreshTextListView height " + mListViewMsgItems.getHeight());
+        SxbLog.d(TAG, "refreshTextListView height " + mListViewMsgItems.getHeight());
 
         if (mListViewMsgItems.getCount() > 1) {
             if (true)
@@ -1058,7 +1070,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mTimerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    Log.v(TAG, "doRefreshListView->task enter with need:" + mBoolNeedRefresh);
+                    SxbLog.v(TAG, "doRefreshListView->task enter with need:" + mBoolNeedRefresh);
                     mHandler.sendEmptyMessage(REFRESH_LISTVIEW);
                 }
             };
@@ -1075,17 +1087,35 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     }
 
     @Override
-    public void updateUserInfo(List<TIMUserProfile> profiles) {
+    public void updateUserInfo(int requestCode, List<TIMUserProfile> profiles) {
         if (null != profiles) {
-            for (TIMUserProfile user : profiles) {
-                if (user.getIdentifier().equals(CurLiveInfo.getHostID())) {
-                    mHostNameTv.setText(TextUtils.isEmpty(user.getNickName()) ? CurLiveInfo.getHostID() : user.getNickName());
-                    mHostIconUrl = user.getFaceUrl();
-                    showHeadIcon(mHeadIcon, mHostIconUrl);
-                } else {
-                    Log.w(TAG, "updateUserInfo->uid not match: " + user.getIdentifier() + "/" + CurLiveInfo.getHostID());
+            switch (requestCode){
+            case GETPROFILE_HOST:
+                for (TIMUserProfile user : profiles) {
+                    if (user.getIdentifier().equals(CurLiveInfo.getHostID())) {
+                        mHostNameTv.setText(TextUtils.isEmpty(user.getNickName()) ? CurLiveInfo.getHostID() : user.getNickName());
+                        mHostIconUrl = user.getFaceUrl();
+                        showHeadIcon(mHeadIcon, mHostIconUrl);
+                    } else {
+                        SxbLog.w(TAG, "updateUserInfo->uid not match: " + user.getIdentifier() + "/" + CurLiveInfo.getHostID());
+                    }
                 }
+            break;
+            case GETPROFILE_JOIN:
+                for (TIMUserProfile user : profiles) {
+                    tvMembers.setText("" + CurLiveInfo.getMembers());
+                    SxbLog.w(TAG, "get nick name:" + user.getNickName());
+                    SxbLog.w(TAG, "get remark name:"+user.getRemark());
+                    SxbLog.w(TAG, "get avatar:"+user.getFaceUrl());
+                    if (!TextUtils.isEmpty(user.getNickName())){
+                        refreshTextListView(user.getNickName(), "join live", Constants.MEMBER_ENTER);
+                    }else{
+                        refreshTextListView(user.getIdentifier(), "join live", Constants.MEMBER_ENTER);
+                    }
+                }
+                break;
             }
+
         }
     }
 }

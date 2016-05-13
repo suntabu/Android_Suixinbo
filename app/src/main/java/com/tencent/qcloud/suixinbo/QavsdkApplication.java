@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.tencent.qcloud.suixinbo.presenters.InitBusinessHelper;
+import com.tencent.qcloud.suixinbo.utils.SxbLogImpl;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,8 @@ public class QavsdkApplication extends Application {
         app = this;
         context = getApplicationContext();
         activities = new LinkedList<>();
+
+        SxbLogImpl.init(getApplicationContext());
 
         //初始化APP
         InitBusinessHelper.initApp(context);

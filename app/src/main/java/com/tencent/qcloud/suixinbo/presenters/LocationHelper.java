@@ -17,6 +17,7 @@ import android.util.Log;
 
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LocationView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,7 +50,7 @@ public class LocationHelper {
         try {
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
-            Log.d(TAG, "getAddressFromLocation->lat:" + latitude + ", long:" + longitude);
+            SxbLog.d(TAG, "getAddressFromLocation->lat:" + latitude + ", long:" + longitude);
             List<Address> list = geocoder.getFromLocation(latitude, longitude, 1);
             if (list.size() > 0){
                 Address address = list.get(0);

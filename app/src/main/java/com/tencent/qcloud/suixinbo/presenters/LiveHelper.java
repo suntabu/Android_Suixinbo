@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.tencent.TIMManager;
 import com.tencent.TIMMessage;
 import com.tencent.TIMMessageListener;
 import com.tencent.TIMTextElem;
+import com.tencent.TIMUserProfile;
 import com.tencent.TIMValueCallBack;
 import com.tencent.av.sdk.AVAudioCtrl;
 import com.tencent.av.sdk.AVEndpoint;
@@ -35,6 +37,7 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.MembersDialogView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,7 +90,7 @@ public class LiveHelper extends Presenter {
     private AVVideoCtrl.CameraPreviewChangeCallback mCameraPreviewChangeCallback = new AVVideoCtrl.CameraPreviewChangeCallback() {
         @Override
         public void onCameraPreviewChangeCallback(int cameraId) {
-            Log.d(TAG, "WL_DEBUG mCameraPreviewChangeCallback.onCameraPreviewChangeCallback cameraId = " + cameraId);
+            SxbLog.d(TAG, "WL_DEBUG mCameraPreviewChangeCallback.onCameraPreviewChangeCallback cameraId = " + cameraId);
 
             QavsdkControl.getInstance().setMirror(FRONT_CAMERA == cameraId);
         }
@@ -138,13 +141,13 @@ public class LiveHelper extends Presenter {
      * @param isEnable
      */
     private void enableCamera(final int camera, boolean isEnable) {
-        Log.i(TAG, "createlive enableCamera camera " + camera + "  isEnable " + isEnable);
+        SxbLog.i(TAG, "createlive enableCamera camera " + camera + "  isEnable " + isEnable);
         AVVideoCtrl avVideoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
         //打开摄像头
         int ret = avVideoCtrl.enableCamera(camera, isEnable, new AVVideoCtrl.EnableCameraCompleteCallback() {
             protected void onComplete(boolean enable, int result) {//开启摄像头回调
                 super.onComplete(enable, result);
-                Log.i(TAG, "createlive enableCamera result " + result);
+                SxbLog.i(TAG, "createlive enableCamera result " + result);
                 if (result == AVError.AV_OK) {//开启成功
 //                    mIsEnableCamera = enable;
                     if (camera == FRONT_CAMERA) {
@@ -161,7 +164,7 @@ public class LiveHelper extends Presenter {
             }
         });
 
-        Log.i(TAG, "enableCamera " + ret);
+        SxbLog.i(TAG, "enableCamera " + ret);
 
     }
 
@@ -172,10 +175,10 @@ public class LiveHelper extends Presenter {
      * @param identifiers 主播ID
      */
     public void RequestViewList(ArrayList<String> identifiers) {
-        Log.i(TAG, "RequestViewList " + identifiers);
+        SxbLog.i(TAG, "RequestViewList " + identifiers);
         if (identifiers.size() == 0) return;
         AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifiers.get(0));
-        Log.d(TAG, "RequestViewList hostIdentifier " + identifiers + " endpoint " + endpoint);
+        SxbLog.d(TAG, "RequestViewList hostIdentifier " + identifiers + " endpoint " + endpoint);
         if (endpoint != null) {
             ArrayList<String> alreadyIds = QavsdkControl.getInstance().getRemoteVideoIds();//已经存在的IDs
 
@@ -209,7 +212,7 @@ public class LiveHelper extends Presenter {
                 mLiveView.showVideoView(REMOTE, id);
             }
             // TODO
-            Log.d(TAG, "RequestViewListCompleteCallback.OnComplete");
+            SxbLog.d(TAG, "RequestViewListCompleteCallback.OnComplete");
         }
     };
 
@@ -223,7 +226,7 @@ public class LiveHelper extends Presenter {
                     } else if (i == 6011) {//群主不存在
                         Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
                     }
-                    Log.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
+                    SxbLog.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
                 }
 
                 @Override
@@ -231,10 +234,15 @@ public class LiveHelper extends Presenter {
                     //发送成回显示消息内容
                     for (int j = 0; j < timMessage.getElementCount(); j++) {
                         TIMElem elem = (TIMElem) timMessage.getElement(0);
-                        String sendId = timMessage.getSender();
-                        handleTextMessage(elem, sendId);
+                        if (timMessage.isSelf()){
+                            handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
+                        }else {
+                            TIMUserProfile sendUser = timMessage.getSenderProfile();
+                            //String sendId = timMessage.getSender();
+                            handleTextMessage(elem, sendUser.getNickName());
+                        }
                     }
-                    Log.i(TAG, "Send text Msg ok");
+                    SxbLog.i(TAG, "Send text Msg ok");
 
                 }
             });
@@ -250,7 +258,7 @@ public class LiveHelper extends Presenter {
             e.printStackTrace();
         }
         String cmds = inviteCmd.toString();
-        Log.i(TAG, "send cmd : " + cmd);
+        SxbLog.i(TAG, "send cmd : " + cmd);
         TIMMessage Gmsg = new TIMMessage();
         TIMCustomElem elem = new TIMCustomElem();
         elem.setData(cmds.getBytes());
@@ -265,19 +273,19 @@ public class LiveHelper extends Presenter {
                     } else if (i == 6011) {//群主不存在
                         Toast.makeText(mContext, "Host don't exit ", Toast.LENGTH_SHORT).show();
                     }
-                    Log.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
+                    SxbLog.e(TAG, "send message failed. code: " + i + " errmsg: " + s);
                 }
 
                 @Override
                 public void onSuccess(TIMMessage timMessage) {
-                    Log.i(TAG, "onSuccess ");
+                    SxbLog.i(TAG, "onSuccess ");
                     //发送成回显示消息内容
 //                    for (int j = 0; j < timMessage.getElementCount(); j++) {
 //                        TIMElem elem = (TIMElem) timMessage.getElement(0);
 //                        String sendId = timMessage.getSender();
 //                        handleTextMessage(elem, sendId);
 //                    }
-//                    Log.i(TAG, "Send text Msg ok");
+//                    SxbLog.i(TAG, "Send text Msg ok");
 
                 }
             });
@@ -287,7 +295,7 @@ public class LiveHelper extends Presenter {
      * 初始化聊天室  设置监听器
      */
     public void initTIMListener(String chatRoomId) {
-        Log.v(TAG, "initTIMListener->current room id: " + chatRoomId);
+        SxbLog.v(TAG, "initTIMListener->current room id: " + chatRoomId);
         mGroupConversation = TIMManager.getInstance().getConversation(TIMConversationType.Group, chatRoomId);
         TIMManager.getInstance().addMessageListener(msgListener);
         mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, chatRoomId);
@@ -304,7 +312,7 @@ public class LiveHelper extends Presenter {
     private TIMMessageListener msgListener = new TIMMessageListener() {
         @Override
         public boolean onNewMessages(List<TIMMessage> list) {
-            //Log.d(TAG, "onNewMessages readMessage " + list.size());
+            //SxbLog.d(TAG, "onNewMessages readMessage " + list.size());
             //解析TIM推送消息
             parseIMMessage(list);
             return false;
@@ -323,7 +331,7 @@ public class LiveHelper extends Presenter {
         if (tlist.size() > 0) {
             if (mGroupConversation != null)
                 mGroupConversation.setReadMessage(tlist.get(0));
-            Log.d(TAG, "parseIMMessage readMessage " + tlist.get(0).timestamp());
+            SxbLog.d(TAG, "parseIMMessage readMessage " + tlist.get(0).timestamp());
         }
 //        if (!bNeverLoadMore && (tlist.size() < mLoadMsgNum))
 //            bMore = false;
@@ -360,14 +368,20 @@ public class LiveHelper extends Presenter {
 
                 //最后处理文本消息
                 if (type == TIMElemType.Text) {
-                    String sendid = currMsg.getSender();
-                    handleTextMessage(elem, sendid);
+                    if (currMsg.isSelf()){
+                        handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
+                    }else {
+                        TIMUserProfile sendUser = currMsg.getSenderProfile();
+                        //String sendid = currMsg.getSender();
+                        if (!TextUtils.isEmpty(sendUser.getNickName())){
+                            handleTextMessage(elem, sendUser.getNickName());
+                        }else {
+                            handleTextMessage(elem, sendUser.getIdentifier());
+                        }
+                    }
                 }
-
-
             }
         }
-
     }
 
     /**
@@ -393,7 +407,7 @@ public class LiveHelper extends Presenter {
     private void handleCustomMsg(TIMElem elem, String sendId) {
         try {
             String customText = new String(((TIMCustomElem) elem).getData(), "UTF-8");
-            Log.i(TAG, "cumstom msg  " + customText);
+            SxbLog.i(TAG, "cumstom msg  " + customText);
 
             JSONTokener jsonParser = new JSONTokener(customText);
             // 此时还未读取任何json文本，直接读取就是一个JSONObject对象。
@@ -529,7 +543,7 @@ public class LiveHelper extends Presenter {
                         ((Camera) cam).setParameters(camParam);
                         flashLgihtStatus = true;
                     } catch (RuntimeException e) {
-                        Log.d("setParameters", "RuntimeException");
+                        SxbLog.d("setParameters", "RuntimeException");
                     }
                 }
             });
@@ -541,7 +555,7 @@ public class LiveHelper extends Presenter {
                         ((Camera) cam).setParameters(camParam);
                         flashLgihtStatus = false;
                     } catch (RuntimeException e) {
-                        Log.d("setParameters", "RuntimeException");
+                        SxbLog.d("setParameters", "RuntimeException");
                     }
 
                 }
@@ -556,12 +570,12 @@ public class LiveHelper extends Presenter {
         TIMGroupManager.getInstance().getGroupMembers("" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<List<TIMGroupMemberInfo>>() {
             @Override
             public void onError(int i, String s) {
-                Log.i(TAG, "get MemberList ");
+                SxbLog.i(TAG, "get MemberList ");
             }
 
             @Override
             public void onSuccess(List<TIMGroupMemberInfo> timGroupMemberInfos) {
-                Log.i(TAG, "get MemberList ");
+                SxbLog.i(TAG, "get MemberList ");
                 getMemberListInfo(timGroupMemberInfos);
 
             }
@@ -603,7 +617,7 @@ public class LiveHelper extends Presenter {
             e.printStackTrace();
         }
         String cmds = inviteCmd.toString();
-        Log.i(TAG, "send cmd : " + cmd);
+        SxbLog.i(TAG, "send cmd : " + cmd);
         TIMMessage msg = new TIMMessage();
         TIMCustomElem elem = new TIMCustomElem();
         elem.setData(cmds.getBytes());
@@ -612,7 +626,7 @@ public class LiveHelper extends Presenter {
         mC2CConversation.sendMessage(msg, new TIMValueCallBack<TIMMessage>() {
             @Override
             public void onError(int i, String s) {
-                Log.e(TAG, "enter error" + i + ": " + s);
+                SxbLog.e(TAG, "enter error" + i + ": " + s);
             }
 
             @Override
@@ -620,7 +634,7 @@ public class LiveHelper extends Presenter {
                 if (cmd == Constants.AVIMCMD_MUlTI_HOST_INVITE) {
                     mLiveView.showInviteView(sendId);
                 }
-                Log.i(TAG, "send praise succ !");
+                SxbLog.i(TAG, "send praise succ !");
             }
         });
     }

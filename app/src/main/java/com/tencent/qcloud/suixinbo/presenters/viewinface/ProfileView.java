@@ -10,5 +10,5 @@ import java.util.List;
 public interface ProfileView {
     void updateProfileInfo(TIMUserProfile profile);
 
-    void updateUserInfo(List<TIMUserProfile> profiles);
+    void updateUserInfo(int requestCode, List<TIMUserProfile> profiles);
 }

@@ -13,6 +13,8 @@
     <string name="btn_take_photo">拍照</string>
     <string name="btn_pic_photo">从手机相册选择</string>
     <string name="btn_return_home">返回首页</string>
+    <string name="btn_return">返回</string>
+    <string name="btn_save">保存</string>
     <string name="btn_cancel">取消</string>
     <string name="btn_refuse">拒绝</string>
     <string name="btn_agree">同意</string>
@@ -49,8 +51,17 @@
 
 
     <!-- profile fragment-->
+    <string name="profile_title">编辑个人信息</string>
+    <string name="profile_icon">头像</string>
+    <string name="profile_nickname">昵称</string>
+    <string name="profile_sign">签名</string>
+    <string name="profile_set">设置</string>
+    <string name="profile_about">关于随心播</string>
     <string name="btn_login_out">退出登录</string>
     <string name="tip_force_offline">您的帐号已在其它地方登陆</string>
+
+    <!-- edit -->
+    <string name="edit_error">修改失败</string>
 
 
     <!-- fragment publish -->

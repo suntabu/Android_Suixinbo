@@ -21,6 +21,7 @@ import android.widget.ListView;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.ChatEntity;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.views.customviews.CustomTextView;
 
 import java.util.ArrayList;
@@ -213,7 +214,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         if (firstVisable <= pos) {
             playViewAnimator(view, 1f, ANIMATORDURING);
         }else{
-            Log.d(TAG, "playDisappearAnimator->unexpect pos: " + pos + "/" + firstVisable);
+            SxbLog.d(TAG, "playDisappearAnimator->unexpect pos: " + pos + "/" + firstVisable);
         }
     }
 
@@ -240,16 +241,16 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
                 startAlpha = 1f*during/ANIMATORDURING;                    // 计算动画初始透明度
                 if (during < 0){   // 剩余时长小于0直接设置透明度为0并返回
                     itemView.setAlpha(0f);
-                    Log.v(TAG, "continueAnimator->already end animator:" + position + "/" + item.getContext() + "-" + during);
+                    SxbLog.v(TAG, "continueAnimator->already end animator:" + position + "/" + item.getContext() + "-" + during);
                     return;
                 }
             }
 
             // 创建属性动画并播放
-            Log.v(TAG, "continueAnimator->pos: "+position+"/"+listMessage.size()+", alpha:"+startAlpha+", dur:"+during);
+            SxbLog.v(TAG, "continueAnimator->pos: "+position+"/"+listMessage.size()+", alpha:"+startAlpha+", dur:"+during);
             playViewAnimator(itemView, startAlpha, during);
         }else{
-            Log.v(TAG, "continueAnimator->ignore pos: "+position+"/"+listMessage.size());
+            SxbLog.v(TAG, "continueAnimator->ignore pos: "+position+"/"+listMessage.size());
         }
     }
 
@@ -260,7 +261,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         for (int i=0; i<mListView.getChildCount(); i++){
             View itemView = mListView.getChildAt(i);
             if (null == itemView){
-                Log.w(TAG, "playDisappearAnimator->view not found: "+i+"/"+mListView.getCount());
+                SxbLog.w(TAG, "playDisappearAnimator->view not found: "+i+"/"+mListView.getCount());
                 break;
             }
 
@@ -269,7 +270,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
             if (position < mAnimatorInfoList.size()){
                 mAnimatorInfoList.get(position).setCreateTime(System.currentTimeMillis());
             }else{
-                Log.e(TAG, "playDisappearAnimator->error: " + position + "/" + mAnimatorInfoList.size());
+                SxbLog.e(TAG, "playDisappearAnimator->error: " + position + "/" + mAnimatorInfoList.size());
             }
 
             playViewAnimator(itemView, 1f, ANIMATORDURING);
@@ -313,7 +314,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         }
 
         while (mAnimatorInfoList.size() >= listMessage.size()){
-            Log.e(TAG, "clearFinishItem->error size: "+ mAnimatorInfoList.size()+"/"+listMessage.size());
+            SxbLog.e(TAG, "clearFinishItem->error size: " + mAnimatorInfoList.size() + "/" + listMessage.size());
             if (mAnimatorInfoList.size() > 0) {
                 mAnimatorInfoList.remove(0);
             }else{
@@ -389,7 +390,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
      */
     @Override
     public void notifyDataSetChanged() {
-        Log.v(TAG, "notifyDataSetChanged->scroll: "+mScrolling);
+        SxbLog.v(TAG, "notifyDataSetChanged->scroll: "+mScrolling);
         if (mScrolling){
             // 滑动过程中不刷新
             super.notifyDataSetChanged();

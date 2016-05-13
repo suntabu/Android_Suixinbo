@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.UploadView;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.upload.Const;
 import com.tencent.upload.UploadManager;
 import com.tencent.upload.task.ITask;
@@ -32,6 +33,7 @@ public class PublishHelper extends Presenter {
     private final static int THREAD_GETSIG_UPLOAD = 3;
 
     private final static int MAIN_CALL_BACK = 1;
+    private final static int MAIN_PROCESS = 2;
 
     private Context mContext;
     private UploadView mView;
@@ -66,10 +68,13 @@ public class PublishHelper extends Presenter {
         mMainHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                Log.d(TAG, "handleMessage id:"+msg.what);
+                SxbLog.d(TAG, "handleMessage id:"+msg.what);
                 switch (msg.what){
                 case MAIN_CALL_BACK:
                     mView.onUploadResult(msg.arg1, (String)msg.obj);
+                    break;
+                case MAIN_PROCESS:
+                    mView.onUploadProcess(msg.arg1);
                     break;
                 }
                 return false;
@@ -84,7 +89,7 @@ public class PublishHelper extends Presenter {
     private void doUpdateSig(){
         String sig = OKhttpHelper.getInstance().getCosSig();
         MySelfInfo.getInstance().setCosSig(sig);
-        Log.d(TAG, "doUpdateSig->get sig: "+sig);
+        SxbLog.d(TAG, "doUpdateSig->get sig: "+sig);
     }
 
     private void doUploadCover(final String path){
@@ -100,11 +105,11 @@ public class PublishHelper extends Presenter {
 
         UploadManager fileUploadMgr = new UploadManager(mContext, appid,
                 Const.FileType.File, "qcloudphoto");
-        Log.d(TAG, "upload cover: " + path);
+        SxbLog.d(TAG, "upload cover: " + path);
         FileUploadTask task = new FileUploadTask(bucket, path, createNetUrl(), null, new IUploadTaskListener() {
             @Override
             public void onUploadSucceed(final FileInfo result) {
-                Log.i(TAG, "upload succeed: " + result.url);
+                SxbLog.i(TAG, "upload succeed: " + result.url);
                 Message msg = new Message();
                 msg.what = MAIN_CALL_BACK;
                 msg.arg1 = 0;
@@ -115,7 +120,7 @@ public class PublishHelper extends Presenter {
 
             @Override
             public void onUploadFailed(int i, String s) {
-                Log.w(TAG, "upload error code: " + i + " msg:" + s);
+                SxbLog.w(TAG, "upload error code: " + i + " msg:" + s);
                 if (-96 == i){  // 签名过期重试
                     Message msg = new Message();
                     msg.what = THREAD_GETSIG_UPLOAD;
@@ -134,12 +139,17 @@ public class PublishHelper extends Presenter {
 
             @Override
             public void onUploadProgress(long l, long l1) {
-                Log.d(TAG, "onUploadProgress: "+l+"/"+l1);
+                SxbLog.d(TAG, "onUploadProgress: " + l + "/" + l1);
+                Message msg = new Message();
+                msg.what = MAIN_PROCESS;
+                msg.arg1 = (int)(l*100/l1);
+
+                mMainHandler.sendMessage(msg);
             }
 
             @Override
             public void onUploadStateChange(ITask.TaskState taskState) {
-                Log.d(TAG, "onUploadStateChange: " + taskState);
+                SxbLog.d(TAG, "onUploadStateChange: " + taskState);
             }
         });
 
