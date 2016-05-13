@@ -151,14 +151,14 @@
                 android:layout_height="match_parent"
                 android:onClick="onClick">
                 <TextView
-                    android:id="@+id/record"
+                    android:id="@+id/push_stream"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="15dp"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:text="@string/text_start_record"
+                    android:text="@string/text_start_push"
                     android:textSize="@dimen/h6" />
             </LinearLayout>
 
@@ -181,11 +181,11 @@
             android:layout_height="1dp"
             android:background="@color/colorGray2" />
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:text="@string/text_record_info" />
+        <!--<TextView-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="15dp"-->
+            <!--android:text="@string/text_record_info" />-->
     </LinearLayout>
 
     <TextView
