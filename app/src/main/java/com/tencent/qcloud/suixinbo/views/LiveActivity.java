@@ -502,7 +502,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         final Dialog dialog = new Dialog(this, R.style.dialog);
         dialog.setContentView(R.layout.dialog_end_live);
 
-        TextView tvSure = (TextView)dialog.findViewById(R.id.btn_sure);
+        TextView tvSure = (TextView) dialog.findViewById(R.id.btn_sure);
         tvSure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -512,7 +512,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 dialog.dismiss();
             }
         });
-        TextView tvCancel = (TextView)dialog.findViewById(R.id.btn_cancel);
+        TextView tvCancel = (TextView) dialog.findViewById(R.id.btn_cancel);
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -711,7 +711,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         index = index + inviteViewCount;
         switch (index) {
             case 1:
-                inviteView1.setText(id);             inviteView1.setVisibility(View.VISIBLE);
+                inviteView1.setText(id);
+                inviteView1.setVisibility(View.VISIBLE);
                 inviteView1.setTag(id);
                 break;
             case 2:
@@ -732,38 +733,57 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     @Override
     public void cancelInviteView(String id) {
-        if ((inviteView1 != null) && (inviteView1.getTag().equals(id))) {
-            Log.i(TAG, "cancelInviteView "+inviteView1.getTag());
+
+        if ((inviteView1 != null) && (inviteView1.getTag() != null)) {
+            if (inviteView1.getTag().equals(id)) {
+                Log.i(TAG, "cancelInviteView " + inviteView1.getTag());
+            }
             inviteView1.setVisibility(View.INVISIBLE);
-        } else if ((inviteView2 != null) && (inviteView2.getTag().equals(id))) {
-            Log.i(TAG, "cancelInviteView "+inviteView2.getTag());
-            inviteView2.setVisibility(View.INVISIBLE);
-        } else if ((inviteView3 != null) && (inviteView3.getTag().equals(id))) {
-            Log.i(TAG, "cancelInviteView "+inviteView3.getTag());
-            inviteView3.setVisibility(View.INVISIBLE);
+        }
+
+        if (inviteView2 != null && inviteView2.getTag() != null) {
+            if (inviteView2.getTag().equals(id)) {
+                Log.i(TAG, "cancelInviteView " + inviteView2.getTag());
+                inviteView2.setVisibility(View.INVISIBLE);
+            } else {
+                Log.i(TAG, "cancelInviteView inviteView2 is null");
+            }
+        } else {
+            Log.i(TAG, "cancelInviteView inviteView2 is null");
+        }
+
+        if (inviteView3 != null && inviteView3.getTag() != null) {
+            if (inviteView3.getTag().equals(id)) {
+                Log.i(TAG, "cancelInviteView " + inviteView3.getTag());
+                inviteView3.setVisibility(View.INVISIBLE);
+            } else {
+                Log.i(TAG, "cancelInviteView inviteView3 is null");
+            }
+        } else {
+            Log.i(TAG, "cancelInviteView inviteView3 is null");
         }
         inviteViewCount--;
     }
 
 
-    private void showReportDialog(){
+    private void showReportDialog() {
         final Dialog reportDialog = new Dialog(this, R.style.report_dlg);
         reportDialog.setContentView(R.layout.dialog_live_report);
 
-        TextView tvReportDirty = (TextView)reportDialog.findViewById(R.id.btn_dirty);
-        TextView tvReportFalse = (TextView)reportDialog.findViewById(R.id.btn_false);
-        TextView tvReportVirus = (TextView)reportDialog.findViewById(R.id.btn_virus);
-        TextView tvReportIllegal = (TextView)reportDialog.findViewById(R.id.btn_illegal);
-        TextView tvReportYellow = (TextView)reportDialog.findViewById(R.id.btn_yellow);
-        TextView tvReportCancel = (TextView)reportDialog.findViewById(R.id.btn_cancel);
+        TextView tvReportDirty = (TextView) reportDialog.findViewById(R.id.btn_dirty);
+        TextView tvReportFalse = (TextView) reportDialog.findViewById(R.id.btn_false);
+        TextView tvReportVirus = (TextView) reportDialog.findViewById(R.id.btn_virus);
+        TextView tvReportIllegal = (TextView) reportDialog.findViewById(R.id.btn_illegal);
+        TextView tvReportYellow = (TextView) reportDialog.findViewById(R.id.btn_yellow);
+        TextView tvReportCancel = (TextView) reportDialog.findViewById(R.id.btn_cancel);
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
-                default:
-                    reportDialog.cancel();
-                    break;
+                switch (v.getId()) {
+                    default:
+                        reportDialog.cancel();
+                        break;
                 }
             }
         };
@@ -799,7 +819,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         showHeadIcon(ivHostIcon, mHostIconUrl);
         TextView tvLbs = (TextView) hostDlg.findViewById(R.id.tv_host_lbs);
         tvLbs.setText(UIUtils.getLimitString(CurLiveInfo.getAddress(), 6));
-        ImageView ivReport = (ImageView)hostDlg.findViewById(R.id.iv_report);
+        ImageView ivReport = (ImageView) hostDlg.findViewById(R.id.iv_report);
         ivReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

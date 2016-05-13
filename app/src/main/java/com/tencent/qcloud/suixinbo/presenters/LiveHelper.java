@@ -405,6 +405,7 @@ public class LiveHelper extends Presenter {
                     mLiveView.showInviteDialog();
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
+                    Log.i(TAG, "handleCustomMsg " + sendId);
                     mLiveView.cancelInviteView(sendId);
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
