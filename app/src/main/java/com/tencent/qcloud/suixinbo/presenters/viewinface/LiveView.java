@@ -15,13 +15,17 @@ public interface LiveView extends MvpView {
 
     void refreshUI(String id);
 
-    void showInviteView(String id);
+    boolean showInviteView(String id);
 
-    void cancelInviteView(String id,boolean cancelInvite);
+    void cancelInviteView(String id);
+
+    void cancelMemberView(String id);
 
     void memberJoin(String id, String name);
 
     void memberQuit(String id, String name);
 
     void readyToQuit();
+
+    void hideInviteDialog();
 }

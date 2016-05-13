@@ -77,6 +77,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private static final int MINFRESHINTERVAL = 500;
     private static final int UPDAT_WALL_TIME_TIMER_TASK = 1;
     private static final int ClOSE_IMSDK = 2;
+    private static final int TIMEOUT_INVITE = 3;
     private boolean mBoolRefreshLock = false;
     private boolean mBoolNeedRefresh = false;
     private final Timer mTimer = new Timer();
@@ -202,6 +203,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case ClOSE_IMSDK:
                 mLiveHelper.perpareQuitRoom(false);
                 mEnterRoomProsscessHelper.quiteLive();
+                break;
+            case TIMEOUT_INVITE:
+                String id = "" + msg.obj;
+                cancelInviteView(id);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id);
                 break;
         }
         return;
@@ -358,6 +364,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             inviteView1 = (TextView) findViewById(R.id.invite_view1);
             inviteView2 = (TextView) findViewById(R.id.invite_view2);
             inviteView3 = (TextView) findViewById(R.id.invite_view3);
+            inviteView1.setOnClickListener(this);
+            inviteView2.setOnClickListener(this);
+            inviteView3.setOnClickListener(this);
 
             initBackDialog();
             initDetailDailog();
@@ -610,6 +619,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     /**
      * 成员状态变更
+     *
      * @param id
      * @param name
      */
@@ -722,6 +732,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     }
 
     @Override
+    public void hideInviteDialog() {
+        if ((inviteDg != null) && (inviteDg.isShowing() == true)) {
+            inviteDg.dismiss();
+        }
+    }
+
+
+    @Override
     public void refreshText(String text, String name) {
         if (text != null) {
             refreshTextListView(name, text, Constants.TEXT_TYPE);
@@ -748,22 +766,23 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private int inviteViewCount = 0;
 
     @Override
-    public void showInviteView(String id) {
+    public boolean showInviteView(String id) {
         int index = QavsdkControl.getInstance().getAvailableViewIndex(1);
         if (index == -1) {
             Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
-            return;
+            return false;
         }
         int requetCount = index + inviteViewCount;
         if (requetCount > 3) {
             Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
-            return;
+            return false;
         }
         switch (requetCount) {
             case 1:
                 inviteView1.setText(id);
                 inviteView1.setVisibility(View.VISIBLE);
                 inviteView1.setTag(id);
+
                 break;
             case 2:
                 inviteView2.setText(id);
@@ -775,26 +794,34 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 inviteView3.setVisibility(View.VISIBLE);
                 inviteView3.setTag(id);
                 break;
-            default:
-                break;
         }
         mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_HOST_INVITE, "", id);
         inviteViewCount++;
+        //30s超时取消
+        Message msg = new Message();
+        msg.what = TIMEOUT_INVITE;
+        msg.obj = id;
+        mHandler.sendMessageDelayed(msg, 30 * 1000);
+        return true;
     }
 
     @Override
-    public void cancelInviteView(String id, boolean cancelInvite) {
+    public void cancelInviteView(String id) {
         if ((inviteView1 != null) && (inviteView1.getTag() != null)) {
             if (inviteView1.getTag().equals(id)) {
-                Log.i(TAG, "cancelInviteView " + inviteView1.getTag());
             }
-            inviteView1.setVisibility(View.INVISIBLE);
+            if (inviteView1.getVisibility() == View.VISIBLE) {
+                inviteView1.setVisibility(View.INVISIBLE);
+                inviteViewCount--;
+            }
         }
 
         if (inviteView2 != null && inviteView2.getTag() != null) {
             if (inviteView2.getTag().equals(id)) {
-                Log.i(TAG, "cancelInviteView " + inviteView2.getTag());
-                inviteView2.setVisibility(View.INVISIBLE);
+                if (inviteView2.getVisibility() == View.VISIBLE) {
+                    inviteView2.setVisibility(View.INVISIBLE);
+                    inviteViewCount--;
+                }
             } else {
                 Log.i(TAG, "cancelInviteView inviteView2 is null");
             }
@@ -804,17 +831,29 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
         if (inviteView3 != null && inviteView3.getTag() != null) {
             if (inviteView3.getTag().equals(id)) {
-                Log.i(TAG, "cancelInviteView " + inviteView3.getTag());
-                inviteView3.setVisibility(View.INVISIBLE);
+                if (inviteView3.getVisibility() == View.VISIBLE) {
+                    inviteView3.setVisibility(View.INVISIBLE);
+                    inviteViewCount--;
+                }
             } else {
                 Log.i(TAG, "cancelInviteView inviteView3 is null");
             }
         } else {
             Log.i(TAG, "cancelInviteView inviteView3 is null");
         }
-        if (cancelInvite == true)
-            mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id, id);
-        inviteViewCount--;
+
+
+    }
+
+    @Override
+    public void cancelMemberView(String id) {
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+        } else {
+            mLiveHelper.closeCameraAndMic();//是自己成员关闭
+        }
+        mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, id);
+        QavsdkControl.getInstance().closeMemberView(id);
+        backToNormalCtrlView();
     }
 
 
@@ -958,13 +997,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case R.id.mic_controll:
                 break;
             case R.id.close_member_video://主动关闭成员摄像头
-                if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-                } else {
-                    mLiveHelper.closeCameraAndMic();//是自己成员关闭
-                }
-                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, backGroundId);
-                QavsdkControl.getInstance().closeMemberView(backGroundId);
-                backToNormalCtrlView();
+                cancelMemberView(backGroundId);
                 break;
             case R.id.beauty_btn:
                 if (mBeautySettings != null) {
@@ -982,6 +1015,18 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             case R.id.qav_beauty_setting_finish:
                 mBeautySettings.setVisibility(View.GONE);
                 mFullControllerUi.setVisibility(View.VISIBLE);
+                break;
+            case R.id.invite_view1:
+                inviteView1.setVisibility(View.INVISIBLE);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, "" + inviteView1.getTag());
+                break;
+            case R.id.invite_view2:
+                inviteView2.setVisibility(View.INVISIBLE);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, "" + inviteView2.getTag());
+                break;
+            case R.id.invite_view3:
+                inviteView3.setVisibility(View.INVISIBLE);
+                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULT_CANCEL_INTERACT, "" + inviteView3.getTag());
                 break;
         }
     }
@@ -1130,20 +1175,20 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void updateUserInfo(int requestCode, List<TIMUserProfile> profiles) {
         if (null != profiles) {
-            switch (requestCode){
-            case GETPROFILE_JOIN:
-                for (TIMUserProfile user : profiles) {
-                    tvMembers.setText("" + CurLiveInfo.getMembers());
-                    SxbLog.w(TAG, "get nick name:" + user.getNickName());
-                    SxbLog.w(TAG, "get remark name:"+user.getRemark());
-                    SxbLog.w(TAG, "get avatar:"+user.getFaceUrl());
-                    if (!TextUtils.isEmpty(user.getNickName())){
-                        refreshTextListView(user.getNickName(), "join live", Constants.MEMBER_ENTER);
-                    }else{
-                        refreshTextListView(user.getIdentifier(), "join live", Constants.MEMBER_ENTER);
+            switch (requestCode) {
+                case GETPROFILE_JOIN:
+                    for (TIMUserProfile user : profiles) {
+                        tvMembers.setText("" + CurLiveInfo.getMembers());
+                        SxbLog.w(TAG, "get nick name:" + user.getNickName());
+                        SxbLog.w(TAG, "get remark name:" + user.getRemark());
+                        SxbLog.w(TAG, "get avatar:" + user.getFaceUrl());
+                        if (!TextUtils.isEmpty(user.getNickName())) {
+                            refreshTextListView(user.getNickName(), "join live", Constants.MEMBER_ENTER);
+                        } else {
+                            refreshTextListView(user.getIdentifier(), "join live", Constants.MEMBER_ENTER);
+                        }
                     }
-                }
-                break;
+                    break;
             }
 
         }

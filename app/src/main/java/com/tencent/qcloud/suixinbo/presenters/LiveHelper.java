@@ -235,9 +235,9 @@ public class LiveHelper extends Presenter {
                     //发送成回显示消息内容
                     for (int j = 0; j < timMessage.getElementCount(); j++) {
                         TIMElem elem = (TIMElem) timMessage.getElement(0);
-                        if (timMessage.isSelf()){
+                        if (timMessage.isSelf()) {
                             handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
-                        }else {
+                        } else {
                             TIMUserProfile sendUser = timMessage.getSenderProfile();
                             //String sendId = timMessage.getSender();
                             handleTextMessage(elem, sendUser.getNickName());
@@ -249,7 +249,7 @@ public class LiveHelper extends Presenter {
             });
     }
 
-    public void sendGroupMessage(int cmd, String param, TIMValueCallBack<TIMMessage> callback){
+    public void sendGroupMessage(int cmd, String param, TIMValueCallBack<TIMMessage> callback) {
         JSONObject inviteCmd = new JSONObject();
         try {
             inviteCmd.put(Constants.CMD_KEY, cmd);
@@ -298,13 +298,13 @@ public class LiveHelper extends Presenter {
         mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, chatRoomId);
     }
 
-    private void notifyQuitReady(){
+    private void notifyQuitReady() {
         TIMManager.getInstance().removeMessageListener(msgListener);
         mLiveView.readyToQuit();
     }
 
     public void perpareQuitRoom(boolean bPurpose) {
-        if (bPurpose){
+        if (bPurpose) {
             sendGroupMessage(Constants.AVIMCMD_ExitLive, "", new TIMValueCallBack<TIMMessage>() {
                 @Override
                 public void onError(int i, String s) {
@@ -316,7 +316,7 @@ public class LiveHelper extends Presenter {
                     notifyQuitReady();
                 }
             });
-        }else{
+        } else {
             notifyQuitReady();
         }
     }
@@ -385,14 +385,14 @@ public class LiveHelper extends Presenter {
 
                 //最后处理文本消息
                 if (type == TIMElemType.Text) {
-                    if (currMsg.isSelf()){
+                    if (currMsg.isSelf()) {
                         handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
-                    }else {
+                    } else {
                         TIMUserProfile sendUser = currMsg.getSenderProfile();
                         //String sendid = currMsg.getSender();
-                        if (!TextUtils.isEmpty(sendUser.getNickName())){
+                        if (!TextUtils.isEmpty(sendUser.getNickName())) {
                             handleTextMessage(elem, sendUser.getNickName());
-                        }else {
+                        } else {
                             handleTextMessage(elem, sendUser.getIdentifier());
                         }
                     }
@@ -437,10 +437,10 @@ public class LiveHelper extends Presenter {
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
                     Log.i(TAG, "handleCustomMsg " + sender.getIdentifier());
-                    mLiveView.cancelInviteView(sender.getIdentifier(), false);
+                    mLiveView.cancelInviteView(sender.getIdentifier());
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
-                    mLiveView.cancelInviteView(sender.getIdentifier(), false);
+                    mLiveView.cancelInviteView(sender.getIdentifier());
                     Toast.makeText(mContext, sender.getIdentifier() + " refuse !", Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.AVIMCMD_Praise:
@@ -461,6 +461,7 @@ public class LiveHelper extends Presenter {
                         closeCameraAndMic();
                     //其他人关闭小窗口
                     QavsdkControl.getInstance().closeMemberView(closeId);
+                    mLiveView.hideInviteDialog();
                     mLiveView.refreshUI(closeId);
                     break;
             }
