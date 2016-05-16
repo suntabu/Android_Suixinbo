@@ -29,6 +29,9 @@ import android.widget.ImageView;
 import com.tencent.qcloud.suixinbo.R;
 
 
+/**
+ * 飘心界面
+ */
 public class HeartView extends ImageView {
 
     private static final Paint sPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);

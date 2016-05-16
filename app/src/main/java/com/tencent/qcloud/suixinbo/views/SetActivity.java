@@ -18,7 +18,7 @@ import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
 import com.tencent.qcloud.suixinbo.views.customviews.TemplateTitle;
 
 /**
- * Created by admin on 2016/5/13.
+ * 设置页面
  */
 public class SetActivity extends Activity implements View.OnClickListener{
     private final static String TAG = "SetActivity";

@@ -34,6 +34,9 @@ import java.lang.ref.WeakReference;
 import java.util.Random;
 
 
+/**
+ * 飘心动画
+ */
 public class HeartLayout extends RelativeLayout implements View.OnClickListener {
 
     private AbstractPathAnimator mAnimator;

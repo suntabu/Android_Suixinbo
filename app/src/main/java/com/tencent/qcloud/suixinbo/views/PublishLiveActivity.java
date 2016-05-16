@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by admin on 16/4/21.
+ * 直播发布类
  */
 public class PublishLiveActivity extends Activity implements View.OnClickListener, LocationView, UploadView {
     private UploadHelper mPublishLivePresenter;

@@ -1,7 +1,8 @@
 package com.tencent.qcloud.suixinbo.model;
 
+
 /**
- * Created by admin on 16/4/22.
+ * 当前直播信息页面
  */
 public class CurLiveInfo {
     private static int members;

@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -35,6 +34,9 @@ import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.util.HashMap;
 
+/**
+ * AVSDK UI控制类
+ */
 public class AVUIControl extends GLViewGroup {
     static final String TAG = "VideoLayerUI";
 

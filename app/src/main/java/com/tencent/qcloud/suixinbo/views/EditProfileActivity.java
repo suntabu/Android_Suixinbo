@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by xkazerzhang on 2016/5/12.
+ * 个人编辑页面
  */
 public class EditProfileActivity extends Activity implements View.OnClickListener, ProfileView, UploadView{
     private final static int REQ_EDIT_NICKNAME = 0x100;

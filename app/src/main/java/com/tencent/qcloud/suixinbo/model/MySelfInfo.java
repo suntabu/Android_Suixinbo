@@ -7,7 +7,7 @@ import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 /**
- * 用户数据
+ * 自己的状态数据
  */
 public class MySelfInfo {
     private static final String TAG = MySelfInfo.class.getSimpleName();

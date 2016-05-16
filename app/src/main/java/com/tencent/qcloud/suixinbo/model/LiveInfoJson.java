@@ -1,7 +1,7 @@
 package com.tencent.qcloud.suixinbo.model;
 
 /**
- * Created by admin on 16/4/28.
+ * Gson 辅助类
  */
 public class LiveInfoJson {
     private int createTime;

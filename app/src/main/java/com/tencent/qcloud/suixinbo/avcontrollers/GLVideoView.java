@@ -3,7 +3,6 @@ package com.tencent.qcloud.suixinbo.avcontrollers;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.util.Log;
 
 import com.tencent.av.opengl.GraphicRendererMgr;
 import com.tencent.av.opengl.glrenderer.GLCanvas;
@@ -17,6 +16,9 @@ import com.tencent.av.sdk.AVView;
 import com.tencent.av.utils.QLog;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
+/**
+ * 视频界面类
+ */
 public class GLVideoView extends GLView {
 
 	private static final String TAG = "GLVideoView";
