@@ -4,8 +4,9 @@ import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 
 import java.util.ArrayList;
 
+
 /**
- * Created by admin on 16/4/26.
+ *  列表页面回调
  */
 public interface LiveListView extends MvpView{
 

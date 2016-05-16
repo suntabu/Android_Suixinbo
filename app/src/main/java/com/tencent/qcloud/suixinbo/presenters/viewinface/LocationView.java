@@ -1,7 +1,8 @@
 package com.tencent.qcloud.suixinbo.presenters.viewinface;
 
+
 /**
- * Created by admin on 2016/5/3.
+ * 定位回调
  */
 public interface LocationView extends MvpView{
 

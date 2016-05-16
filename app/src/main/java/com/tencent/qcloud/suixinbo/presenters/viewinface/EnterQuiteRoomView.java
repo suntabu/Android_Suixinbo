@@ -4,7 +4,7 @@ package com.tencent.qcloud.suixinbo.presenters.viewinface;
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 
 /**
- * 创建房间回调接口
+ * 进出房间回调接口
  */
 public interface EnterQuiteRoomView extends MvpView {
 

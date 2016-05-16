@@ -1,7 +1,8 @@
 package com.tencent.qcloud.suixinbo.presenters.viewinface;
 
+
 /**
- * Created by admin on 4/14/16.
+ * 登出回调
  */
 public interface LogoutView extends MvpView{
 

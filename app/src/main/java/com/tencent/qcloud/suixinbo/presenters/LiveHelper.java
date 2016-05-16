@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 直播的控制类
+ * 直播的控制类presenter
  */
 public class LiveHelper extends Presenter {
     private LiveView mLiveView;

@@ -14,6 +14,9 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LoginHeloper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 
+/**
+ * 登录类
+ */
 public class LoginActivity extends Activity implements View.OnClickListener, LoginView {
     TextView mBtnLogin, mBtnRegister;
     EditText mPassWord, mUserName;

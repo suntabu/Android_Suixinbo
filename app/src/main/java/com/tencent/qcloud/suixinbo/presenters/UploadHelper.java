@@ -6,7 +6,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.UploadView;
@@ -18,10 +17,8 @@ import com.tencent.upload.task.IUploadTaskListener;
 import com.tencent.upload.task.data.FileInfo;
 import com.tencent.upload.task.impl.FileUploadTask;
 
-import java.util.Calendar;
-
 /**
- * Created by admin on 16/4/21.
+ * Cos人图片上传类
  */
 public class UploadHelper extends Presenter {
     private final String TAG = "PublishHelper";
