@@ -183,7 +183,7 @@ public class QavsdkControl {
     }
 
     public void setMirror(boolean isMirror) {
-        SxbLog.d(TAG, "setMirror SelfIdentifier:" + getSelfIdentifier());
+        SxbLog.d(TAG, "setMirror SelfIdentifier:" + getSelfIdentifier()+"/"+isMirror);
 
         if (null != mAVUIControl) {
             mAVUIControl.setMirror(isMirror, getSelfIdentifier());

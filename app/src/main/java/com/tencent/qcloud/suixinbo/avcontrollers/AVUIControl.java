@@ -187,6 +187,8 @@ public class AVUIControl extends GLViewGroup {
         if (index >= 0) {
             view = mGlVideoView[index];
             view.setMirror(isMirror);
+        }else{
+            SxbLog.e(TAG, "setMirror->fail index: "+index);
         }
     }
 
@@ -456,6 +458,7 @@ public class AVUIControl extends GLViewGroup {
     int getViewIndexById(String identifier, int videoSrcType) {
         int index = -1;
         if (null == identifier) {
+            SxbLog.e(TAG, "getViewIndexById->id is empty!");
             return index;
         }
         for (int i = 0; i < mGlVideoView.length; i++) {

@@ -577,6 +577,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         //必须得进入房间之后才能初始化UI
         mEnterRoomProsscessHelper.initAvUILayer(avView);
 
+        mLiveHelper.fixCamera();
         if (isSucc == true) {
             //IM初始化
             mLiveHelper.initTIMListener("" + CurLiveInfo.getRoomNum());
@@ -716,6 +717,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             SxbLog.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
             QavsdkControl.getInstance().setSelfId(MySelfInfo.getInstance().getId());
             QavsdkControl.getInstance().setLocalHasVideo(true, MySelfInfo.getInstance().getId());
+            mLiveHelper.fixCamera();
             //主播通知用户服务器
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
                 mEnterRoomProsscessHelper.notifyServerCreateRoom();
