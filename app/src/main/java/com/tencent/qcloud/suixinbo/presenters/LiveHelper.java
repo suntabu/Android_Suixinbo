@@ -113,6 +113,7 @@ public class LiveHelper extends Presenter {
 
     }
 
+
     /**
      * 打开摄像头
      */
@@ -133,11 +134,23 @@ public class LiveHelper extends Presenter {
     /**
      * 开关摄像头
      */
-    public void toggleCamera(){
+    public void toggleCamera() {
         if (isOpenCamera) {
             closeCamera();
-        }else{
+        } else {
             openCamera();
+        }
+    }
+
+
+    /**
+     * 开关Mic
+     */
+    public void toggleMic() {
+        if (isMicOpen) {
+            openMic();
+        } else {
+            muteMic();
         }
     }
 
@@ -497,6 +510,9 @@ public class LiveHelper extends Presenter {
                     break;
                 case Constants.AVIMCMD_MULTI_HOST_CONTROLL_CAMERA:
                     toggleCamera();
+                    break;
+                case Constants.AVIMCMD_MULTI_HOST_CONTROLL_MIC:
+                    toggleMic();
                     break;
 
             }

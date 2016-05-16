@@ -249,7 +249,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 //                }
             }
 
-            if (action.equals(Constants.ACTION_SWITCH_VIDEO)) {//点击成员
+            if (action.equals(Constants.ACTION_SWITCH_VIDEO)) {//点击成员回调
                 backGroundId = intent.getStringExtra(Constants.EXTRA_IDENTIFIER);
 
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {//自己是主播
@@ -1006,6 +1006,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 mMemberDg.show();
                 break;
             case R.id.camera_controll:
+                Toast.makeText(LiveActivity.this, "切换" + backGroundId + "camrea 状态", Toast.LENGTH_SHORT).show();
                 if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//自己关闭自己
                     mLiveHelper.toggleCamera();
                 } else {
@@ -1013,6 +1014,12 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 }
                 break;
             case R.id.mic_controll:
+                Toast.makeText(LiveActivity.this, "切换" + backGroundId + "mic 状态", Toast.LENGTH_SHORT).show();
+                if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//自己关闭自己
+                    mLiveHelper.toggleMic();
+                } else {
+                    mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MULTI_HOST_CONTROLL_MIC, backGroundId, backGroundId);//主播关闭自己
+                }
                 break;
             case R.id.close_member_video://主动关闭成员摄像头
                 cancelMemberView(backGroundId);

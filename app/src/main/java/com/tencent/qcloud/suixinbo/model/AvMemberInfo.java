@@ -2,6 +2,9 @@ package com.tencent.qcloud.suixinbo.model;
 
 import android.graphics.Bitmap;
 
+/**
+ * 互动直播成员
+ */
 public class AvMemberInfo {
 	public String identifier = "";
 	public boolean hasAudio = false;
@@ -19,4 +22,6 @@ public class AvMemberInfo {
 				+ ", isShareMovie = " + isShareMovie + ", hasGetInfo = "
 				+ hasGetInfo + ", name = " + name;
 	}
+
+
 }

@@ -21,7 +21,7 @@
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_marginLeft="85dp"
-        android:background="@drawable/icon_camera_on" />
+        android:background="@drawable/camera_switch" />
 
     <TextView
         android:id="@+id/mic_controll"
@@ -29,5 +29,5 @@
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_marginLeft="85dp"
-        android:background="@drawable/icon_mic_open" />
+        android:background="@drawable/mic_switch" />
 </LinearLayout>
