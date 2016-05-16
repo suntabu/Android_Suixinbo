@@ -210,6 +210,10 @@ public class LiveHelper extends Presenter {
 
     }
 
+    public void fixCamera(){
+        QavsdkControl.getInstance().setMirror(mIsFrontCamera);
+    }
+
 
     /**
      * AVSDK 请求主播数据
