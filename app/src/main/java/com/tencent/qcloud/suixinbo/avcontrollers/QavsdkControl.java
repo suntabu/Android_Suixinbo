@@ -1,7 +1,6 @@
 package com.tencent.qcloud.suixinbo.avcontrollers;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 
 import com.tencent.av.sdk.AVAudioCtrl;
@@ -183,7 +182,7 @@ public class QavsdkControl {
     }
 
     public void setMirror(boolean isMirror) {
-        SxbLog.d(TAG, "setMirror SelfIdentifier:" + getSelfIdentifier());
+        SxbLog.d(TAG, "setMirror :" + isMirror);
 
         if (null != mAVUIControl) {
             mAVUIControl.setMirror(isMirror, getSelfIdentifier());

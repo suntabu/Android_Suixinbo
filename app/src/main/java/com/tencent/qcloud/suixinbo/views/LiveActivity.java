@@ -344,6 +344,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         BtnCtrlVideo.setOnClickListener(this);
         BtnCtrlMic.setOnClickListener(this);
         BtnHungup.setOnClickListener(this);
+        TextView roomId = (TextView) findViewById(R.id.room_id);
+        roomId.setText(CurLiveInfo.getChatRoomId());
 
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostCtrView.setVisibility(View.VISIBLE);

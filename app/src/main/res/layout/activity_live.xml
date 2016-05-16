@@ -23,6 +23,16 @@
 
 
         <TextView
+            android:id="@+id/room_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="200dp"
+            android:text="1231231" />
+
+
+        <TextView
             android:id="@+id/video_interact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
