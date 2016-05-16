@@ -1,7 +1,6 @@
 package com.tencent.qcloud.suixinbo.presenters;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.tencent.TIMCallBack;
@@ -158,12 +157,12 @@ public class LoginHeloper {
 
             @Override
             public void OnStrAccRegFail(TLSErrInfo tlsErrInfo) {
-
+                Toast.makeText(mContext, " register a user fail ! " + tlsErrInfo.Msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void OnStrAccRegTimeout(TLSErrInfo tlsErrInfo) {
-
+                Toast.makeText(mContext, " register timeout ! " + tlsErrInfo.Msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
