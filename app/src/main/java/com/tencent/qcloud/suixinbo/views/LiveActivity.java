@@ -794,6 +794,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
             return false;
         }
+
+        if (hasInvited(id)) {
+            Toast.makeText(LiveActivity.this, "it has already invited", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         switch (requetCount) {
             case 1:
                 inviteView1.setText(id);
@@ -822,6 +827,26 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         return true;
     }
 
+
+    /**
+     * 判断是否邀请过同一个人
+     *
+     * @param id
+     * @return
+     */
+    private boolean hasInvited(String id) {
+        if (id.equals(inviteView1.getTag())) {
+            return true;
+        }
+        if (id.equals(inviteView2.getTag())) {
+            return true;
+        }
+        if (id.equals(inviteView3.getTag())) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void cancelInviteView(String id) {
         if ((inviteView1 != null) && (inviteView1.getTag() != null)) {
@@ -829,6 +854,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             }
             if (inviteView1.getVisibility() == View.VISIBLE) {
                 inviteView1.setVisibility(View.INVISIBLE);
+                inviteView1.setTag("");
                 inviteViewCount--;
             }
         }
@@ -837,6 +863,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (inviteView2.getTag().equals(id)) {
                 if (inviteView2.getVisibility() == View.VISIBLE) {
                     inviteView2.setVisibility(View.INVISIBLE);
+                    inviteView1.setTag("");
                     inviteViewCount--;
                 }
             } else {
@@ -850,6 +877,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (inviteView3.getTag().equals(id)) {
                 if (inviteView3.getVisibility() == View.VISIBLE) {
                     inviteView3.setVisibility(View.INVISIBLE);
+                    inviteView1.setTag("");
                     inviteViewCount--;
                 }
             } else {

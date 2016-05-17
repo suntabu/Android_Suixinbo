@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import com.bumptech.glide.RequestManager;
 import com.tencent.TIMUserProfile;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
-import com.tencent.qcloud.suixinbo.presenters.LoginHeloper;
+import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
 import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LogoutView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
@@ -42,7 +41,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
     private TextView mProfileId;
     private TextView mProfileInfo;
     private ImageView mEditProfile;
-    private LoginHeloper mLoginHeloper;
+    private LoginHelper mLoginHeloper;
     private ProfileInfoHelper mProfileHelper;
     private LineControllerView mBtnLogout;
     private LineControllerView mBtnSet;
@@ -71,7 +70,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         mBtnLogout.setOnClickListener(this);
         mEditProfile.setOnClickListener(this);
 
-        mLoginHeloper = new LoginHeloper(getActivity().getApplicationContext(), this);
+        mLoginHeloper = new LoginHelper(getActivity().getApplicationContext(), this);
         mProfileHelper = new ProfileInfoHelper(this);
         return view;
     }

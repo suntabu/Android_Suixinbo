@@ -11,8 +11,9 @@ import android.widget.Toast;
 import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
-import com.tencent.qcloud.suixinbo.presenters.LoginHeloper;
+import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 /**
  * 登录类
@@ -21,13 +22,13 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
     TextView mBtnLogin, mBtnRegister;
     EditText mPassWord, mUserName;
     private static final String TAG = LoginActivity.class.getSimpleName();
-    private LoginHeloper mLoginHeloper;
+    private LoginHelper mLoginHeloper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mLoginHeloper = new LoginHeloper(this, this);
+        SxbLog.i(TAG,"LoginActivity onCreate");
+        mLoginHeloper = new LoginHelper(this, this);
         //获取个人数据本地缓存
         MySelfInfo.getInstance().getCache(getApplicationContext());
         if (needLogin() == true) {//本地没有账户需要登录
@@ -40,6 +41,7 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
             mBtnLogin.setOnClickListener(this);
         } else {
             //有账户登录直接IM登录
+            SxbLog.i(TAG,"LoginActivity onCreate");
             mLoginHeloper.imLogin(MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
         }
 

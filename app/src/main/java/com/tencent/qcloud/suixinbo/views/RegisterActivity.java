@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
-import com.tencent.qcloud.suixinbo.presenters.LoginHeloper;
+import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 
 /**
@@ -23,7 +23,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener, 
     private TextView mBtnRegister;
     private ImageButton mBtnBack;
     QavsdkApplication mMyApplication;
-    LoginHeloper mLoginHeloper;
+    LoginHelper mLoginHeloper;
     private static final String TAG = RegisterActivity.class.getSimpleName();
 
     @Override
@@ -38,7 +38,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener, 
         mBtnBack.setOnClickListener(this);
         mBtnRegister.setOnClickListener(this);
         mMyApplication = (QavsdkApplication) getApplication();
-        mLoginHeloper = new LoginHeloper(this, this);
+        mLoginHeloper = new LoginHelper(this, this);
 
         QavsdkApplication.getInstance().addActivity(this);
     }
