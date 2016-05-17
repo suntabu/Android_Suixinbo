@@ -1,14 +1,18 @@
 package com.tencent.qcloud.suixinbo.views;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -27,10 +31,14 @@ import com.tencent.qcloud.suixinbo.presenters.UploadHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LocationView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.UploadView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
+import com.tencent.qcloud.suixinbo.utils.UIUtils;
 import com.tencent.qcloud.suixinbo.views.customviews.CustomSwitch;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 直播发布类
@@ -52,6 +60,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
 
     private static final int CROP_CHOOSE = 10;
     private boolean bUploading = false;
+    private boolean bPermission = false;
     private int uploadPercent = 0;
 
     @Override
@@ -75,6 +84,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         initPhotoDialog();
         // 提前更新sig
         mPublishLivePresenter.updateSig();
+
+        bPermission = checkPublishPermission();
 
         QavsdkApplication.getInstance().addActivity(this);
     }
@@ -115,7 +126,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 }else{
                     btnLBS.setChecked(true, true);
                     tvLBS.setText(R.string.text_live_location);
-                    if (mLocationHelper.checkPermission()){
+                    if (mLocationHelper.checkLocationPermission()){
                         if (!mLocationHelper.getMyLocation(getApplicationContext(), this)){
                             tvLBS.setText(getString(R.string.text_live_lbs_fail));
                             btnLBS.setChecked(false, false);
@@ -175,14 +186,20 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
      * @param type
      */
     private void getPicFrom(int type) {
+        if (!bPermission){
+            Toast.makeText(this, getString(R.string.tip_no_permission), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         switch (type) {
             case CAPTURE_IMAGE_CAMERA:
-                Intent intent_photo = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 fileUri = createCoverUri("");
+                Intent intent_photo = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent_photo.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 startActivityForResult(intent_photo, CAPTURE_IMAGE_CAMERA);
                 break;
             case IMAGE_STORE:
+                fileUri = createCoverUri("_select");
                 Intent intent_album = new Intent("android.intent.action.GET_CONTENT");
                 intent_album.setType("image/*");
                 startActivityForResult(intent_album, IMAGE_STORE);
@@ -191,9 +208,37 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         }
     }
 
+    private boolean checkPublishPermission(){
+        if (Build.VERSION.SDK_INT >= 23) {
+            List<String> permissions = new ArrayList<>();
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.CAMERA)){
+                permissions.add(Manifest.permission.CAMERA);
+            }
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.READ_PHONE_STATE)){
+                permissions.add(Manifest.permission.READ_PHONE_STATE);
+            }
+            if (permissions.size() != 0){
+                ActivityCompat.requestPermissions(PublishLiveActivity.this,
+                        (String[]) permissions.toArray(new String[0]),
+                        Constants.WRITE_PERMISSION_REQ_CODE);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private Uri createCoverUri(String type) {
         String filename = MySelfInfo.getInstance().getId()+ type + ".jpg";
         File outputImage = new File(Environment.getExternalStorageDirectory(), filename);
+        if (ContextCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(PublishLiveActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_PERMISSION_REQ_CODE);
+            return null;
+        }
         try {
             if (outputImage.exists()) {
                 outputImage.delete();
@@ -215,7 +260,12 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                     startPhotoZoom(fileUri);
                     break;
                 case IMAGE_STORE:
-                    startPhotoZoom(data.getData());
+                    String path = UIUtils.getPath(this, data.getData());
+                    if (null != path){
+                        SxbLog.d(TAG, "startPhotoZoom->path:" + path);
+                        File file = new File(path);
+                        startPhotoZoom(Uri.fromFile(file));
+                    }
                     break;
                 case CROP_CHOOSE:
                     tvPicTip.setVisibility(View.GONE);
@@ -233,6 +283,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     public void startPhotoZoom(Uri uri) {
         cropUri = createCoverUri("_crop");
 
+        SxbLog.e("XIAO", "startPhotoZoom->url:"+uri);
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
@@ -276,6 +327,14 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 }
             }
             break;
+            case Constants.WRITE_PERMISSION_REQ_CODE:
+                for (int ret : grantResults){
+                    if (ret != PackageManager.PERMISSION_GRANTED){
+                        return;
+                    }
+                }
+                bPermission = true;
+                break;
         default:
             break;
         }
