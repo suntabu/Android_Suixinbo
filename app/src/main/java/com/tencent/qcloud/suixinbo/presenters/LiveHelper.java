@@ -418,7 +418,8 @@ public class LiveHelper extends Presenter {
                 }
                 //定制消息
                 if (type == TIMElemType.Custom) {
-                    handleCustomMsg(elem, currMsg.getSenderProfile());
+                    if (currMsg.getSenderProfile() != null)
+                        handleCustomMsg(elem, currMsg.getSenderProfile());
                     continue;
                 }
 

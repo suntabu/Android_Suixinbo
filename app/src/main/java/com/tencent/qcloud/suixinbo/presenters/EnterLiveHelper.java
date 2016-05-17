@@ -339,7 +339,7 @@ public class EnterLiveHelper extends Presenter {
 
         @Override
         protected void onPostExecute(LiveInfoJson result) {
-            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, result);
+//            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, result);
         }
     }
 
