@@ -59,7 +59,7 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
                 LiveInfoJson item = liveList.get(i);
                 //如果是自己
                 if (item.getHost().getUid().equals(MySelfInfo.getInstance().getId())) {
-                    Toast.makeText(getActivity(), "this wrong room", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "this room don't exist", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Intent intent = new Intent(getActivity(), LiveActivity.class);
