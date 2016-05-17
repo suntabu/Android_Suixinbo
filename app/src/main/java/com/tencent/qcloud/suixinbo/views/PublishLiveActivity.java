@@ -262,7 +262,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 case IMAGE_STORE:
                     String path = UIUtils.getPath(this, data.getData());
                     if (null != path){
-                        SxbLog.e(TAG, "startPhotoZoom->path:" + path);
+                        SxbLog.d(TAG, "startPhotoZoom->path:" + path);
                         File file = new File(path);
                         startPhotoZoom(Uri.fromFile(file));
                     }
