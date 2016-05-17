@@ -67,7 +67,6 @@ public class LiveHelper extends Presenter {
     private static final String UNREAD = "0";
     private ArrayList<String> mCurrentVideoMembers;
     private ArrayList<MemberInfo> mDialogMembers = new ArrayList<MemberInfo>();
-    private int requestCount = 1;
     private AVView mRequestViewList[] = new AVView[MAX_REQUEST_VIEW_COUNT];
     private String mRequestIdentifierList[] = new String[MAX_REQUEST_VIEW_COUNT];
     private Boolean isOpenCamera = false;
@@ -210,7 +209,7 @@ public class LiveHelper extends Presenter {
 
     }
 
-    public void fixCamera(){
+    public void fixCamera() {
         QavsdkControl.getInstance().setMirror(mIsFrontCamera);
     }
 
