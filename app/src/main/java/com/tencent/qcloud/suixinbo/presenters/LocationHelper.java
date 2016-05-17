@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LocationView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
@@ -33,7 +32,7 @@ public class LocationHelper {
         locActivity = activity;
     }
 
-    public boolean checkPermission(){
+    public boolean checkLocationPermission(){
         if (Build.VERSION.SDK_INT >= 23) {
             if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(locActivity, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(locActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.LOCATION_PERMISSION_REQ_CODE);
@@ -68,7 +67,7 @@ public class LocationHelper {
             return false;
         }
 
-        if (!checkPermission()){
+        if (!checkLocationPermission()){
             return true;
         }
 
