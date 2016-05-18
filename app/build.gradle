@@ -11,6 +11,23 @@ android {
         versionCode 1234567890
         versionName "MagicVersionForReplace"
     }
+
+    signingConfigs{
+        release{
+            storeFile file("$System.env.KEYSTORE_PATH")
+            storePassword "$System.env.STOREPASS"
+            keyAlias "$System.env.ALIAS"
+            keyPassword "$System.env.KEYPASS"
+        }
+    }
+
+    buildTypes{
+        release{
+            signingConfig signingConfigs.release
+        }
+    }
+
+
     buildTypes {
         release {
             minifyEnabled false
