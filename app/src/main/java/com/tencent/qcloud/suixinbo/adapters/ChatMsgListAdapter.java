@@ -9,7 +9,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +29,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-
 /**
  * 消息列表的Adapter
  */
-public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScrollListener{
+public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScrollListener {
 
     private static String TAG = ChatMsgListAdapter.class.getSimpleName();
     private static final int ITEMCOUNT = 7;
@@ -47,10 +45,10 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
     private ListView mListView;
     private ArrayList<ChatEntity> myArray = new ArrayList<ChatEntity>();
 
-    class AnimatorInfo{
+    class AnimatorInfo {
         long createTime;
 
-        public AnimatorInfo(long uTime){
+        public AnimatorInfo(long uTime) {
             createTime = uTime;
         }
 
@@ -62,6 +60,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
             this.createTime = createTime;
         }
     }
+
     private static final int MAXANIMATORCOUNT = 8;
     private static final int ANIMATORDURING = 8000;
     private static final int MAXITEMCOUNT = 50;
@@ -99,27 +98,34 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
     }
 
     /**
-     *  通过名称计算颜色
+     * 通过名称计算颜色
      */
-    private int calcNameColor(String strName){
-        byte idx=0;
-
+    private int calcNameColor(String strName) {
+        if (strName == null) return 0;
+        byte idx = 0;
         byte[] byteArr = strName.getBytes();
-        for (int i=0; i<byteArr.length; i++){
+        for (int i = 0; i < byteArr.length; i++) {
             idx ^= byteArr[i];
         }
 
-        switch(idx&0x7){
-        case 1: return context.getResources().getColor(R.color.colorSendName1);
-        case 2: return context.getResources().getColor(R.color.colorSendName2);
-        case 3: return context.getResources().getColor(R.color.colorSendName3);
-        case 4: return context.getResources().getColor(R.color.colorSendName4);
-        case 5: return context.getResources().getColor(R.color.colorSendName5);
-        case 6: return context.getResources().getColor(R.color.colorSendName6);
-        case 7: return context.getResources().getColor(R.color.colorSendName7);
-        case 0:
-        default:
-            return context.getResources().getColor(R.color.colorSendName);
+        switch (idx & 0x7) {
+            case 1:
+                return context.getResources().getColor(R.color.colorSendName1);
+            case 2:
+                return context.getResources().getColor(R.color.colorSendName2);
+            case 3:
+                return context.getResources().getColor(R.color.colorSendName3);
+            case 4:
+                return context.getResources().getColor(R.color.colorSendName4);
+            case 5:
+                return context.getResources().getColor(R.color.colorSendName5);
+            case 6:
+                return context.getResources().getColor(R.color.colorSendName6);
+            case 7:
+                return context.getResources().getColor(R.color.colorSendName7);
+            case 0:
+            default:
+                return context.getResources().getColor(R.color.colorSendName);
         }
     }
 
@@ -145,7 +151,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
             playViewAnimator(convertView, position, item);
         }
 
-        spanString = new SpannableString(item.getSenderName()+"  "+item.getContext());
+        spanString = new SpannableString(item.getSenderName() + "  " + item.getContext());
         if (item.getType() != Constants.TEXT_TYPE) {
             // 设置名称为粗体
             StyleSpan boldStyle = new StyleSpan(Typeface.BOLD_ITALIC);
@@ -174,11 +180,12 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
 
     /**
      * 停止View属性动画
+     *
      * @param itemView
      */
-    private void stopViewAnimator(View itemView){
+    private void stopViewAnimator(View itemView) {
         AnimatorSet aniSet = (AnimatorSet) itemView.getTag(R.id.tag_second);
-        if (null != aniSet){
+        if (null != aniSet) {
             aniSet.cancel();
             mAnimatorSetList.remove(aniSet);
         }
@@ -186,11 +193,12 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
 
     /**
      * 播放View属性动画
+     *
      * @param itemView   动画对应View
-     * @param startAlpha  初始透明度
-     * @param duringTime   动画时长
+     * @param startAlpha 初始透明度
+     * @param duringTime 动画时长
      */
-    private void playViewAnimator(View itemView, float startAlpha, long duringTime){
+    private void playViewAnimator(View itemView, float startAlpha, long duringTime) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(itemView, "alpha", startAlpha, 0f);
         AnimatorSet aniSet = new AnimatorSet();
         aniSet.setDuration(duringTime);
@@ -202,40 +210,42 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
 
     /**
      * 播放渐消动画
+     *
      * @param pos
      * @param view
      */
-    public void playDisappearAnimator(int pos, View view){
+    public void playDisappearAnimator(int pos, View view) {
         int firstVisable = mListView.getFirstVisiblePosition();
         if (firstVisable <= pos) {
             playViewAnimator(view, 1f, ANIMATORDURING);
-        }else{
+        } else {
             SxbLog.d(TAG, "playDisappearAnimator->unexpect pos: " + pos + "/" + firstVisable);
         }
     }
 
     /**
-     *  继续播放渐消动画
+     * 继续播放渐消动画
+     *
      * @param itemView
      * @param position
      * @param item
      */
-    private void continueAnimator(View itemView, int position, final ChatEntity item){
-        int animatorIdx = listMessage.size()-1-position;
+    private void continueAnimator(View itemView, int position, final ChatEntity item) {
+        int animatorIdx = listMessage.size() - 1 - position;
 
-        if (animatorIdx < MAXANIMATORCOUNT){
+        if (animatorIdx < MAXANIMATORCOUNT) {
             float startAlpha = 1f;
             long during = ANIMATORDURING;
 
             stopViewAnimator(itemView);
 
             // 播放动画
-            if (position < mAnimatorInfoList.size()){
+            if (position < mAnimatorInfoList.size()) {
                 AnimatorInfo info = mAnimatorInfoList.get(position);
                 long time = info.getCreateTime();  //  获取列表项加载的初始时间
-                during = during - (System.currentTimeMillis()-time);     // 计算动画剩余时长
-                startAlpha = 1f*during/ANIMATORDURING;                    // 计算动画初始透明度
-                if (during < 0){   // 剩余时长小于0直接设置透明度为0并返回
+                during = during - (System.currentTimeMillis() - time);     // 计算动画剩余时长
+                startAlpha = 1f * during / ANIMATORDURING;                    // 计算动画初始透明度
+                if (during < 0) {   // 剩余时长小于0直接设置透明度为0并返回
                     itemView.setAlpha(0f);
                     SxbLog.v(TAG, "continueAnimator->already end animator:" + position + "/" + item.getContext() + "-" + during);
                     return;
@@ -243,29 +253,29 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
             }
 
             // 创建属性动画并播放
-            SxbLog.v(TAG, "continueAnimator->pos: "+position+"/"+listMessage.size()+", alpha:"+startAlpha+", dur:"+during);
+            SxbLog.v(TAG, "continueAnimator->pos: " + position + "/" + listMessage.size() + ", alpha:" + startAlpha + ", dur:" + during);
             playViewAnimator(itemView, startAlpha, during);
-        }else{
-            SxbLog.v(TAG, "continueAnimator->ignore pos: "+position+"/"+listMessage.size());
+        } else {
+            SxbLog.v(TAG, "continueAnimator->ignore pos: " + position + "/" + listMessage.size());
         }
     }
 
     /**
      * 播放消失动画
      */
-    private void playDisappearAnimator(){
-        for (int i=0; i<mListView.getChildCount(); i++){
+    private void playDisappearAnimator() {
+        for (int i = 0; i < mListView.getChildCount(); i++) {
             View itemView = mListView.getChildAt(i);
-            if (null == itemView){
-                SxbLog.w(TAG, "playDisappearAnimator->view not found: "+i+"/"+mListView.getCount());
+            if (null == itemView) {
+                SxbLog.w(TAG, "playDisappearAnimator->view not found: " + i + "/" + mListView.getCount());
                 break;
             }
 
             // 更新动画创建时间
             int position = mListView.getFirstVisiblePosition() + i;
-            if (position < mAnimatorInfoList.size()){
+            if (position < mAnimatorInfoList.size()) {
                 mAnimatorInfoList.get(position).setCreateTime(System.currentTimeMillis());
-            }else{
+            } else {
                 SxbLog.e(TAG, "playDisappearAnimator->error: " + position + "/" + mAnimatorInfoList.size());
             }
 
@@ -275,9 +285,10 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
 
     /**
      * 播放列表项动画
-     * @param itemView  要播放动画的列表项
-     * @param position  列表项的位置
-     * @param item   列表数据
+     *
+     * @param itemView 要播放动画的列表项
+     * @param position 列表项的位置
+     * @param item     列表数据
      */
     private void playViewAnimator(View itemView, int position, final ChatEntity item) {
         if (!myArray.contains(item)) {  // 首次加载的列表项动画
@@ -287,7 +298,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
 
         if (mScrolling) {  // 滚动时不播放动画，设置透明度为1
             itemView.setAlpha(1f);
-        }else{
+        } else {
             continueAnimator(itemView, position, item);
         }
     }
@@ -295,25 +306,25 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
     /**
      * 删除超过上限(MAXITEMCOUNT)的列表项
      */
-    private void clearFinishItem(){
+    private void clearFinishItem() {
         // 删除超过的列表项
-        while (listMessage.size() > MAXITEMCOUNT){
+        while (listMessage.size() > MAXITEMCOUNT) {
             listMessage.remove(0);
-            if (mAnimatorInfoList.size() > 0){
+            if (mAnimatorInfoList.size() > 0) {
                 mAnimatorInfoList.remove(0);
             }
         }
 
         // 缓存列表延迟删除
-        while (myArray.size() > (MAXITEMCOUNT<<1)){
+        while (myArray.size() > (MAXITEMCOUNT << 1)) {
             myArray.remove(0);
         }
 
-        while (mAnimatorInfoList.size() >= listMessage.size()){
+        while (mAnimatorInfoList.size() >= listMessage.size()) {
             SxbLog.e(TAG, "clearFinishItem->error size: " + mAnimatorInfoList.size() + "/" + listMessage.size());
             if (mAnimatorInfoList.size() > 0) {
                 mAnimatorInfoList.remove(0);
-            }else{
+            } else {
                 break;
             }
         }
@@ -322,17 +333,17 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
     /**
      * 重新计算ITEMCOUNT条记录的高度，并动态调整ListView的高度
      */
-    private void redrawListViewHeight(){
+    private void redrawListViewHeight() {
         int totalHeight = 0;
-        int start = 0, lineCount=0;
+        int start = 0, lineCount = 0;
 
-        if (listMessage.size() < 0){
+        if (listMessage.size() < 0) {
             return;
         }
 
         // 计算底部ITEMCOUNT条记录的高度
         mCreateAnimator = false;    // 计算高度时不播放属性动画
-        for (int i=listMessage.size()-1; i>=start && lineCount<ITEMCOUNT; i--,lineCount++){
+        for (int i = listMessage.size() - 1; i >= start && lineCount < ITEMCOUNT; i--, lineCount++) {
             View listItem = getView(i, null, mListView);
             listItem.measure(0, 0);
             // add item height
@@ -342,14 +353,14 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
 
         // 调整ListView高度
         ViewGroup.LayoutParams params = mListView.getLayoutParams();
-        params.height = totalHeight + (mListView.getDividerHeight()* (lineCount-1));
+        params.height = totalHeight + (mListView.getDividerHeight() * (lineCount - 1));
         mListView.setLayoutParams(params);
     }
 
     /**
      * 停止当前所有属性动画并重置透明度
      */
-    private void stopAnimator(){
+    private void stopAnimator() {
         // 停止动画
         for (AnimatorSet anSet : mAnimatorSetList) {
             anSet.cancel();
@@ -370,12 +381,12 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
     /**
      * 继续可视范围内所有动画
      */
-    private void continueAllAnimator(){
+    private void continueAllAnimator() {
         int startPos = mListView.getFirstVisiblePosition();
 
-        for (int i=0; i<mListView.getChildCount(); i++){
+        for (int i = 0; i < mListView.getChildCount(); i++) {
             View view = mListView.getChildAt(i);
-            if (null != view && startPos+i < listMessage.size()) {
+            if (null != view && startPos + i < listMessage.size()) {
                 continueAnimator(view, startPos + i, listMessage.get(startPos + i));
             }
         }
@@ -386,8 +397,8 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
      */
     @Override
     public void notifyDataSetChanged() {
-        SxbLog.v(TAG, "notifyDataSetChanged->scroll: "+mScrolling);
-        if (mScrolling){
+        SxbLog.v(TAG, "notifyDataSetChanged->scroll: " + mScrolling);
+        if (mScrolling) {
             // 滑动过程中不刷新
             super.notifyDataSetChanged();
             return;
@@ -409,7 +420,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         // 重置ListView高度
         redrawListViewHeight();
 
-        if (MySelfInfo.getInstance().isbLiveAnimator() && listMessage.size() >= MAXITEMCOUNT){
+        if (MySelfInfo.getInstance().isbLiveAnimator() && listMessage.size() >= MAXITEMCOUNT) {
             continueAllAnimator();
         }
 
@@ -417,31 +428,31 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         mListView.post(new Runnable() {
             @Override
             public void run() {
-                mListView.setSelection(mListView.getCount()-1);
+                mListView.setSelection(mListView.getCount() - 1);
             }
         });
     }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-        switch (scrollState){
-        case SCROLL_STATE_FLING:
-            break;
-        case SCROLL_STATE_TOUCH_SCROLL:
-            if (MySelfInfo.getInstance().isbLiveAnimator()) {
-                // 开始滚动时停止所有属性动画
-                stopAnimator();
-                resetAlpha();
-            }
-            mScrolling = true;
-            break;
-        case SCROLL_STATE_IDLE:
-            mScrolling = false;
-            if (MySelfInfo.getInstance().isbLiveAnimator()) {
-                // 停止滚动时播放渐消动画
-                playDisappearAnimator();
-            }
-            break;
+        switch (scrollState) {
+            case SCROLL_STATE_FLING:
+                break;
+            case SCROLL_STATE_TOUCH_SCROLL:
+                if (MySelfInfo.getInstance().isbLiveAnimator()) {
+                    // 开始滚动时停止所有属性动画
+                    stopAnimator();
+                    resetAlpha();
+                }
+                mScrolling = true;
+                break;
+            case SCROLL_STATE_IDLE:
+                mScrolling = false;
+                if (MySelfInfo.getInstance().isbLiveAnimator()) {
+                    // 停止滚动时播放渐消动画
+                    playDisappearAnimator();
+                }
+                break;
         }
 
     }

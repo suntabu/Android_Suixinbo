@@ -76,10 +76,6 @@ public class LiveHelper extends Presenter {
         mLiveView = liveview;
     }
 
-    public LiveHelper(Context context) {
-        mContext = context;
-    }
-
     public LiveHelper(Context context, MembersDialogView dialogView) {
         mContext = context;
         mMembersDialogView = dialogView;
@@ -197,8 +193,8 @@ public class LiveHelper extends Presenter {
                     QavsdkControl.getInstance().setMirror(mIsFrontCamera);
 
                     //如果是主播直接本地渲染
-                    if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
-                        mLiveView.showVideoView(LOCAL, CurLiveInfo.getHostID());
+//                    if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
+//                        mLiveView.showVideoView(LOCAL, CurLiveInfo.getHostID());
 
                 }
             }
