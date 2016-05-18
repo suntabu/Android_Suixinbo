@@ -79,7 +79,7 @@ public class LoginHelper {
 
     /**
      * 退出imsdk
-     * <p>
+     * <p/>
      * 退出成功会调用退出AVSDK
      */
     public void imLogout() {
@@ -193,7 +193,8 @@ public class LoginHelper {
     private void startAVSDK() {
         QavsdkControl.getInstance().setAvConfig(Constants.SDK_APPID, "" + Constants.ACCOUNT_TYPE, MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
         QavsdkControl.getInstance().startContext();
-        mLoginView.LoginSucc();
+        if (mLoginView != null)
+            mLoginView.LoginSucc();
     }
 
 
