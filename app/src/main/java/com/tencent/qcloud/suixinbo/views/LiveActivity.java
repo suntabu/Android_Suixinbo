@@ -139,7 +139,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     }
 
 
-
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(android.os.Message msg) {
@@ -198,34 +197,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         }
 
         if (Constants.HOST == MySelfInfo.getInstance().getIdStatus() && null != mVideoTime) {
-            SxbLog.i(TAG," refresh time ");
+            SxbLog.i(TAG, " refresh time ");
             mVideoTime.setText(formatTime);
         }
     }
-
-    private void processInnerMsg(Message msg) {
-        switch (msg.what) {
-            case UPDAT_WALL_TIME_TIMER_TASK:
-                updateWallTime();
-                break;
-            case REFRESH_LISTVIEW:
-                doRefreshListView();
-                break;
-            case ClOSE_IMSDK:
-                mLiveHelper.perpareQuitRoom(false);
-                mEnterRoomProsscessHelper.quiteLive();
-                break;
-            case TIMEOUT_INVITE:
-                String id = "" + msg.obj;
-                cancelInviteView(id);
-                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_HOST_CANCELINVITE, id);
-                break;
-        }
-        return;
-    }
-
-
-//    private final MyHandler mHandler = new MyHandler(this);
 
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -484,7 +459,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     private class VideoTimerTask extends TimerTask {
         public void run() {
-            SxbLog.i(TAG,"timeTask ");
+            SxbLog.i(TAG, "timeTask ");
             ++mSecond;
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
                 mHandler.sendEmptyMessage(UPDAT_WALL_TIME_TIMER_TASK);
