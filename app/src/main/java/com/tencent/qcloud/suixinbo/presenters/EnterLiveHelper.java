@@ -106,24 +106,13 @@ public class EnterLiveHelper extends Presenter {
                 case TYPE_MEMBER_CHANGE_IN:
                     SxbLog.i(TAG, "stepin id  " + updateList.length);
                     mStepInOutView.memberJoinLive(updateList);
-//                    for (String id : updateList) {
-//                        String host = CurLiveInfo.getHostID();
-//                        if (id.equals(host)) {
-////                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
-//                        }
-//                    }
+
                     break;
                 case TYPE_MEMBER_CHANGE_HAS_CAMERA_VIDEO:
                     video_ids.clear();
                     for (String id : updateList) {
                         video_ids.add(id);
                         SxbLog.i(TAG, "camera id " + id);
-//                        String host = CurLiveInfo.getHostID();
-//                        if (id.equals(host)) {
-//                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
-//                        } else {
-
-//                        }
                     }
                     Intent intent = new Intent(Constants.ACTION_CAMERA_OPEN_IN_LIVE);
                     intent.putStringArrayListExtra("ids", video_ids);
@@ -137,14 +126,6 @@ public class EnterLiveHelper extends Presenter {
 
             }
 
-//            //用户
-//            for (String member : updateList) {
-//                SxbLog.i(TAG, " onEndpoints id " + member);
-//                if (member.equals(CurLiveInfo.getHostID())) {
-//
-//                }
-//
-//            }
         }
 
         public void OnPrivilegeDiffNotify(int privilege) {
@@ -327,6 +308,9 @@ public class EnterLiveHelper extends Presenter {
 
     private NotifyServerLiveEnd liveEndTask;
 
+    /**
+     * 通知用户UserServer房间
+     */
     private void notifyServerLiveEnd() {
         liveEndTask = new NotifyServerLiveEnd();
         liveEndTask.execute(MySelfInfo.getInstance().getId());
@@ -341,7 +325,6 @@ public class EnterLiveHelper extends Presenter {
 
         @Override
         protected void onPostExecute(LiveInfoJson result) {
-//            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, result);
         }
     }
 
@@ -397,12 +380,9 @@ public class EnterLiveHelper extends Presenter {
 
 
     /**
-     * 通知房间
+     * 进入AV房间
+     * @param roomNum
      */
-    private void notifyServerQuit() {
-
-    }
-
     private void EnterAVRoom(int roomNum) {
         SxbLog.i(TAG, "createlive joinLiveRoom enterAVRoom " + roomNum);
         AVContext avContext = QavsdkControl.getInstance().getAVContext();
