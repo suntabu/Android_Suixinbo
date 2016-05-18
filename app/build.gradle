@@ -14,7 +14,7 @@ android {
 
     signingConfigs{
         release {
-            storeFile file("../build/target/product/security/.keystore")
+            storeFile file("../.keystore")
             storePassword "tencent"
             keyAlias "show"
             keyPassword "tencent"
