@@ -104,6 +104,7 @@ public class EnterLiveHelper extends Presenter {
 
             switch (eventid) {
                 case TYPE_MEMBER_CHANGE_IN:
+                    SxbLog.i(TAG, "stepin id  " + updateList.length);
                     mStepInOutView.memberJoinLive(updateList);
 //                    for (String id : updateList) {
 //                        String host = CurLiveInfo.getHostID();
@@ -116,6 +117,7 @@ public class EnterLiveHelper extends Presenter {
                     video_ids.clear();
                     for (String id : updateList) {
                         video_ids.add(id);
+                        SxbLog.i(TAG, "camera id " + id);
 //                        String host = CurLiveInfo.getHostID();
 //                        if (id.equals(host)) {
 //                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));

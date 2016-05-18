@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -451,20 +450,13 @@ public class LiveHelper extends Presenter {
                     if (currMsg.isSelf()) {
                         handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
                     } else {
-//                        TIMUserProfile sendUser = currMsg.getSenderProfile();
                         String nickname;
-                        if (currMsg.getSenderProfile() != null) {
+                        if (currMsg.getSenderProfile() != null && (!currMsg.getSenderProfile().getNickName().equals(""))) {
                             nickname = currMsg.getSenderProfile().getNickName();
                         } else {
                             nickname = sendId;
                         }
-
-                        //String sendid = currMsg.getSender();
-                        if (!TextUtils.isEmpty(nickname)) {
-                            handleTextMessage(elem, nickname);
-                        } else {
-                            handleTextMessage(elem, nickname);
-                        }
+                        handleTextMessage(elem, nickname);
                     }
                 }
             }
