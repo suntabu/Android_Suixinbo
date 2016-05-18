@@ -13,11 +13,11 @@ android {
     }
 
     signingConfigs{
-        release{
-            storeFile file("$System.env.KEYSTORE_PATH")
-            storePassword "$System.env.STOREPASS"
-            keyAlias "$System.env.ALIAS"
-            keyPassword "$System.env.KEYPASS"
+        release {
+            storeFile file("../build/target/product/security/.keystore")
+            storePassword "tencent"
+            keyAlias "show"
+            keyPassword "tencent"
         }
     }
     packagingOptions{
@@ -31,17 +31,13 @@ android {
         abortOnError false
     }
 
-    buildTypes{
-        release{
-            signingConfig signingConfigs.release
-        }
-    }
 
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
