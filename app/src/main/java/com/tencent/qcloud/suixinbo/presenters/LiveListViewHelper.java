@@ -25,7 +25,7 @@ public class LiveListViewHelper extends Presenter {
 
     public void getPageData() {
         mGetLiveListTask = new GetLiveListTask();
-        mGetLiveListTask.execute(0, 10);
+        mGetLiveListTask.execute(0, 20);
     }
 
     public void getMoreData() {
