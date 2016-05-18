@@ -16,6 +16,7 @@ import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
+import com.tencent.qcloud.suixinbo.presenters.InitBusinessHelper;
 import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
 import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
@@ -80,6 +81,7 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
         SxbLog.i(TAG, "HomeActivity onStart");
         super.onStart();
         if (QavsdkControl.getInstance().getAVContext() == null) {//retry
+            InitBusinessHelper.initApp(getApplicationContext());
             SxbLog.i(TAG, "HomeActivity retry login");
             mLoginHelper = new LoginHelper(this);
             mLoginHelper.imLogin(MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());

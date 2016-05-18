@@ -31,7 +31,7 @@ public class MembersDialog extends Dialog implements MembersDialogView {
         mLiveHelper = new LiveHelper(mContext, this);
         setContentView(R.layout.members_layout);
         mMemberList = (ListView) findViewById(R.id.member_list);
-        mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, data, view);
+        mMembersAdapter = new MembersAdapter(mContext, R.layout.members_item_layout, data, view,this);
         mMemberList.setAdapter(mMembersAdapter);
         Window window = getWindow();
         window.setGravity(Gravity.TOP);

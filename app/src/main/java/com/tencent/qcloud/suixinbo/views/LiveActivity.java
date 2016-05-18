@@ -743,7 +743,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     @Override
     public void showInviteDialog() {
-        if (inviteDg.isShowing() != true) {
+        if (getBaseContext() != null && inviteDg.isShowing() != true) {
             inviteDg.show();
         }
     }
@@ -863,7 +863,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (inviteView2.getTag().equals(id)) {
                 if (inviteView2.getVisibility() == View.VISIBLE) {
                     inviteView2.setVisibility(View.INVISIBLE);
-                    inviteView1.setTag("");
+                    inviteView2.setTag("");
                     inviteViewCount--;
                 }
             } else {
@@ -877,7 +877,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (inviteView3.getTag().equals(id)) {
                 if (inviteView3.getVisibility() == View.VISIBLE) {
                     inviteView3.setVisibility(View.INVISIBLE);
-                    inviteView1.setTag("");
+                    inviteView3.setTag("");
                     inviteViewCount--;
                 }
             } else {
