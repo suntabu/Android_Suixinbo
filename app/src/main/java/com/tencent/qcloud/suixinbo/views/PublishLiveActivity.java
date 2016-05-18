@@ -74,8 +74,8 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         tvPicTip = (TextView) findViewById(R.id.tv_pic_tip);
         BtnPublish = (TextView) findViewById(R.id.btn_publish);
         cover = (ImageView) findViewById(R.id.cover);
-        tvLBS = (TextView)findViewById(R.id.address);
-        btnLBS = (CustomSwitch)findViewById(R.id.btn_lbs);
+        tvLBS = (TextView) findViewById(R.id.address);
+        btnLBS = (CustomSwitch) findViewById(R.id.btn_lbs);
         cover.setOnClickListener(this);
         BtnBack.setOnClickListener(this);
         BtnPublish.setOnClickListener(this);
@@ -103,9 +103,9 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 finish();
                 break;
             case R.id.btn_publish:
-                if (bUploading){
-                    Toast.makeText(this, getString(R.string.publish_wait_uploading)+" "+uploadPercent+"%", Toast.LENGTH_SHORT).show();
-                }else {
+                if (bUploading) {
+                    Toast.makeText(this, getString(R.string.publish_wait_uploading) + " " + uploadPercent + "%", Toast.LENGTH_SHORT).show();
+                } else {
                     Intent intent = new Intent(this, LiveActivity.class);
                     intent.putExtra(Constants.ID_STATUS, Constants.HOST);
                     MySelfInfo.getInstance().setIdStatus(Constants.HOST);
@@ -113,6 +113,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                     CurLiveInfo.setHostID(MySelfInfo.getInstance().getId());
                     CurLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
                     startActivity(intent);
+                    SxbLog.i(TAG, "PerformanceTest  publish Live     " +  SxbLog.getTime());
                     this.finish();
                 }
                 break;
@@ -120,14 +121,14 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                 mPicChsDialog.show();
                 break;
             case R.id.btn_lbs:
-                if (btnLBS.getChecked()){
+                if (btnLBS.getChecked()) {
                     btnLBS.setChecked(false, true);
                     tvLBS.setText(R.string.text_live_close_lbs);
-                }else{
+                } else {
                     btnLBS.setChecked(true, true);
                     tvLBS.setText(R.string.text_live_location);
-                    if (mLocationHelper.checkLocationPermission()){
-                        if (!mLocationHelper.getMyLocation(getApplicationContext(), this)){
+                    if (mLocationHelper.checkLocationPermission()) {
+                        if (!mLocationHelper.getMyLocation(getApplicationContext(), this)) {
                             tvLBS.setText(getString(R.string.text_live_lbs_fail));
                             btnLBS.setChecked(false, false);
                         }
@@ -149,7 +150,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         Window dlgwin = mPicChsDialog.getWindow();
         WindowManager.LayoutParams lp = dlgwin.getAttributes();
         dlgwin.setGravity(Gravity.BOTTOM);
-        lp.width = (int)(display.getWidth()); //设置宽度
+        lp.width = (int) (display.getWidth()); //设置宽度
 
         mPicChsDialog.getWindow().setAttributes(lp);
 
@@ -186,7 +187,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
      * @param type
      */
     private void getPicFrom(int type) {
-        if (!bPermission){
+        if (!bPermission) {
             Toast.makeText(this, getString(R.string.tip_no_permission), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -208,19 +209,19 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         }
     }
 
-    private boolean checkPublishPermission(){
+    private boolean checkPublishPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
             List<String> permissions = new ArrayList<>();
-            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
-            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.CAMERA)){
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.CAMERA)) {
                 permissions.add(Manifest.permission.CAMERA);
             }
-            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.READ_PHONE_STATE)){
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.READ_PHONE_STATE)) {
                 permissions.add(Manifest.permission.READ_PHONE_STATE);
             }
-            if (permissions.size() != 0){
+            if (permissions.size() != 0) {
                 ActivityCompat.requestPermissions(PublishLiveActivity.this,
                         (String[]) permissions.toArray(new String[0]),
                         Constants.WRITE_PERMISSION_REQ_CODE);
@@ -232,10 +233,10 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     }
 
     private Uri createCoverUri(String type) {
-        String filename = MySelfInfo.getInstance().getId()+ type + ".jpg";
+        String filename = MySelfInfo.getInstance().getId() + type + ".jpg";
         File outputImage = new File(Environment.getExternalStorageDirectory(), filename);
         if (ContextCompat.checkSelfPermission(PublishLiveActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED){
+                != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(PublishLiveActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_PERMISSION_REQ_CODE);
             return null;
         }
@@ -247,7 +248,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         return Uri.fromFile(outputImage);
     }
 
@@ -261,7 +262,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
                     break;
                 case IMAGE_STORE:
                     String path = UIUtils.getPath(this, data.getData());
-                    if (null != path){
+                    if (null != path) {
                         SxbLog.d(TAG, "startPhotoZoom->path:" + path);
                         File file = new File(path);
                         startPhotoZoom(Uri.fromFile(file));
@@ -283,7 +284,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     public void startPhotoZoom(Uri uri) {
         cropUri = createCoverUri("_crop");
 
-        SxbLog.e("XIAO", "startPhotoZoom->url:"+uri);
+        SxbLog.e("XIAO", "startPhotoZoom->url:" + uri);
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
@@ -308,7 +309,7 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
             } else {
                 tvLBS.setText(getString(R.string.text_live_lbs_fail));
             }
-        }else{
+        } else {
             CurLiveInfo.setLat1(0);
             CurLiveInfo.setLong1(0);
             CurLiveInfo.setAddress("");
@@ -318,34 +319,34 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-        case Constants.LOCATION_PERMISSION_REQ_CODE:
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                if (!mLocationHelper.getMyLocation(getApplicationContext(), this)){
-                    tvLBS.setText(getString(R.string.text_live_lbs_fail));
-                    btnLBS.setChecked(false, false);
+        switch (requestCode) {
+            case Constants.LOCATION_PERMISSION_REQ_CODE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (!mLocationHelper.getMyLocation(getApplicationContext(), this)) {
+                        tvLBS.setText(getString(R.string.text_live_lbs_fail));
+                        btnLBS.setChecked(false, false);
+                    }
                 }
-            }
-            break;
+                break;
             case Constants.WRITE_PERMISSION_REQ_CODE:
-                for (int ret : grantResults){
-                    if (ret != PackageManager.PERMISSION_GRANTED){
+                for (int ret : grantResults) {
+                    if (ret != PackageManager.PERMISSION_GRANTED) {
                         return;
                     }
                 }
                 bPermission = true;
                 break;
-        default:
-            break;
+            default:
+                break;
         }
     }
 
     @Override
     public void onUploadResult(int code, String url) {
-        if (0 == code){
+        if (0 == code) {
             CurLiveInfo.setCoverurl(url);
             Toast.makeText(this, getString(R.string.publish_upload_success), Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             Toast.makeText(this, getString(R.string.publish_upload_cover_failed), Toast.LENGTH_SHORT).show();
         }
         bUploading = false;

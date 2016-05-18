@@ -20,6 +20,7 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LiveListViewHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveListView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.util.ArrayList;
 
@@ -73,6 +74,7 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
                 CurLiveInfo.setAdmires(item.getAdmireCount());
                 CurLiveInfo.setAddress(item.getLbs().getAddress());
                 startActivity(intent);
+                SxbLog.i(TAG, "PerformanceTest  join Live     " + SxbLog.getTime());
             }
         });
 

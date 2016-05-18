@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -52,7 +51,7 @@ public class InputTextMsgDialog extends Dialog {
         setContentView(R.layout.input_text_dialog);
         messageTextView = (EditText) findViewById(R.id.input_message);
         confirmBtn = (TextView) findViewById(R.id.confrim_btn);
-        rlDlg = (RelativeLayout) findViewById(R.id.rl_dlg);
+//        rlDlg = (RelativeLayout) findViewById(R.id.rl_dlg);
         imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
