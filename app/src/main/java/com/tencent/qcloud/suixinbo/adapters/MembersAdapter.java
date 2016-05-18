@@ -11,6 +11,7 @@ import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MemberInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
+import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
 import java.util.ArrayList;
 
@@ -22,11 +23,13 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
     private Context mContext;
     private static final String TAG = MembersAdapter.class.getSimpleName();
     private LiveView mLiveView;
+    private MembersDialog membersDialog;
 
-    public MembersAdapter(Context context, int resource, ArrayList<MemberInfo> objects, LiveView liveView) {
+    public MembersAdapter(Context context, int resource, ArrayList<MemberInfo> objects, LiveView liveView, MembersDialog dialog) {
         super(context, resource, objects);
         mContext = context;
         mLiveView = liveView;
+        membersDialog = dialog;
     }
 
 
@@ -56,10 +59,12 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
             @Override
             public void onClick(View view) {
                 SxbLog.i(TAG, "select item:  " + selectId);
+
                 if (data.isOnVideoChat() == false) {//不在房间中，发起邀请
                     if (mLiveView.showInviteView(selectId)) {
 //                        data.setIsOnVideoChat(true);
                         view.setBackgroundResource(R.drawable.btn_video_disconnect);
+
                     }
                 } else {
                     mLiveView.cancelInviteView(selectId);
@@ -67,6 +72,7 @@ public class MembersAdapter extends ArrayAdapter<MemberInfo> {
                     view.setBackgroundResource(R.drawable.btn_video_connection);
                     mLiveView.cancelMemberView(selectId);
                 }
+                membersDialog.dismiss();
 
             }
         });

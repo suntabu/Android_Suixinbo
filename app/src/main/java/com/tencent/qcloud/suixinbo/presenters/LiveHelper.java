@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -75,10 +74,6 @@ public class LiveHelper extends Presenter {
     public LiveHelper(Context context, LiveView liveview) {
         mContext = context;
         mLiveView = liveview;
-    }
-
-    public LiveHelper(Context context) {
-        mContext = context;
     }
 
     public LiveHelper(Context context, MembersDialogView dialogView) {
@@ -198,8 +193,8 @@ public class LiveHelper extends Presenter {
                     QavsdkControl.getInstance().setMirror(mIsFrontCamera);
 
                     //如果是主播直接本地渲染
-                    if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
-                        mLiveView.showVideoView(LOCAL, CurLiveInfo.getHostID());
+//                    if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
+//                        mLiveView.showVideoView(LOCAL, CurLiveInfo.getHostID());
 
                 }
             }
@@ -227,11 +222,14 @@ public class LiveHelper extends Presenter {
         if (endpoint != null) {
             ArrayList<String> alreadyIds = QavsdkControl.getInstance().getRemoteVideoIds();//已经存在的IDs
 
+            SxbLog.i(TAG, "RequestViewList identifiers : " + identifiers.size());
+            SxbLog.i(TAG, "RequestViewList alreadyIds : " + alreadyIds.size());
             for (String id : identifiers) {//把新加入的添加到后面
                 alreadyIds.add(id);
             }
             int viewindex = 0;
             for (String id : alreadyIds) {//一并请求
+                if (viewindex >= 4) break;
                 AVView view = new AVView();
                 view.videoSrcType = AVView.VIDEO_SRC_TYPE_CAMERA;
                 view.viewSizeType = AVView.VIEW_SIZE_TYPE_BIG;
@@ -283,8 +281,14 @@ public class LiveHelper extends Presenter {
                             handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
                         } else {
                             TIMUserProfile sendUser = timMessage.getSenderProfile();
+                            String name;
+                            if (sendUser != null) {
+                                name = sendUser.getNickName();
+                            } else {
+                                name = timMessage.getSender();
+                            }
                             //String sendId = timMessage.getSender();
-                            handleTextMessage(elem, sendUser.getNickName());
+                            handleTextMessage(elem, name);
                         }
                     }
                     SxbLog.i(TAG, "Send text Msg ok");
@@ -418,27 +422,37 @@ public class LiveHelper extends Presenter {
                 }
                 //定制消息
                 if (type == TIMElemType.Custom) {
-                    handleCustomMsg(elem, currMsg.getSenderProfile());
+                    String id, nickname;
+                    if (currMsg.getSenderProfile() != null) {
+                        id = currMsg.getSenderProfile().getIdentifier();
+                        nickname = currMsg.getSenderProfile().getNickName();
+                    } else {
+                        id = sendId;
+                        nickname = sendId;
+                    }
+                    handleCustomMsg(elem, id, nickname);
                     continue;
                 }
 
                 //其他群消息过滤
-                if (!CurLiveInfo.getChatRoomId().equals(currMsg.getConversation().getPeer())) {
-                    continue;
-                }
+
+                if (currMsg.getConversation() != null && currMsg.getConversation().getPeer() != null)
+                    if (!CurLiveInfo.getChatRoomId().equals(currMsg.getConversation().getPeer())) {
+                        continue;
+                    }
 
                 //最后处理文本消息
                 if (type == TIMElemType.Text) {
                     if (currMsg.isSelf()) {
                         handleTextMessage(elem, MySelfInfo.getInstance().getNickName());
                     } else {
-                        TIMUserProfile sendUser = currMsg.getSenderProfile();
-                        //String sendid = currMsg.getSender();
-                        if (!TextUtils.isEmpty(sendUser.getNickName())) {
-                            handleTextMessage(elem, sendUser.getNickName());
+                        String nickname;
+                        if (currMsg.getSenderProfile() != null && (!currMsg.getSenderProfile().getNickName().equals(""))) {
+                            nickname = currMsg.getSenderProfile().getNickName();
                         } else {
-                            handleTextMessage(elem, sendUser.getIdentifier());
+                            nickname = sendId;
                         }
+                        handleTextMessage(elem, nickname);
                     }
                 }
             }
@@ -449,13 +463,13 @@ public class LiveHelper extends Presenter {
      * 处理文本消息解析
      *
      * @param elem
-     * @param sendId
+     * @param name
      */
-    private void handleTextMessage(TIMElem elem, String sendId) {
+    private void handleTextMessage(TIMElem elem, String name) {
         TIMTextElem textElem = (TIMTextElem) elem;
 //        Toast.makeText(mContext, "" + textElem.getText(), Toast.LENGTH_SHORT).show();
 
-        mLiveView.refreshText(textElem.getText(), sendId);
+        mLiveView.refreshText(textElem.getText(), name);
 //        sendToUIThread(REFRESH_TEXT, textElem.getText(), sendId);
     }
 
@@ -465,7 +479,7 @@ public class LiveHelper extends Presenter {
      *
      * @param elem
      */
-    private void handleCustomMsg(TIMElem elem, TIMUserProfile sender) {
+    private void handleCustomMsg(TIMElem elem, String identifier, String nickname) {
         try {
             String customText = new String(((TIMCustomElem) elem).getData(), "UTF-8");
             SxbLog.i(TAG, "cumstom msg  " + customText);
@@ -480,23 +494,23 @@ public class LiveHelper extends Presenter {
                     mLiveView.showInviteDialog();
                     break;
                 case Constants.AVIMCMD_MUlTI_JOIN:
-                    Log.i(TAG, "handleCustomMsg " + sender.getIdentifier());
-                    mLiveView.cancelInviteView(sender.getIdentifier());
+                    Log.i(TAG, "handleCustomMsg " + identifier);
+                    mLiveView.cancelInviteView(identifier);
                     break;
                 case Constants.AVIMCMD_MUlTI_REFUSE:
-                    mLiveView.cancelInviteView(sender.getIdentifier());
-                    Toast.makeText(mContext, sender.getIdentifier() + " refuse !", Toast.LENGTH_SHORT).show();
+                    mLiveView.cancelInviteView(identifier);
+                    Toast.makeText(mContext, identifier + " refuse !", Toast.LENGTH_SHORT).show();
                     break;
                 case Constants.AVIMCMD_Praise:
                     mLiveView.refreshThumbUp();
                     break;
                 case Constants.AVIMCMD_EnterLive:
                     //mLiveView.refreshText("Step in live", sendId);
-                    mLiveView.memberJoin(sender.getIdentifier(), sender.getNickName());
+                    mLiveView.memberJoin(identifier, nickname);
                     break;
                 case Constants.AVIMCMD_ExitLive:
                     //mLiveView.refreshText("quite live", sendId);
-                    mLiveView.memberQuit(sender.getIdentifier(), sender.getNickName());
+                    mLiveView.memberQuit(identifier, nickname);
                     break;
                 case Constants.AVIMCMD_MULTI_CANCEL_INTERACT://主播关闭摄像头命令
                     //如果是自己关闭Camera和Mic

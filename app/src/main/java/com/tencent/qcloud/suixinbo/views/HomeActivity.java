@@ -16,8 +16,11 @@ import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
+import com.tencent.qcloud.suixinbo.presenters.InitBusinessHelper;
+import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
 import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
+import com.tencent.qcloud.suixinbo.utils.SxbLog;
 
 import java.util.List;
 
@@ -28,16 +31,18 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
     private FragmentTabHost mTabHost;
     private LayoutInflater layoutInflater;
     private ProfileInfoHelper infoHelper;
+    private LoginHelper mLoginHelper;
     private final Class fragmentArray[] = {FragmentLiveList.class, FragmentPublish.class, FragmentProfile.class};
     private int mImageViewArray[] = {R.drawable.tab_live, R.drawable.icon_publish, R.drawable.tab_profile};
     private String mTextviewArray[] = {"live", "publish", "profile"};
+    private static final String TAG = HomeActivity.class.getSimpleName();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_layout);
-
+        SxbLog.i(TAG, "HomeActivity onStart");
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         layoutInflater = LayoutInflater.from(this);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.contentPanel);
@@ -68,10 +73,20 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
             infoHelper = new ProfileInfoHelper(this);
             infoHelper.getMyProfile();
         }
-
         QavsdkApplication.getInstance().addActivity(this);
     }
 
+    @Override
+    protected void onStart() {
+        SxbLog.i(TAG, "HomeActivity onStart");
+        super.onStart();
+        if (QavsdkControl.getInstance().getAVContext() == null) {//retry
+            InitBusinessHelper.initApp(getApplicationContext());
+            SxbLog.i(TAG, "HomeActivity retry login");
+            mLoginHelper = new LoginHelper(this);
+            mLoginHelper.imLogin(MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
+        }
+    }
 
     private View getTabItemView(int index) {
         View view = layoutInflater.inflate(R.layout.tab_content, null);
@@ -82,6 +97,7 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
 
     @Override
     protected void onDestroy() {
+        SxbLog.i(TAG, "HomeActivity onDestroy");
         QavsdkControl.getInstance().stopContext();
         QavsdkApplication.getInstance().removeActivity(this);
         super.onDestroy();
@@ -89,11 +105,12 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
 
     @Override
     public void updateProfileInfo(TIMUserProfile profile) {
+        SxbLog.i(TAG, "updateProfileInfo");
         if (null != profile) {
             MySelfInfo.getInstance().setAvatar(profile.getFaceUrl());
-            if (!TextUtils.isEmpty(profile.getNickName())){
+            if (!TextUtils.isEmpty(profile.getNickName())) {
                 MySelfInfo.getInstance().setNickName(profile.getNickName());
-            }else{
+            } else {
                 MySelfInfo.getInstance().setNickName(profile.getIdentifier());
             }
         }

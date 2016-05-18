@@ -104,6 +104,7 @@ public class EnterLiveHelper extends Presenter {
 
             switch (eventid) {
                 case TYPE_MEMBER_CHANGE_IN:
+                    SxbLog.i(TAG, "stepin id  " + updateList.length);
                     mStepInOutView.memberJoinLive(updateList);
 //                    for (String id : updateList) {
 //                        String host = CurLiveInfo.getHostID();
@@ -116,6 +117,7 @@ public class EnterLiveHelper extends Presenter {
                     video_ids.clear();
                     for (String id : updateList) {
                         video_ids.add(id);
+                        SxbLog.i(TAG, "camera id " + id);
 //                        String host = CurLiveInfo.getHostID();
 //                        if (id.equals(host)) {
 //                            mContext.sendBroadcast(new Intent(AvConstants.ACTION_HOST_ENTER));
@@ -339,7 +341,7 @@ public class EnterLiveHelper extends Presenter {
 
         @Override
         protected void onPostExecute(LiveInfoJson result) {
-            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, result);
+//            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, result);
         }
     }
 
@@ -416,8 +418,8 @@ public class EnterLiveHelper extends Presenter {
         enterRoomParam.autoCreateRoom = true;
         enterRoomParam.videoRecvMode = AVRoom.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO;
 
-
-        avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
+        if (avContext != null)
+            avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
 //        AVRoom.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam(roomNum, AvConstants.auth_bits, authBuffer, "", AvConstants.AUDIO_VOICE_CHAT_MODE, true);
         // create room
         int ret = avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);

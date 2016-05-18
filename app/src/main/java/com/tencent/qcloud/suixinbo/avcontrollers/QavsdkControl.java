@@ -1,7 +1,6 @@
 package com.tencent.qcloud.suixinbo.avcontrollers;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 
 import com.tencent.av.sdk.AVAudioCtrl;
@@ -20,10 +19,7 @@ import java.util.ArrayList;
 public class QavsdkControl {
     private static final String TAG = "QavsdkControl";
     private AVContextControl mAVContextControl = null;
-    //    private AVRoomControl mAVRoomControl = null;
     private AVUIControl mAVUIControl = null;
-    //    private AVVideoControl mAVVideoControl = null;
-//    private AVAudioControl mAVAudioControl = null;
     /* 持有私有静态实例，防止被引用，此处赋值为null，目的是实现延迟加载 */
     private static QavsdkControl instance = null;
     private static Context mContext;
@@ -50,9 +46,6 @@ public class QavsdkControl {
 
     private QavsdkControl(Context context) {
         mAVContextControl = new AVContextControl(context);
-//        mAVRoomControl = new AVRoomControl(context);
-//        mAVVideoControl = new AVVideoControl(context);
-//        mAVAudioControl = new AVAudioControl(context);
         SxbLog.d(TAG, "WL_DEBUG QavsdkControl");
     }
 
@@ -183,7 +176,7 @@ public class QavsdkControl {
     }
 
     public void setMirror(boolean isMirror) {
-        SxbLog.d(TAG, "setMirror SelfIdentifier:" + getSelfIdentifier()+"/"+isMirror);
+        SxbLog.d(TAG, "setMirror SelfIdentifier:" + getSelfIdentifier() + "/" + isMirror);
 
         if (null != mAVUIControl) {
             mAVUIControl.setMirror(isMirror, getSelfIdentifier());
@@ -378,13 +371,13 @@ public class QavsdkControl {
         }
     }
 
-    public String getQualityTips() {
-        if (null != mAVUIControl) {
-            return mAVUIControl.getQualityTips();
-        } else {
-            return null;
-        }
-    }
+//    public String getQualityTips() {
+//        if (null != mAVUIControl) {
+//            return mAVUIControl.getQualityTips();
+//        } else {
+//            return null;
+//        }
+//    }
 
 //
 //    public void setCreateRoomStatus(boolean status) {
@@ -451,6 +444,31 @@ public class QavsdkControl {
             return avVideoCtrl.getQualityTips();
         }
         return "";
+    }
+
+
+    public String getQualityTips() {
+        QavsdkControl qavsdk = QavsdkControl.getInstance();
+        String audioQos = "";
+        String videoQos = "";
+        String roomQos = "";
+
+        if (qavsdk != null) {
+            audioQos = getAudioQualityTips();
+
+            videoQos = getVideoQualityTips();
+
+            if (qavsdk.getRoom() != null) {
+                roomQos = qavsdk.getRoom().getQualityTips();
+            }
+        }
+
+        if (audioQos != null && videoQos != null && roomQos != null) {
+            return audioQos + videoQos + roomQos;
+        } else {
+            return "";
+        }
+
     }
 
 

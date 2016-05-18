@@ -21,19 +21,23 @@ import tencent.tls.platform.TLSUserInfo;
 /**
  * 登录的数据处理类
  */
-public class LoginHeloper {
+public class LoginHelper {
     private Context mContext;
-    private static final String TAG = LoginHeloper.class.getSimpleName();
+    private static final String TAG = LoginHelper.class.getSimpleName();
     private LoginView mLoginView;
     private LogoutView mLogoutView;
     private int RoomId = -1;
 
-    public LoginHeloper(Context context, LoginView loginView) {
+    public LoginHelper(Context context) {
+        mContext = context;
+    }
+
+    public LoginHelper(Context context, LoginView loginView) {
         mContext = context;
         mLoginView = loginView;
     }
 
-    public LoginHeloper(Context context, LogoutView logoutView) {
+    public LoginHelper(Context context, LogoutView logoutView) {
         mContext = context;
         mLogoutView = logoutView;
     }
@@ -196,7 +200,7 @@ public class LoginHeloper {
     /**
      * 反初始化AVADK
      */
-    private void stopAVSDK() {
+    public void stopAVSDK() {
         QavsdkControl.getInstance().stopContext();
         mLogoutView.LogoutSucc();
     }

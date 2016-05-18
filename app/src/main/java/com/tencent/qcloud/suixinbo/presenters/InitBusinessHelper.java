@@ -2,11 +2,8 @@ package com.tencent.qcloud.suixinbo.presenters;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.tencent.TIMManager;
@@ -14,7 +11,6 @@ import com.tencent.TIMUserStatusListener;
 import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
-import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.CrashHandler;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
@@ -53,6 +49,7 @@ public class InitBusinessHelper {
     public static void initApp(final Context context) {
         //初始化avsdk imsdk
         QavsdkControl.initQavsdk(context);
+        TIMManager.getInstance().disableBeaconReport();
         TIMManager.getInstance().init(context);
 
         TIMManager.getInstance().setUserStatusListener(new TIMUserStatusListener() {

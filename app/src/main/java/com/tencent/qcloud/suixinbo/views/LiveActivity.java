@@ -54,7 +54,6 @@ import com.tencent.qcloud.suixinbo.views.customviews.HeartLayout;
 import com.tencent.qcloud.suixinbo.views.customviews.InputTextMsgDialog;
 import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -134,26 +133,35 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mEnterRoomProsscessHelper.startEnterRoom();
 
         //QavsdkControl.getInstance().setCameraPreviewChangeCallback();
-        mVideoTimer = new Timer(true);
+
 
         QavsdkApplication.getInstance().addActivity(this);
     }
 
-    private static class MyHandler extends Handler {
-        private final WeakReference<LiveActivity> mActivity;
 
-        public MyHandler(LiveActivity activity) {
-            mActivity = new WeakReference<LiveActivity>(activity);
-        }
-
+    private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
-        public void handleMessage(Message msg) {
-            if (null == mActivity.get()) {
-                return;
+        public boolean handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case UPDAT_WALL_TIME_TIMER_TASK:
+                    updateWallTime();
+                    break;
+                case REFRESH_LISTVIEW:
+                    doRefreshListView();
+                    break;
+                case ClOSE_IMSDK:
+                    mLiveHelper.perpareQuitRoom(false);
+                    mEnterRoomProsscessHelper.quiteLive();
+                    break;
+                case TIMEOUT_INVITE:
+                    String id = "" + msg.obj;
+                    cancelInviteView(id);
+                    mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_HOST_CANCELINVITE, id);
+                    break;
             }
-            mActivity.get().processInnerMsg(msg);
+            return false;
         }
-    }
+    });
 
     /**
      * 时间格式化
@@ -189,33 +197,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         }
 
         if (Constants.HOST == MySelfInfo.getInstance().getIdStatus() && null != mVideoTime) {
+            SxbLog.i(TAG, " refresh time ");
             mVideoTime.setText(formatTime);
         }
     }
-
-    private void processInnerMsg(Message msg) {
-        switch (msg.what) {
-            case UPDAT_WALL_TIME_TIMER_TASK:
-                updateWallTime();
-                break;
-            case REFRESH_LISTVIEW:
-                doRefreshListView();
-                break;
-            case ClOSE_IMSDK:
-                mLiveHelper.perpareQuitRoom(false);
-                mEnterRoomProsscessHelper.quiteLive();
-                break;
-            case TIMEOUT_INVITE:
-                String id = "" + msg.obj;
-                cancelInviteView(id);
-                mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_HOST_CANCELINVITE, id);
-                break;
-        }
-        return;
-    }
-
-
-    private final MyHandler mHandler = new MyHandler(this);
 
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -474,6 +459,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     private class VideoTimerTask extends TimerTask {
         public void run() {
+            SxbLog.i(TAG, "timeTask ");
             ++mSecond;
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
                 mHandler.sendEmptyMessage(UPDAT_WALL_TIME_TIMER_TASK);
@@ -712,8 +698,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void showVideoView(boolean isLocal, String id) {
         SxbLog.i(TAG, "showVideoView " + id);
-        mVideoTimerTask = new VideoTimerTask();
-        mVideoTimer.schedule(mVideoTimerTask, 1000, 1000);
+
         //渲染本地Camera
         if (isLocal == true) {
             SxbLog.i(TAG, "showVideoView host :" + MySelfInfo.getInstance().getId());
@@ -723,9 +708,16 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             //主播通知用户服务器
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
                 mEnterRoomProsscessHelper.notifyServerCreateRoom();
+
+                //主播心跳
                 mHearBeatTimer = new Timer(true);
                 mHeartBeatTask = new HeartBeatTask();
                 mHearBeatTimer.schedule(mHeartBeatTask, 1000, 3 * 1000);
+
+                //直播时间
+                mVideoTimer = new Timer(true);
+                mVideoTimerTask = new VideoTimerTask();
+                mVideoTimer.schedule(mVideoTimerTask, 1000, 1000);
             }
         } else {
 //            QavsdkControl.getInstance().addRemoteVideoMembers(id);
@@ -743,7 +735,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     @Override
     public void showInviteDialog() {
-        if (inviteDg.isShowing() != true) {
+        if (getBaseContext() != null && inviteDg.isShowing() != true) {
             inviteDg.show();
         }
     }
@@ -794,6 +786,11 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             Toast.makeText(LiveActivity.this, "the invitation's upper limit is 3", Toast.LENGTH_SHORT).show();
             return false;
         }
+
+        if (hasInvited(id)) {
+            Toast.makeText(LiveActivity.this, "it has already invited", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         switch (requetCount) {
             case 1:
                 inviteView1.setText(id);
@@ -822,6 +819,26 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         return true;
     }
 
+
+    /**
+     * 判断是否邀请过同一个人
+     *
+     * @param id
+     * @return
+     */
+    private boolean hasInvited(String id) {
+        if (id.equals(inviteView1.getTag())) {
+            return true;
+        }
+        if (id.equals(inviteView2.getTag())) {
+            return true;
+        }
+        if (id.equals(inviteView3.getTag())) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void cancelInviteView(String id) {
         if ((inviteView1 != null) && (inviteView1.getTag() != null)) {
@@ -829,6 +846,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             }
             if (inviteView1.getVisibility() == View.VISIBLE) {
                 inviteView1.setVisibility(View.INVISIBLE);
+                inviteView1.setTag("");
                 inviteViewCount--;
             }
         }
@@ -837,6 +855,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (inviteView2.getTag().equals(id)) {
                 if (inviteView2.getVisibility() == View.VISIBLE) {
                     inviteView2.setVisibility(View.INVISIBLE);
+                    inviteView2.setTag("");
                     inviteViewCount--;
                 }
             } else {
@@ -850,6 +869,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (inviteView3.getTag().equals(id)) {
                 if (inviteView3.getVisibility() == View.VISIBLE) {
                     inviteView3.setVisibility(View.INVISIBLE);
+                    inviteView3.setTag("");
                     inviteViewCount--;
                 }
             } else {
