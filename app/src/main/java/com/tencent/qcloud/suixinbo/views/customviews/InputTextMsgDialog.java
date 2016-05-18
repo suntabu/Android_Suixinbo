@@ -3,12 +3,15 @@ package com.tencent.qcloud.suixinbo.views.customviews;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +39,8 @@ public class InputTextMsgDialog extends Dialog {
     private LiveHelper mLiveControlHelper;
     private Activity mVideoPlayActivity;
     private InputMethodManager imm;
-    private int mViewPositionY = 0;
+    private RelativeLayout rlDlg;
+    private int mLastDiff = 0;
     private final String reg = "[`~@#$%^&*()-_+=|{}':;,/.<>￥…（）—【】‘；：”“’。，、]";
     private Pattern pattern = Pattern.compile(reg);
 
@@ -48,10 +52,12 @@ public class InputTextMsgDialog extends Dialog {
         setContentView(R.layout.input_text_dialog);
         messageTextView = (EditText) findViewById(R.id.input_message);
         confirmBtn = (TextView) findViewById(R.id.confrim_btn);
+        rlDlg = (RelativeLayout) findViewById(R.id.rl_dlg);
         imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SxbLog.d("XIAO", "onClick enter->");
                 if (messageTextView.getText().length() > 0) {
                     sendText("" + messageTextView.getText());
                     imm.showSoftInput(messageTextView, InputMethodManager.SHOW_FORCED);
@@ -65,7 +71,8 @@ public class InputTextMsgDialog extends Dialog {
         messageTextView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() != KeyEvent.ACTION_UP){   // 忽略其它事件
+                SxbLog.d("XIAO", "onKey->" + v + "," + keyCode + "," + event);
+                if (event.getAction() != KeyEvent.ACTION_UP) {   // 忽略其它事件
                     return false;
                 }
 
@@ -90,14 +97,20 @@ public class InputTextMsgDialog extends Dialog {
         rldlgview.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                int location[] = new int[2];
-                rldlgview.getLocationOnScreen(location);
-                if (mViewPositionY <= location[1]) {
-                    mViewPositionY = location[1];
-                } else {
+                Rect r = new Rect();
+                //获取当前界面可视部分
+                getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+                //获取屏幕的高度
+                int screenHeight =  getWindow().getDecorView().getRootView().getHeight();
+                //此处就是用来获取键盘的高度的， 在键盘没有弹出的时候 此高度为0 键盘弹出的时候为一个正数
+                int heightDifference = screenHeight - r.bottom;
+
+                if (heightDifference <= 0 && mLastDiff > 0){
                     imm.hideSoftInputFromWindow(messageTextView.getWindowToken(), 0);
                     dismiss();
                 }
+                SxbLog.d("XIAO", heightDifference+"/"+mLastDiff);
+                mLastDiff = heightDifference;
             }
         });
         rldlgview.setOnClickListener(new View.OnClickListener() {
