@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -332,6 +333,14 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         TextView roomId = (TextView) findViewById(R.id.room_id);
         roomId.setText(CurLiveInfo.getChatRoomId());
 
+        //for 测试用
+        TextView paramVideo = (TextView) findViewById(R.id.param_video);
+        paramVideo.setOnClickListener(this);
+        tvTipsMsg = (TextView) findViewById(R.id.qav_tips_msg);
+        tvTipsMsg.setTextColor(Color.GREEN);
+        paramTimer.schedule(task, 1000, 1000);
+
+
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             mHostCtrView.setVisibility(View.VISIBLE);
             mNomalMemberCtrView.setVisibility(View.GONE);
@@ -477,6 +486,10 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         if (null != mVideoTimer) {
             mVideoTimer.cancel();
             mVideoTimer = null;
+        }
+        if (null != paramTimer) {
+            paramTimer.cancel();
+            paramTimer = null;
         }
         inviteViewCount = 0;
         thumbUp = 0;
@@ -1077,8 +1090,69 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                 inviteView3.setVisibility(View.INVISIBLE);
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, "" + inviteView3.getTag());
                 break;
+            case R.id.param_video:
+                showTips = !showTips;
+                break;
         }
     }
+
+    //for 测试获取测试参数
+    private boolean showTips = false;
+    private TextView tvTipsMsg;
+    Timer paramTimer = new Timer();
+    TimerTask task = new TimerTask() {
+        public void run() {
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    if (showTips) {
+                        if (tvTipsMsg != null) {
+                            String strTips = QavsdkControl.getInstance().getQualityTips();
+                            strTips = praseString(strTips);
+                            if (!TextUtils.isEmpty(strTips)) {
+                                tvTipsMsg.setText(strTips);
+                            }
+                        }
+                    } else {
+                        tvTipsMsg.setText("");
+                    }
+                }
+            });
+        }
+    };
+
+    //for 测试 解析参数
+    private String praseString(String video) {
+        if (video.length() == 0) {
+            return "";
+        }
+        String result = "";
+        String splitItems[];
+        String tokens[];
+        splitItems = video.split("\\n");
+        for (int i = 0; i < splitItems.length; ++i) {
+            if (splitItems[i].length() < 2)
+                continue;
+
+            tokens = splitItems[i].split(":");
+            if (tokens[0].length() == "mainVideoSendSmallViewQua".length()) {
+                continue;
+            }
+            if (tokens[0].endsWith("BigViewQua")) {
+                tokens[0] = "mainVideoSendViewQua";
+            }
+            if (tokens[0].endsWith("BigViewQos")) {
+                tokens[0] = "mainVideoSendViewQos";
+            }
+            result += tokens[0] + ":\n" + "\t\t";
+            for (int j = 1; j < tokens.length; ++j)
+                result += tokens[j];
+            result += "\n\n";
+            //Log.d(TAG, "test:" + result);
+        }
+        //Log.d(TAG, "test:" + result);
+        return result;
+    }
+
 
     private void backToNormalCtrlView() {
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {

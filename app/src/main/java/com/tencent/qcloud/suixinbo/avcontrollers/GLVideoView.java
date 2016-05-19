@@ -75,10 +75,6 @@ public class GLVideoView extends GLView {
         mYuvTexture.setGLRenderListener(new YUVTexture.GLRenderListener() {
             @Override
             public void onRenderFrame() {
-                if (isFristFrame == false) {
-                    SxbLog.i(TAG, "PerformanceTest joinLive end     " +  SxbLog.getTime());
-                    isFristFrame = true;
-                }
                 invalidate();
             }
 
@@ -98,6 +94,11 @@ public class GLVideoView extends GLView {
             public void onRenderInfoNotify(int width, int height, int angle) {
                 if (QLog.isColorLevel()) {
                     QLog.d(TAG, QLog.CLR, "onRenderInfoNotify uin: " + mIdentifier + ", mVideoSrcType: " + mVideoSrcType + ", width: " + width + ", height: " + height + ", angle: " + angle);
+                }
+
+                if (isFristFrame == false) {
+                    SxbLog.i(TAG, "PerformanceTest joinLive end     " +  SxbLog.getTime());
+                    isFristFrame = true;
                 }
                 mYuvTexture.setTextureSize(width, height);
                 // refresh();

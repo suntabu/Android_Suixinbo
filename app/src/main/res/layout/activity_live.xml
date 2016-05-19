@@ -10,6 +10,19 @@
         android:layout_height="fill_parent" />
 
 
+    <TextView
+        android:id="@+id/qav_tips_msg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="80dp"
+        android:maxLength="2000"
+        android:singleLine="false"
+        android:textSize="13sp" />
+
+
     <FrameLayout
         android:id="@+id/controll_ui"
         android:layout_width="match_parent"
@@ -30,6 +43,16 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="200dp"
             android:text="1231231" />
+
+
+        <TextView
+            android:id="@+id/param_video"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="top|left"
+            android:layout_marginTop="33dp"
+            android:layout_marginLeft="200dp"
+            android:background="@drawable/icon_param" />
 
 
         <TextView
