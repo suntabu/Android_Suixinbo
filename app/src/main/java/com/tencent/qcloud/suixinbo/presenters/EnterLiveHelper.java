@@ -94,6 +94,13 @@ public class EnterLiveHelper extends Presenter {
         // 离开房间成功回调
         public void onExitRoomComplete(int result) {
             isInAVRoom = false;
+            quiteIMChatRoom();
+            CurLiveInfo.setCurrentRequestCount(0);
+            uninitAudioService();
+            //通知结束
+            notifyServerLiveEnd();
+
+            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
             SxbLog.d(TAG, "WL_DEBUG mRoomDelegate.onExitRoomComplete result = " + result);
 
         }
@@ -294,15 +301,9 @@ public class EnterLiveHelper extends Presenter {
      */
     public void quiteLive() {
         //退出IM房间
-        quiteIMChatRoom();
+
         //退出AV房间
         quiteAVRoom();
-        CurLiveInfo.setCurrentRequestCount(0);
-        uninitAudioService();
-        //通知结束
-        notifyServerLiveEnd();
-
-        mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
 
     }
 
