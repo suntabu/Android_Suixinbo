@@ -1,14 +1,19 @@
 package com.tencent.qcloud.suixinbo.views;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.Gravity;
@@ -17,6 +22,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -28,6 +34,7 @@ import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.UploadHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.UploadView;
+import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
@@ -36,6 +43,7 @@ import com.tencent.qcloud.suixinbo.views.customviews.TemplateTitle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,6 +64,7 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
     private TemplateTitle ttEdit;
     private LineControllerView lcvNickName;
     private LineControllerView lcvSign;
+    private boolean bPermission = false;
 
     private Uri iconUrl, iconCrop;
 
@@ -99,6 +108,8 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
         mProfileInfoHelper = new ProfileInfoHelper(this);
         mUploadHelper = new UploadHelper(this, this);
 
+        bPermission = checkCropPermission();
+
         QavsdkApplication.getInstance().addActivity(this);
     }
 
@@ -111,6 +122,11 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
     private Uri createCoverUri(String type) {
         String filename = MySelfInfo.getInstance().getId()+ type + ".jpg";
         File outputImage = new File(Environment.getExternalStorageDirectory(), filename);
+        if (ContextCompat.checkSelfPermission(EditProfileActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(EditProfileActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_PERMISSION_REQ_CODE);
+            return null;
+        }
         try {
             if (outputImage.exists()) {
                 outputImage.delete();
@@ -123,12 +139,37 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
         return Uri.fromFile(outputImage);
     }
 
+    private boolean checkCropPermission(){
+        if (Build.VERSION.SDK_INT >= 23) {
+            List<String> permissions = new ArrayList<>();
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(EditProfileActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+            if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(EditProfileActivity.this, Manifest.permission.READ_PHONE_STATE)){
+                permissions.add(Manifest.permission.READ_PHONE_STATE);
+            }
+            if (permissions.size() != 0){
+                ActivityCompat.requestPermissions(EditProfileActivity.this,
+                        (String[]) permissions.toArray(new String[0]),
+                        Constants.WRITE_PERMISSION_REQ_CODE);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
     /**
      * 获取图片资源
      *
      * @param type
      */
     private void getPicFrom(int type) {
+        if (!bPermission){
+            Toast.makeText(this, getString(R.string.tip_no_permission), Toast.LENGTH_SHORT).show();
+            return;
+        }
         switch (type) {
             case CAPTURE_IMAGE_CAMERA:
                 Intent intent_photo = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -137,6 +178,7 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
                 startActivityForResult(intent_photo, CAPTURE_IMAGE_CAMERA);
                 break;
             case IMAGE_STORE:
+                iconUrl = createCoverUri("_select_icon");
                 Intent intent_album = new Intent("android.intent.action.GET_CONTENT");
                 intent_album.setType("image/*");
                 startActivityForResult(intent_album, IMAGE_STORE);
@@ -239,11 +281,33 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
             startPhotoZoom(iconUrl);
             break;
         case IMAGE_STORE:
-            startPhotoZoom(data.getData());
+            String path = UIUtils.getPath(this, data.getData());
+            if (null != path){
+                SxbLog.e(TAG, "startPhotoZoom->path:" + path);
+                File file = new File(path);
+                startPhotoZoom(Uri.fromFile(file));
+            }
             break;
         case CROP_CHOOSE:
             mUploadHelper.uploadCover(iconCrop.getPath());
             break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case Constants.WRITE_PERMISSION_REQ_CODE:
+                for (int ret : grantResults){
+                    if (ret != PackageManager.PERMISSION_GRANTED){
+                        return;
+                    }
+                }
+                bPermission = true;
+                break;
+            default:
+                break;
         }
     }
 
