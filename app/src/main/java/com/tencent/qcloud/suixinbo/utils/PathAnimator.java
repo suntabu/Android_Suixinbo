@@ -28,6 +28,9 @@ import android.view.animation.Transformation;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * 飘心路径动画器
+ */
 public class PathAnimator extends AbstractPathAnimator {
     private final AtomicInteger mCounter = new AtomicInteger(0);
     private Handler mHandler;

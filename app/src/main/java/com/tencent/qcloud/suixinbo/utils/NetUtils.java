@@ -7,8 +7,9 @@ import android.telephony.TelephonyManager;
 
 import com.tencent.av.sdk.AVConstants;
 
+
 /**
- * Created by admin on 16/5/10.
+ *   网络工具类
  */
 public class NetUtils {
 

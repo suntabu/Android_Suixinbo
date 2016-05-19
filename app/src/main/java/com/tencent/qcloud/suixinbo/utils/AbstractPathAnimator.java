@@ -27,6 +27,9 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
+/**
+ * 飘心路径
+ */
 public abstract class AbstractPathAnimator {
     private final Random mRandom;
     protected final Config mConfig;

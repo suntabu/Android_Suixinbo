@@ -10,7 +10,6 @@ import com.tencent.qcloud.suixinbo.R;
 
 
 /**
- * Created by Tencent on 2016/1/8.
  * 带有动画的switch
  */
 public class CustomSwitch extends ImageView {
