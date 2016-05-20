@@ -68,7 +68,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     private static final String TAG = LiveActivity.class.getSimpleName();
     private static final int GETPROFILE_JOIN = 0x200;
 
-    private EnterLiveHelper mEnterRoomProsscessHelper;
+    private EnterLiveHelper mEnterRoomHelper;
     private ProfileInfoHelper mUserInfoHelper;
     private LiveHelper mLiveHelper;
 
@@ -121,7 +121,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         setContentView(R.layout.activity_live);
 
         //进出房间的协助类
-        mEnterRoomProsscessHelper = new EnterLiveHelper(this, this);
+        mEnterRoomHelper = new EnterLiveHelper(this, this);
         //房间内的交互协助类
         mLiveHelper = new LiveHelper(this, this);
         // 用户资料类
@@ -131,7 +131,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         registerReceiver();
         backGroundId = CurLiveInfo.getHostID();
         //进入房间流程
-        mEnterRoomProsscessHelper.startEnterRoom();
+        mEnterRoomHelper.startEnterRoom();
 
         //QavsdkControl.getInstance().setCameraPreviewChangeCallback();
 
@@ -152,7 +152,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
                     break;
                 case ClOSE_IMSDK:
                     mLiveHelper.perpareQuitRoom(false);
-                    mEnterRoomProsscessHelper.quiteLive();
+                    mEnterRoomHelper.quiteLive();
                     break;
                 case TIMEOUT_INVITE:
                     String id = "" + msg.obj;
@@ -522,7 +522,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
         } else {
             mLiveHelper.perpareQuitRoom(true);
-            mEnterRoomProsscessHelper.quiteLive();
+            mEnterRoomHelper.quiteLive();
         }
     }
 
@@ -558,12 +558,12 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
      */
     private void quiteLivePassively() {
         mLiveHelper.perpareQuitRoom(false);
-        mEnterRoomProsscessHelper.quiteLive();
+        mEnterRoomHelper.quiteLive();
     }
 
     @Override
     public void readyToQuit() {
-        mEnterRoomProsscessHelper.quiteLive();
+        mEnterRoomHelper.quiteLive();
     }
 
     /**
@@ -576,8 +576,9 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     public void EnterRoomComplete(int id_status, boolean isSucc) {
         Toast.makeText(LiveActivity.this, "EnterRoom  " + id_status + " isSucc " + isSucc, Toast.LENGTH_SHORT).show();
         //必须得进入房间之后才能初始化UI
-        mEnterRoomProsscessHelper.initAvUILayer(avView);
+        mEnterRoomHelper.initAvUILayer(avView);
 
+        //修正摄像头镜像
         mLiveHelper.fixCamera();
         if (isSucc == true) {
             //IM初始化
@@ -586,7 +587,8 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             if (id_status == Constants.HOST) {//主播方式加入房间成功
                 //开启摄像头渲染画面
                 SxbLog.i(TAG, "createlive EnterRoomComplete isSucc" + isSucc);
-            } else {//以成员方式加入房间成功
+            } else {
+                //发消息通知上线
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_EnterLive, "");
             }
         }
@@ -596,7 +598,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
     @Override
     public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-            if ((null != mDetailDialog) && (mDetailDialog.isShowing() == false)) {
+            if ((getBaseContext() != null) && (null != mDetailDialog) && (mDetailDialog.isShowing() == false)) {
                 mDetailTime.setText(formatTime);
                 mDetailAdmires.setText("" + CurLiveInfo.getAdmires());
                 mDetailWatchCount.setText("" + watchCount);
@@ -720,7 +722,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
             mLiveHelper.fixCamera();
             //主播通知用户服务器
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-                mEnterRoomProsscessHelper.notifyServerCreateRoom();
+                mEnterRoomHelper.notifyServerCreateRoom();
 
                 //主播心跳
                 mHearBeatTimer = new Timer(true);
@@ -748,7 +750,7 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
 
     @Override
     public void showInviteDialog() {
-        if (getBaseContext() != null && inviteDg.isShowing() != true) {
+        if ((inviteDg != null) && (getBaseContext() != null) && (inviteDg.isShowing() != true)) {
             inviteDg.show();
         }
     }

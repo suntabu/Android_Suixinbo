@@ -430,7 +430,7 @@ public class QavsdkControl {
 
     public String getAudioQualityTips() {
         AVAudioCtrl avAudioCtrl;
-        if (QavsdkControl.getInstance() != null) {
+        if (QavsdkControl.getInstance() != null && QavsdkControl.getInstance().getAVContext() != null) {
             avAudioCtrl = getAVContext().getAudioCtrl();
             return avAudioCtrl.getQualityTips();
         }

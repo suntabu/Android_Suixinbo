@@ -152,7 +152,7 @@ public class AVUIControl extends GLViewGroup {
     }
 
     public void onDestroy() {
-        SxbLog.e("memoryLeak", "memoryLeak AVUIControl onDestroy");
+        SxbLog.w(TAG, " AVUIControl onDestroy");
         unInitCameraaPreview();
         mContext = null;
         mRootView = null;
@@ -743,7 +743,7 @@ public class AVUIControl extends GLViewGroup {
                 QLog.d(TAG, QLog.CLR, "add camera surface view fail." + e);
             }
         }
-        SxbLog.e("memoryLeak", "memoryLeak initCameraPreview");
+        SxbLog.i(TAG, "initCameraPreview");
     }
 
     void unInitCameraaPreview() {
