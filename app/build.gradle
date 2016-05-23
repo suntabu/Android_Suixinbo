@@ -13,13 +13,14 @@ android {
     }
 
     signingConfigs{
-        release {
-            storeFile file("../.keystore")
-            storePassword "tencent"
-            keyAlias "show"
-            keyPassword "tencent"
+        release{
+            storeFile file("$System.env.KEYSTORE_PATH")
+            storePassword "$System.env.STOREPASS"
+            keyAlias "$System.env.ALIAS"
+            keyPassword "$System.env.KEYPASS"
         }
     }
+
     packagingOptions{
         exclude '*.apk'
     }
