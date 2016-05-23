@@ -97,7 +97,7 @@ public class GLVideoView extends GLView {
                 }
 
                 if (isFristFrame == false) {
-                    SxbLog.i(TAG, "PerformanceTest joinLive end     " +  SxbLog.getTime());
+                    SxbLog.i(TAG, "PerformanceTest  end     " +  SxbLog.getTime());
                     isFristFrame = true;
                 }
                 mYuvTexture.setTextureSize(width, height);

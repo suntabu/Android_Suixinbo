@@ -272,6 +272,7 @@ public class EnterLiveHelper extends Presenter {
                     isInChatRoom = true;
                 } else {
                     Toast.makeText(mContext, "join IM room fail " + s + " " + i, Toast.LENGTH_SHORT).show();
+                    quiteLive();
                 }
             }
 
@@ -338,6 +339,14 @@ public class EnterLiveHelper extends Presenter {
         if (isInAVRoom == true) {
             AVContext avContext = QavsdkControl.getInstance().getAVContext();
             int result = avContext.exitRoom();
+        }else{
+            quiteIMChatRoom();
+            CurLiveInfo.setCurrentRequestCount(0);
+            uninitAudioService();
+            //通知结束
+//            notifyServerLiveEnd();
+
+            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
         }
     }
 
