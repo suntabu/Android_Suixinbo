@@ -1,7 +1,6 @@
 package com.tencent.qcloud.suixinbo.views;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,7 +31,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.tencent.TIMUserProfile;
 import com.tencent.av.sdk.AVView;
-import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.ChatMsgListAdapter;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
@@ -77,8 +75,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private ChatMsgListAdapter mChatMsgListAdapter;
     private static final int MINFRESHINTERVAL = 500;
     private static final int UPDAT_WALL_TIME_TIMER_TASK = 1;
-    private static final int ClOSE_IMSDK = 2;
-    private static final int TIMEOUT_INVITE = 3;
+    private static final int TIMEOUT_INVITE = 2;
     private boolean mBoolRefreshLock = false;
     private boolean mBoolNeedRefresh = false;
     private final Timer mTimer = new Timer();
@@ -147,10 +144,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                     break;
                 case REFRESH_LISTVIEW:
                     doRefreshListView();
-                    break;
-                case ClOSE_IMSDK:
-                    mLiveHelper.perpareQuitRoom(false);
-                    mEnterRoomHelper.quiteLive();
                     break;
                 case TIMEOUT_INVITE:
                     String id = "" + msg.obj;
@@ -519,7 +512,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
         } else {
             mLiveHelper.perpareQuitRoom(true);
-            mEnterRoomHelper.quiteLive();
+//            mEnterRoomHelper.quiteLive();
         }
     }
 
@@ -555,7 +548,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
      */
     private void quiteLivePassively() {
         mLiveHelper.perpareQuitRoom(false);
-        mEnterRoomHelper.quiteLive();
+//        mEnterRoomHelper.quiteLive();
     }
 
     @Override
