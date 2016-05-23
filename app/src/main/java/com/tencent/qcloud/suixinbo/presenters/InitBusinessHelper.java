@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.widget.Toast;
 
 import com.tencent.TIMManager;
@@ -56,23 +57,8 @@ public class InitBusinessHelper {
             @Override
             public void onForceOffline() {
                 SxbLog.w(TAG, "onForceOffline->entered!");
-                Activity topActivity = QavsdkApplication.getTopActivity();
-                if (null != topActivity) {
-                    AlertDialog.Builder adBuilder = new AlertDialog.Builder(topActivity);
-                    adBuilder.setMessage(context.getString(R.string.tip_force_offline))
-                            .setPositiveButton(context.getString(R.string.btn_sure), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                    QavsdkApplication.exitApplication();
-                                }
-                            });
-                    AlertDialog dialog = adBuilder.create();
-                    dialog.show();
-                }else{
-                    Toast.makeText(context, context.getString(R.string.tip_force_offline), Toast.LENGTH_SHORT).show();
-                    QavsdkApplication.exitApplication();
-                }
+                Toast.makeText(context, context.getString(R.string.tip_force_offline), Toast.LENGTH_SHORT).show();
+                context.sendBroadcast(new Intent(Constants.BD_EXIT_APP));
             }
         });
 

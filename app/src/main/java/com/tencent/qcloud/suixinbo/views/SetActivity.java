@@ -13,6 +13,7 @@ import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
+import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 import com.tencent.qcloud.suixinbo.views.customviews.CustomSwitch;
 import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
 import com.tencent.qcloud.suixinbo.views.customviews.TemplateTitle;
@@ -20,7 +21,7 @@ import com.tencent.qcloud.suixinbo.views.customviews.TemplateTitle;
 /**
  * 设置页面
  */
-public class SetActivity extends Activity implements View.OnClickListener{
+public class SetActivity extends BaseActivity implements View.OnClickListener{
     private final static String TAG = "SetActivity";
     private CustomSwitch csAnimator;
     private LineControllerView lcvLog;
@@ -32,14 +33,11 @@ public class SetActivity extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set);
 
-        QavsdkApplication.getInstance().addActivity(this);
-
         initView();
     }
 
     @Override
     protected void onDestroy() {
-        QavsdkApplication.getInstance().removeActivity(this);
         super.onDestroy();
     }
 

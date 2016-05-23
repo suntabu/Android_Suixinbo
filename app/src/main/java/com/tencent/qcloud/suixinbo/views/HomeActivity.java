@@ -21,13 +21,14 @@ import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
 import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.ProfileView;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
+import com.tencent.qcloud.suixinbo.views.customviews.BaseFragmentActivity;
 
 import java.util.List;
 
 /**
  * 主界面
  */
-public class HomeActivity extends FragmentActivity implements ProfileView {
+public class HomeActivity extends BaseFragmentActivity implements ProfileView {
     private FragmentTabHost mTabHost;
     private LayoutInflater layoutInflater;
     private ProfileInfoHelper infoHelper;
@@ -73,7 +74,6 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
             infoHelper = new ProfileInfoHelper(this);
             infoHelper.getMyProfile();
         }
-        QavsdkApplication.getInstance().addActivity(this);
     }
 
     @Override
@@ -99,7 +99,6 @@ public class HomeActivity extends FragmentActivity implements ProfileView {
     protected void onDestroy() {
         SxbLog.i(TAG, "HomeActivity onDestroy");
         QavsdkControl.getInstance().stopContext();
-        QavsdkApplication.getInstance().removeActivity(this);
         super.onDestroy();
     }
 

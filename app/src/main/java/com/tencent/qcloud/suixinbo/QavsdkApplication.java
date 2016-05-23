@@ -18,13 +18,12 @@ public class QavsdkApplication extends Application {
 
     private static QavsdkApplication app;
     private static Context context;
-    private static List<Activity> activities;
+
     @Override
     public void onCreate() {
         super.onCreate();
         app = this;
         context = getApplicationContext();
-        activities = new LinkedList<>();
 
         SxbLogImpl.init(getApplicationContext());
 
@@ -38,29 +37,7 @@ public class QavsdkApplication extends Application {
         return context;
     }
 
-    public static QavsdkApplication getInstance(){
+    public static QavsdkApplication getInstance() {
         return app;
-    }
-
-    public static void addActivity(Activity activity){
-        activities.add(activity);
-    }
-
-    public static void removeActivity(Activity activity){
-        activities.remove(activity);
-    }
-
-    public static Activity getTopActivity(){
-        if (0 != activities.size()){
-            return activities.get(activities.size()-1);
-        }
-
-        return null;
-    }
-
-    public static void exitApplication(){
-        for (Activity activity : activities){
-            activity.finish();
-        }
     }
 }

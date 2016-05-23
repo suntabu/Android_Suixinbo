@@ -11,12 +11,13 @@ import android.widget.Toast;
 
 import com.tencent.TIMCallBack;
 import com.tencent.qcloud.suixinbo.R;
+import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 import com.tencent.qcloud.suixinbo.views.customviews.TemplateTitle;
 
 /**
  * 修改文本页面
  */
-public class EditActivity extends Activity {
+public class EditActivity extends BaseActivity {
 
 
     public final static String RETURN_EXTRA = "result";

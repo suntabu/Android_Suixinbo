@@ -5,6 +5,7 @@ package com.tencent.qcloud.suixinbo.utils;
  * 静态函数
  */
 public class Constants {
+    public static final String BD_EXIT_APP = "bd_sxb_exit";
 
     public static final String USER_INFO = "user_info";
 

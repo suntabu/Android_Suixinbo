@@ -51,6 +51,7 @@ import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
+import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 import com.tencent.qcloud.suixinbo.views.customviews.HeartLayout;
 import com.tencent.qcloud.suixinbo.views.customviews.InputTextMsgDialog;
 import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
@@ -64,7 +65,7 @@ import java.util.TimerTask;
 /**
  * Live直播类
  */
-public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveView, View.OnClickListener, ProfileView {
+public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, LiveView, View.OnClickListener, ProfileView {
     private static final String TAG = LiveActivity.class.getSimpleName();
     private static final int GETPROFILE_JOIN = 0x200;
 
@@ -134,9 +135,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         mEnterRoomHelper.startEnterRoom();
 
         //QavsdkControl.getInstance().setCameraPreviewChangeCallback();
-
-
-        QavsdkApplication.getInstance().addActivity(this);
     }
 
 
@@ -499,7 +497,6 @@ public class LiveActivity extends Activity implements EnterQuiteRoomView, LiveVi
         unregisterReceiver();
         QavsdkControl.getInstance().clearVideoMembers();
         QavsdkControl.getInstance().onDestroy();
-        QavsdkApplication.getInstance().removeActivity(this);
     }
 
 

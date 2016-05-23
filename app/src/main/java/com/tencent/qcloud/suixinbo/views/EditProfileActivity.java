@@ -38,6 +38,7 @@ import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.GlideCircleTransform;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
+import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 import com.tencent.qcloud.suixinbo.views.customviews.LineControllerView;
 import com.tencent.qcloud.suixinbo.views.customviews.TemplateTitle;
 
@@ -49,7 +50,7 @@ import java.util.List;
 /**
  * 个人编辑页面
  */
-public class EditProfileActivity extends Activity implements View.OnClickListener, ProfileView, UploadView{
+public class EditProfileActivity extends BaseActivity implements View.OnClickListener, ProfileView, UploadView{
     private final static int REQ_EDIT_NICKNAME = 0x100;
     private final static int REQ_EDIT_SIGN  = 0x200;
 
@@ -109,13 +110,10 @@ public class EditProfileActivity extends Activity implements View.OnClickListene
         mUploadHelper = new UploadHelper(this, this);
 
         bPermission = checkCropPermission();
-
-        QavsdkApplication.getInstance().addActivity(this);
     }
 
     @Override
     protected void onDestroy() {
-        QavsdkApplication.getInstance().removeActivity(this);
         super.onDestroy();
     }
 

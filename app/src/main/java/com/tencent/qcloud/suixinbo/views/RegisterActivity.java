@@ -14,11 +14,12 @@ import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
+import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 
 /**
  * 注册账号类
  */
-public class RegisterActivity extends Activity implements View.OnClickListener, LoginView {
+public class RegisterActivity extends BaseActivity implements View.OnClickListener, LoginView {
     private EditText mUserName, mPassword, mRepassword;
     private TextView mBtnRegister;
     private ImageButton mBtnBack;
@@ -39,13 +40,10 @@ public class RegisterActivity extends Activity implements View.OnClickListener, 
         mBtnRegister.setOnClickListener(this);
         mMyApplication = (QavsdkApplication) getApplication();
         mLoginHeloper = new LoginHelper(this, this);
-
-        QavsdkApplication.getInstance().addActivity(this);
     }
 
     @Override
     protected void onDestroy() {
-        QavsdkApplication.getInstance().removeActivity(this);
         super.onDestroy();
     }
 

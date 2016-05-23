@@ -14,11 +14,12 @@ import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LoginView;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
+import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 
 /**
  * 登录类
  */
-public class LoginActivity extends Activity implements View.OnClickListener, LoginView {
+public class LoginActivity extends BaseActivity implements View.OnClickListener, LoginView {
     TextView mBtnLogin, mBtnRegister;
     EditText mPassWord, mUserName;
     private static final String TAG = LoginActivity.class.getSimpleName();
@@ -44,13 +45,10 @@ public class LoginActivity extends Activity implements View.OnClickListener, Log
             SxbLog.i(TAG,"LoginActivity onCreate");
             mLoginHeloper.imLogin(MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
         }
-
-        QavsdkApplication.getInstance().addActivity(this);
     }
 
     @Override
     protected void onDestroy() {
-        QavsdkApplication.getInstance().removeActivity(this);
         super.onDestroy();
     }
 

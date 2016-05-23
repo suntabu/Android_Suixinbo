@@ -33,6 +33,7 @@ import com.tencent.qcloud.suixinbo.presenters.viewinface.UploadView;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
 import com.tencent.qcloud.suixinbo.utils.UIUtils;
+import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 import com.tencent.qcloud.suixinbo.views.customviews.CustomSwitch;
 
 import java.io.File;
@@ -43,7 +44,7 @@ import java.util.List;
 /**
  * 直播发布类
  */
-public class PublishLiveActivity extends Activity implements View.OnClickListener, LocationView, UploadView {
+public class PublishLiveActivity extends BaseActivity implements View.OnClickListener, LocationView, UploadView {
     private UploadHelper mPublishLivePresenter;
     private LocationHelper mLocationHelper;
     private TextView BtnBack, BtnPublish;
@@ -86,13 +87,10 @@ public class PublishLiveActivity extends Activity implements View.OnClickListene
         mPublishLivePresenter.updateSig();
 
         bPermission = checkPublishPermission();
-
-        QavsdkApplication.getInstance().addActivity(this);
     }
 
     @Override
     protected void onDestroy() {
-        QavsdkApplication.getInstance().removeActivity(this);
         super.onDestroy();
     }
 
