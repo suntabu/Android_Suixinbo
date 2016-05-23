@@ -272,6 +272,7 @@ public class EnterLiveHelper extends Presenter {
                     isInChatRoom = true;
                 } else {
                     Toast.makeText(mContext, "join IM room fail " + s + " " + i, Toast.LENGTH_SHORT).show();
+                    quiteLive();
                 }
             }
 
