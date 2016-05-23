@@ -26,3 +26,4 @@
 
 ##随心播的Spear的配置
 因随心播的参数配置较高，因此对主播上行带宽有要求
+![Spear配置](https://raw.githubusercontent.com/zhaoyang21cn/Android_Suixinbo/master/QQ%E6%88%AA%E5%9B%BE20160520170326.jpg)
