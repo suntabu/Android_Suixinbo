@@ -72,6 +72,7 @@ public class GetMemberListHelper extends Presenter {
 
     @Override
     public void onDestory() {
+        mMembersDialogView =null;
         mContext = null;
     }
 }

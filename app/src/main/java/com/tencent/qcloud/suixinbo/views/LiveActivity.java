@@ -19,10 +19,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +34,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.tencent.TIMUserProfile;
+import com.tencent.av.TIMAvManager;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.ChatMsgListAdapter;
@@ -286,6 +291,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private FrameLayout mFullControllerUi, mBackgound;
     private SeekBar mBeautyBar;
     private int mBeautyRate;
+    private TextView pushBtn;
 
     private void showHeadIcon(ImageView view, String avatar) {
         if (TextUtils.isEmpty(avatar)) {
@@ -340,7 +346,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             BtnSwitch = (TextView) findViewById(R.id.switch_cam);
             BtnBeauty = (TextView) findViewById(R.id.beauty_btn);
             BtnMic = (TextView) findViewById(R.id.mic_btn);
-
             BtnScreen = (TextView) findViewById(R.id.fullscreen_btn);
             mVideoChat.setVisibility(View.VISIBLE);
             Btnflash.setOnClickListener(this);
@@ -356,8 +361,16 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             inviteView2.setOnClickListener(this);
             inviteView3.setOnClickListener(this);
 
+
+            pushBtn = (TextView) findViewById(R.id.push_btn);
+            pushBtn.setVisibility(View.VISIBLE);
+            pushBtn.setOnClickListener(this);
+
             initBackDialog();
             initDetailDailog();
+            initPushDialog();
+
+
             mMemberDg = new MembersDialog(this, R.style.floag_dialog, this);
             startRecordAnimation();
             showHeadIcon(mHeadIcon, MySelfInfo.getInstance().getAvatar());
@@ -546,7 +559,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     }
 
     /**
-     * e
      * 被动退出直播
      */
     private void quiteLivePassively() {
@@ -1024,11 +1036,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 mFullControllerUi.setVisibility(View.INVISIBLE);
                 BtnNormal.setVisibility(View.VISIBLE);
                 break;
-//            case R.id.av_screen_layout:
-//                mHostCtrView.setVisibility(View.VISIBLE);
-//                mVideoMemberCtrlView.setVisibility(View.INVISIBLE);
-//                mBackgound.setVisibility(View.GONE);
-//                break;
             case R.id.normal_btn:
                 mFullControllerUi.setVisibility(View.VISIBLE);
                 BtnNormal.setVisibility(View.GONE);
@@ -1087,6 +1094,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 break;
             case R.id.param_video:
                 showTips = !showTips;
+                break;
+            case R.id.push_btn:
+                pushStream();
                 break;
         }
     }
@@ -1310,5 +1320,95 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             }
 
         }
+    }
+
+    //旁路直播
+    private static boolean isPushed = false;
+
+    public void pushStream() {
+        if (!isPushed) {
+            if (mPushDialog != null)
+                mPushDialog.show();
+        } else {
+            mLiveHelper.stopPushAction();
+        }
+    }
+
+    private Dialog mPushDialog;
+
+    private void initPushDialog() {
+        mPushDialog = new Dialog(this, R.style.dialog);
+        mPushDialog.setContentView(R.layout.push_dialog_layout);
+        final TIMAvManager.StreamParam mStreamParam = TIMAvManager.getInstance().new StreamParam();
+        final EditText pushfileNameInput = (EditText) mPushDialog.findViewById(R.id.push_filename);
+        final RadioGroup radgroup = (RadioGroup) mPushDialog.findViewById(R.id.push_type);
+
+        radgroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radbtn = (RadioButton) mPushDialog.findViewById(checkedId);
+                Toast.makeText(LiveActivity.this, "按钮组值发生改变,你选了 " + radbtn.getText(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        Button recordOk = (Button) mPushDialog.findViewById(R.id.btn_record_ok);
+        recordOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (pushfileNameInput.getText().toString().equals("")) {
+                    return;
+                }
+
+                if (radgroup.getCheckedRadioButtonId() == R.id.hls) {
+                    mStreamParam.setEncode(TIMAvManager.StreamEncode.HLS);
+                } else {
+                    mStreamParam.setEncode(TIMAvManager.StreamEncode.RTMP);
+                }
+//                mStreamParam.setEncode(TIMAvManager.StreamEncode.HLS);
+                mLiveHelper.pushAction(mStreamParam);
+                mPushDialog.dismiss();
+            }
+        });
+
+
+        Button recordCancel = (Button) mPushDialog.findViewById(R.id.btn_record_cancel);
+        recordCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPushDialog.dismiss();
+            }
+        });
+
+        Window dialogWindow = mPushDialog.getWindow();
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        dialogWindow.setGravity(Gravity.CENTER);
+        dialogWindow.setAttributes(lp);
+        mPushDialog.setCanceledOnTouchOutside(false);
+    }
+
+
+    @Override
+    public void pushStreamSucc(TIMAvManager.StreamRes streamRes) {
+        List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
+        isPushed = true;
+        pushBtn.setText("stopStream");
+//        int length = liveUrls.size();
+//        String url = null;
+//        String url2 = null;
+//        if (length == 1) {
+//            TIMAvManager.LiveUrl avUrl = liveUrls.get(0);
+//            url = avUrl.getUrl();
+//        } else if (length == 2) {
+//            TIMAvManager.LiveUrl avUrl = liveUrls.get(0);
+//            url = avUrl.getUrl();
+//            TIMAvManager.LiveUrl avUrl2 = liveUrls.get(1);
+//            url2 = avUrl2.getUrl();
+//        }
+    }
+
+    @Override
+    public void stopStreamSucc() {
+        isPushed = false;
+        pushBtn.setText("pushStream");
     }
 }

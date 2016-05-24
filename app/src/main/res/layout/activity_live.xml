@@ -61,6 +61,18 @@
 
 
         <TextView
+            android:id="@+id/push_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_gravity="top|left"
+            android:layout_marginLeft="240dp"
+            android:visibility="invisible"
+            android:layout_marginTop="33dp"
+            android:text="pushStream"
+            />
+
+
+        <TextView
             android:id="@+id/video_interact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

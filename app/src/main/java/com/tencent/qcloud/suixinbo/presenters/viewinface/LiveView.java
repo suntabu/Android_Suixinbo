@@ -1,6 +1,8 @@
 package com.tencent.qcloud.suixinbo.presenters.viewinface;
 
 
+import com.tencent.av.TIMAvManager;
+
 /**
  *  直播界面回调
  */
@@ -29,4 +31,8 @@ public interface LiveView extends MvpView {
     void readyToQuit();
 
     void hideInviteDialog();
+
+    void pushStreamSucc(TIMAvManager.StreamRes streamRes);
+
+    void stopStreamSucc();
 }

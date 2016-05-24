@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.tencent.TIMCallBack;
 import com.tencent.TIMConversation;
 import com.tencent.TIMConversationType;
 import com.tencent.TIMCustomElem;
@@ -21,6 +22,7 @@ import com.tencent.TIMMessageListener;
 import com.tencent.TIMTextElem;
 import com.tencent.TIMUserProfile;
 import com.tencent.TIMValueCallBack;
+import com.tencent.av.TIMAvManager;
 import com.tencent.av.sdk.AVAudioCtrl;
 import com.tencent.av.sdk.AVEndpoint;
 import com.tencent.av.sdk.AVError;
@@ -641,49 +643,6 @@ public class LiveHelper extends Presenter {
         }
     }
 
-//    /**
-//     * 拉取成员列表 成功返回ID列表
-//     */
-//    public void getMemberList() {
-//        TIMGroupManager.getInstance().getGroupMembers("" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<List<TIMGroupMemberInfo>>() {
-//            @Override
-//            public void onError(int i, String s) {
-//                SxbLog.i(TAG, "get MemberList ");
-//            }
-//
-//            @Override
-//            public void onSuccess(List<TIMGroupMemberInfo> timGroupMemberInfos) {
-//                SxbLog.i(TAG, "get MemberList ");
-//                getMemberListInfo(timGroupMemberInfos);
-//
-//            }
-//        });
-//    }
-//
-//
-//    /**
-//     * 拉取成员列表信息
-//     *
-//     * @param timGroupMemberInfos
-//     */
-//    private void getMemberListInfo(List<TIMGroupMemberInfo> timGroupMemberInfos) {
-//        mDialogMembers.clear();
-//        for (TIMGroupMemberInfo item : timGroupMemberInfos) {
-//            if (item.getUser().equals(MySelfInfo.getInstance().getId())) {
-//                continue;
-//            }
-//            MemberInfo member = new MemberInfo();
-//            member.setUserId(item.getUser());
-//            if (QavsdkControl.getInstance().containIdView(item.getUser())) {
-//                member.setIsOnVideoChat(true);
-//            }
-//            mDialogMembers.add(member);
-//
-//        }
-//
-//        mMembersDialogView.showMembersList(mDialogMembers);
-//
-//    }
 
 
     public void sendC2CMessage(final int cmd, String Param, final String sendId) {
@@ -714,6 +673,59 @@ public class LiveHelper extends Presenter {
             }
         });
     }
+
+
+    private TIMAvManager.RoomInfo roomInfo;
+    private long streamChannelID;
+    public void pushAction(TIMAvManager.StreamParam mStreamParam) {
+        int roomid = (int) QavsdkControl.getInstance().getAVContext().getRoom().getRoomId();
+        SxbLog.i(TAG, "Push roomid: " + roomid);
+        SxbLog.d(TAG, "Push groupid: " + CurLiveInfo.getRoomNum());
+        roomInfo = TIMAvManager.getInstance().new RoomInfo();
+        roomInfo.setRoomId(roomid);
+        roomInfo.setRelationId(CurLiveInfo.getRoomNum());
+        //推流的接口
+        TIMAvManager.getInstance().requestMultiVideoStreamerStart(roomInfo, mStreamParam, new TIMValueCallBack<TIMAvManager.StreamRes>() {
+            @Override
+            public void onError(int i, String s) {
+                SxbLog.e(TAG, "url error " + i + " : " + s);
+                Toast.makeText(mContext, "start stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(TIMAvManager.StreamRes streamRes) {
+                List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
+                streamChannelID = streamRes.getChnlId();
+                mLiveView.pushStreamSucc(streamRes);
+
+//                ClipToBoard(url, url2);
+
+            }
+        });
+    }
+
+    public void stopPushAction() {
+        SxbLog.d(TAG, "Push stop Id " + streamChannelID);
+        List<Long> myList = new ArrayList<Long>();
+        myList.add(streamChannelID);
+        TIMAvManager.getInstance().requestMultiVideoStreamerStop(roomInfo, myList, new TIMCallBack() {
+            @Override
+            public void onError(int i, String s) {
+                SxbLog.e(TAG, "url stop error " + i + " : " + s);
+                Toast.makeText(mContext, "stop stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onSuccess() {
+                mLiveView.stopStreamSucc();
+
+            }
+        });
+    }
+
+
+
 
 
     @Override
