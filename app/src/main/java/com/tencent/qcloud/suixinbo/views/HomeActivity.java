@@ -95,7 +95,8 @@ public class HomeActivity extends BaseFragmentActivity implements ProfileView {
 
     @Override
     protected void onDestroy() {
-        mLoginHelper.onDestory();
+        if (mLoginHelper != null)
+            mLoginHelper.onDestory();
         SxbLog.i(TAG, "HomeActivity onDestroy");
         QavsdkControl.getInstance().stopContext();
         super.onDestroy();

@@ -28,11 +28,11 @@ public class LocationHelper {
     private static String TAG = "LocationHelper";
     private Activity locActivity;
 
-    public LocationHelper(Activity activity){
+    public LocationHelper(Activity activity) {
         locActivity = activity;
     }
 
-    public boolean checkLocationPermission(){
+    public boolean checkLocationPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(locActivity, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(locActivity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Constants.LOCATION_PERMISSION_REQ_CODE);
@@ -43,7 +43,7 @@ public class LocationHelper {
         return true;
     }
 
-    private String getAddressFromLocation(Context context, Location location){
+    private String getAddressFromLocation(Context context, Location location) {
         Geocoder geocoder = new Geocoder(context);
 
         try {
@@ -51,7 +51,7 @@ public class LocationHelper {
             double longitude = location.getLongitude();
             SxbLog.d(TAG, "getAddressFromLocation->lat:" + latitude + ", long:" + longitude);
             List<Address> list = geocoder.getFromLocation(latitude, longitude, 1);
-            if (list.size() > 0){
+            if (list.size() > 0) {
                 Address address = list.get(0);
                 return address.getAddressLine(0);
             }
@@ -61,31 +61,32 @@ public class LocationHelper {
         return "";
     }
 
-    public boolean getMyLocation(final Context context, final LocationView view){
+    public boolean getMyLocation(final Context context, final LocationView view) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+        if (!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             return false;
         }
 
-        if (!checkLocationPermission()){
+        if (!checkLocationPermission()) {
             return true;
         }
 
         Location curLoc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if (null == curLoc){
+        if (null == curLoc) {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 0, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     String strAddr = getAddressFromLocation(context, location);
-                    if (TextUtils.isEmpty(strAddr)){
+                    if (TextUtils.isEmpty(strAddr)) {
                         view.onLocationChanged(-1, 0, 0, strAddr);
-                    }else{
+                    } else {
                         view.onLocationChanged(0, location.getLatitude(), location.getLongitude(), strAddr);
                     }
                 }
 
                 @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {}
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
 
                 @Override
                 public void onProviderEnabled(String provider) {
@@ -95,15 +96,19 @@ public class LocationHelper {
                 public void onProviderDisabled(String provider) {
                 }
             });
-        }else{
+        } else {
             String strAddr = getAddressFromLocation(context, curLoc);
-            if (TextUtils.isEmpty(strAddr)){
+            if (TextUtils.isEmpty(strAddr)) {
                 view.onLocationChanged(-1, 0, 0, strAddr);
-            }else{
+            } else {
                 view.onLocationChanged(0, curLoc.getLatitude(), curLoc.getLongitude(), strAddr);
             }
         }
 
         return true;
+    }
+
+    public void onDestory() {
+        locActivity = null;
     }
 }

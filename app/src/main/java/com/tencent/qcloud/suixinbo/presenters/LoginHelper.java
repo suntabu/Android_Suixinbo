@@ -209,6 +209,8 @@ public class LoginHelper extends Presenter {
 
     @Override
     public void onDestory() {
+        mLoginView = null;
+        mLogoutView = null;
         mContext = null;
     }
 }

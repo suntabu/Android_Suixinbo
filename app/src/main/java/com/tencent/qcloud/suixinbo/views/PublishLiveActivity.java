@@ -90,6 +90,7 @@ public class PublishLiveActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void onDestroy() {
         mPublishLivePresenter.onDestory();
+        mLocationHelper.onDestory();
         super.onDestroy();
     }
 

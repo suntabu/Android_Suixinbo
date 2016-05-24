@@ -170,6 +170,7 @@ public class UploadHelper extends Presenter {
 
     @Override
     public void onDestory() {
+        mView = null;
         mContext = null;
     }
 }
