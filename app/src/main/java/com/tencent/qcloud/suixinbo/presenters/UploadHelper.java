@@ -25,8 +25,8 @@ public class UploadHelper extends Presenter {
     private final String bucket = "sxbbucket";
     private final String appid = "10022853";
 
-    private final static int THREAD_GET_SIG       = 1;
-    private final static int THREAD_UPLAOD        = 2;
+    private final static int THREAD_GET_SIG = 1;
+    private final static int THREAD_UPLAOD = 2;
     private final static int THREAD_GETSIG_UPLOAD = 3;
 
     private final static int MAIN_CALL_BACK = 1;
@@ -46,12 +46,12 @@ public class UploadHelper extends Presenter {
         mHandler = new Handler(mThread.getLooper(), new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                switch (msg.what){
+                switch (msg.what) {
                     case THREAD_GET_SIG:
                         doUpdateSig();
                         break;
                     case THREAD_UPLAOD:
-                        doUploadCover((String)msg.obj, true);
+                        doUploadCover((String) msg.obj, true);
                         break;
                     case THREAD_GETSIG_UPLOAD:
                         doUpdateSig();
@@ -65,33 +65,33 @@ public class UploadHelper extends Presenter {
         mMainHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-                SxbLog.d(TAG, "handleMessage id:"+msg.what);
-                switch (msg.what){
-                case MAIN_CALL_BACK:
-                    mView.onUploadResult(msg.arg1, (String)msg.obj);
-                    break;
-                case MAIN_PROCESS:
-                    mView.onUploadProcess(msg.arg1);
-                    break;
+                SxbLog.d(TAG, "handleMessage id:" + msg.what);
+                switch (msg.what) {
+                    case MAIN_CALL_BACK:
+                        mView.onUploadResult(msg.arg1, (String) msg.obj);
+                        break;
+                    case MAIN_PROCESS:
+                        mView.onUploadProcess(msg.arg1);
+                        break;
                 }
                 return false;
             }
         });
     }
 
-    private String createNetUrl(){
-        return "/"+MySelfInfo.getInstance().getId()+"_"+System.currentTimeMillis()+".jpg";
+    private String createNetUrl() {
+        return "/" + MySelfInfo.getInstance().getId() + "_" + System.currentTimeMillis() + ".jpg";
     }
 
-    private void doUpdateSig(){
+    private void doUpdateSig() {
         String sig = OKhttpHelper.getInstance().getCosSig();
         MySelfInfo.getInstance().setCosSig(sig);
         SxbLog.d(TAG, "doUpdateSig->get sig: " + sig);
     }
 
-    private void doUploadCover(final String path, boolean bRetry){
+    private void doUploadCover(final String path, boolean bRetry) {
         String sig = MySelfInfo.getInstance().getCosSig();
-        if (TextUtils.isEmpty(sig)){
+        if (TextUtils.isEmpty(sig)) {
             if (bRetry) {
                 Message msg = new Message();
                 msg.what = THREAD_GETSIG_UPLOAD;
@@ -120,13 +120,13 @@ public class UploadHelper extends Presenter {
             @Override
             public void onUploadFailed(int i, String s) {
                 SxbLog.w(TAG, "upload error code: " + i + " msg:" + s);
-                if (-96 == i){  // 签名过期重试
+                if (-96 == i) {  // 签名过期重试
                     Message msg = new Message();
                     msg.what = THREAD_GETSIG_UPLOAD;
                     msg.obj = path;
 
                     mHandler.sendMessage(msg);
-                }else{
+                } else {
                     Message msg = new Message();
                     msg.what = MAIN_CALL_BACK;
                     msg.arg1 = i;
@@ -141,7 +141,7 @@ public class UploadHelper extends Presenter {
                 SxbLog.d(TAG, "onUploadProgress: " + l + "/" + l1);
                 Message msg = new Message();
                 msg.what = MAIN_PROCESS;
-                msg.arg1 = (int)(l*100/l1);
+                msg.arg1 = (int) (l * 100 / l1);
 
                 mMainHandler.sendMessage(msg);
             }
@@ -156,7 +156,7 @@ public class UploadHelper extends Presenter {
         fileUploadMgr.upload(task);
     }
 
-    public void updateSig(){
+    public void updateSig() {
         mHandler.sendEmptyMessage(THREAD_GET_SIG);
     }
 
@@ -166,5 +166,10 @@ public class UploadHelper extends Presenter {
         msg.obj = path;
 
         mHandler.sendMessage(msg);
+    }
+
+    @Override
+    public void onDestory() {
+        mContext = null;
     }
 }

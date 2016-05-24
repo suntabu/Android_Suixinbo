@@ -20,14 +20,12 @@ import java.util.ArrayList;
  * 成员列表适配器
  */
 public class MembersAdapter extends ArrayAdapter<MemberInfo> {
-    private Context mContext;
     private static final String TAG = MembersAdapter.class.getSimpleName();
     private LiveView mLiveView;
     private MembersDialog membersDialog;
 
     public MembersAdapter(Context context, int resource, ArrayList<MemberInfo> objects, LiveView liveView, MembersDialog dialog) {
         super(context, resource, objects);
-        mContext = context;
         mLiveView = liveView;
         membersDialog = dialog;
     }

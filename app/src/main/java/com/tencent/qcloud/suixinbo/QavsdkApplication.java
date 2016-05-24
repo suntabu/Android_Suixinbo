@@ -1,14 +1,11 @@
 package com.tencent.qcloud.suixinbo;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.tencent.qcloud.suixinbo.presenters.InitBusinessHelper;
 import com.tencent.qcloud.suixinbo.utils.SxbLogImpl;
-
-import java.util.LinkedList;
-import java.util.List;
 
 
 /**
@@ -29,6 +26,9 @@ public class QavsdkApplication extends Application {
 
         //初始化APP
         InitBusinessHelper.initApp(context);
+
+
+        LeakCanary.install(this);
 
         //创建AVSDK 控制器类
     }

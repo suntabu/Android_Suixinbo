@@ -13,8 +13,6 @@ import com.tencent.TIMConversationType;
 import com.tencent.TIMCustomElem;
 import com.tencent.TIMElem;
 import com.tencent.TIMElemType;
-import com.tencent.TIMGroupManager;
-import com.tencent.TIMGroupMemberInfo;
 import com.tencent.TIMGroupSystemElem;
 import com.tencent.TIMGroupSystemElemType;
 import com.tencent.TIMManager;
@@ -31,7 +29,6 @@ import com.tencent.av.sdk.AVVideoCtrl;
 import com.tencent.av.sdk.AVView;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
-import com.tencent.qcloud.suixinbo.model.MemberInfo;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LiveView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.MembersDialogView;
@@ -64,8 +61,6 @@ public class LiveHelper extends Presenter {
     private TIMConversation mC2CConversation;
     private boolean isMicOpen = true;
     private static final String UNREAD = "0";
-    private ArrayList<String> mCurrentVideoMembers;
-    private ArrayList<MemberInfo> mDialogMembers = new ArrayList<MemberInfo>();
     private AVView mRequestViewList[] = new AVView[MAX_REQUEST_VIEW_COUNT];
     private String mRequestIdentifierList[] = new String[MAX_REQUEST_VIEW_COUNT];
     private Boolean isOpenCamera = false;
@@ -74,11 +69,6 @@ public class LiveHelper extends Presenter {
     public LiveHelper(Context context, LiveView liveview) {
         mContext = context;
         mLiveView = liveview;
-    }
-
-    public LiveHelper(Context context, MembersDialogView dialogView) {
-        mContext = context;
-        mMembersDialogView = dialogView;
     }
 
 
@@ -651,49 +641,49 @@ public class LiveHelper extends Presenter {
         }
     }
 
-    /**
-     * 拉取成员列表 成功返回ID列表
-     */
-    public void getMemberList() {
-        TIMGroupManager.getInstance().getGroupMembers("" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<List<TIMGroupMemberInfo>>() {
-            @Override
-            public void onError(int i, String s) {
-                SxbLog.i(TAG, "get MemberList ");
-            }
-
-            @Override
-            public void onSuccess(List<TIMGroupMemberInfo> timGroupMemberInfos) {
-                SxbLog.i(TAG, "get MemberList ");
-                getMemberListInfo(timGroupMemberInfos);
-
-            }
-        });
-    }
-
-
-    /**
-     * 拉取成员列表信息
-     *
-     * @param timGroupMemberInfos
-     */
-    private void getMemberListInfo(List<TIMGroupMemberInfo> timGroupMemberInfos) {
-        mDialogMembers.clear();
-        for (TIMGroupMemberInfo item : timGroupMemberInfos) {
-            if (item.getUser().equals(MySelfInfo.getInstance().getId())) {
-                continue;
-            }
-            MemberInfo member = new MemberInfo();
-            member.setUserId(item.getUser());
-            if (QavsdkControl.getInstance().containIdView(item.getUser())) {
-                member.setIsOnVideoChat(true);
-            }
-            mDialogMembers.add(member);
-
-        }
-
-        mMembersDialogView.showMembersList(mDialogMembers);
-
-    }
+//    /**
+//     * 拉取成员列表 成功返回ID列表
+//     */
+//    public void getMemberList() {
+//        TIMGroupManager.getInstance().getGroupMembers("" + MySelfInfo.getInstance().getMyRoomNum(), new TIMValueCallBack<List<TIMGroupMemberInfo>>() {
+//            @Override
+//            public void onError(int i, String s) {
+//                SxbLog.i(TAG, "get MemberList ");
+//            }
+//
+//            @Override
+//            public void onSuccess(List<TIMGroupMemberInfo> timGroupMemberInfos) {
+//                SxbLog.i(TAG, "get MemberList ");
+//                getMemberListInfo(timGroupMemberInfos);
+//
+//            }
+//        });
+//    }
+//
+//
+//    /**
+//     * 拉取成员列表信息
+//     *
+//     * @param timGroupMemberInfos
+//     */
+//    private void getMemberListInfo(List<TIMGroupMemberInfo> timGroupMemberInfos) {
+//        mDialogMembers.clear();
+//        for (TIMGroupMemberInfo item : timGroupMemberInfos) {
+//            if (item.getUser().equals(MySelfInfo.getInstance().getId())) {
+//                continue;
+//            }
+//            MemberInfo member = new MemberInfo();
+//            member.setUserId(item.getUser());
+//            if (QavsdkControl.getInstance().containIdView(item.getUser())) {
+//                member.setIsOnVideoChat(true);
+//            }
+//            mDialogMembers.add(member);
+//
+//        }
+//
+//        mMembersDialogView.showMembersList(mDialogMembers);
+//
+//    }
 
 
     public void sendC2CMessage(final int cmd, String Param, final String sendId) {
@@ -726,4 +716,9 @@ public class LiveHelper extends Presenter {
     }
 
 
+    @Override
+    public void onDestory() {
+        mLiveView = null;
+        mContext = null;
+    }
 }

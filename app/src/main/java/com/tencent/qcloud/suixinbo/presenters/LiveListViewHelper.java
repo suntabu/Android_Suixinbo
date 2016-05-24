@@ -1,7 +1,6 @@
 package com.tencent.qcloud.suixinbo.presenters;
 
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
@@ -13,12 +12,10 @@ import java.util.ArrayList;
  * 直播列表页Presenter
  */
 public class LiveListViewHelper extends Presenter {
-    private Context mContext;
     private LiveListView mLiveListView;
     private GetLiveListTask mGetLiveListTask;
 
-    public LiveListViewHelper(Context context, LiveListView view) {
-        mContext = context;
+    public LiveListViewHelper(LiveListView view) {
         mLiveListView = view;
     }
 
@@ -30,6 +27,10 @@ public class LiveListViewHelper extends Presenter {
 
     public void getMoreData() {
 
+    }
+
+    @Override
+    public void onDestory() {
     }
 
     /**

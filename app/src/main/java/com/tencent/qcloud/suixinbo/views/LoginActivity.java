@@ -1,6 +1,5 @@
 package com.tencent.qcloud.suixinbo.views;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,7 +7,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
@@ -28,7 +26,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SxbLog.i(TAG,"LoginActivity onCreate");
+        SxbLog.i(TAG, "LoginActivity onCreate");
         mLoginHeloper = new LoginHelper(this, this);
         //获取个人数据本地缓存
         MySelfInfo.getInstance().getCache(getApplicationContext());
@@ -42,13 +40,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             mBtnLogin.setOnClickListener(this);
         } else {
             //有账户登录直接IM登录
-            SxbLog.i(TAG,"LoginActivity onCreate");
+            SxbLog.i(TAG, "LoginActivity onCreate");
             mLoginHeloper.imLogin(MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
         }
     }
 
     @Override
     protected void onDestroy() {
+        mLoginHeloper.onDestory();
         super.onDestroy();
     }
 
@@ -78,7 +77,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             mLoginHeloper.tlsLogin(mUserName.getText().toString(), mPassWord.getText().toString());
         }
     }
-
 
 
     /**

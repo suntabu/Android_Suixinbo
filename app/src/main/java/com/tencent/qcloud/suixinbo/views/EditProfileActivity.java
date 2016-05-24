@@ -1,7 +1,6 @@
 package com.tencent.qcloud.suixinbo.views;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -27,7 +26,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.tencent.TIMUserProfile;
-import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.ProfileInfoHelper;
@@ -115,6 +113,7 @@ public class EditProfileActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mUploadHelper.onDestory();
     }
 
     private Uri createCoverUri(String type) {

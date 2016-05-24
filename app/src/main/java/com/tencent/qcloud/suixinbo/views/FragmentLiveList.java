@@ -42,7 +42,7 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mLiveListViewHelper = new LiveListViewHelper(getActivity(), this);
+        mLiveListViewHelper = new LiveListViewHelper(this);
         View view = inflater.inflate(R.layout.liveframent_layout, container, false);
         mLiveList = (ListView) view.findViewById(R.id.live_list);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout_list);
@@ -90,6 +90,12 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        mLiveListViewHelper.onDestory();
+        super.onDestroy();
     }
 
     @Override

@@ -21,7 +21,7 @@ import tencent.tls.platform.TLSUserInfo;
 /**
  * 登录的数据处理类
  */
-public class LoginHelper {
+public class LoginHelper extends Presenter {
     private Context mContext;
     private static final String TAG = LoginHelper.class.getSimpleName();
     private LoginView mLoginView;
@@ -207,4 +207,8 @@ public class LoginHelper {
     }
 
 
+    @Override
+    public void onDestory() {
+        mContext = null;
+    }
 }

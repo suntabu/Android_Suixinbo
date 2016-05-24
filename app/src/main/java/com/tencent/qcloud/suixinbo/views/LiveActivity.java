@@ -468,6 +468,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     @Override
     protected void onDestroy() {
+
         watchCount = 0;
         super.onDestroy();
         if (null != mHearBeatTimer) {
@@ -488,6 +489,8 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         CurLiveInfo.setAdmires(0);
         CurLiveInfo.setCurrentRequestCount(0);
         unregisterReceiver();
+        mLiveHelper.onDestory();
+        mEnterRoomHelper.onDestory();
         QavsdkControl.getInstance().clearVideoMembers();
         QavsdkControl.getInstance().onDestroy();
     }

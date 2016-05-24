@@ -1,7 +1,6 @@
 package com.tencent.qcloud.suixinbo.views;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,11 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.CurLiveInfo;
-import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
+import com.tencent.qcloud.suixinbo.presenters.LocationHelper;
 import com.tencent.qcloud.suixinbo.presenters.UploadHelper;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.LocationView;
 import com.tencent.qcloud.suixinbo.presenters.viewinface.UploadView;
@@ -91,6 +89,7 @@ public class PublishLiveActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void onDestroy() {
+        mPublishLivePresenter.onDestory();
         super.onDestroy();
     }
 

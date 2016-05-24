@@ -76,9 +76,15 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
     }
 
     @Override
+    public void onDestroy() {
+        mLoginHeloper.onDestory();
+        super.onDestroy();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        if (null != mProfileInfo){
+        if (null != mProfileInfo) {
             mProfileHelper.getMyProfile();
         }
     }
@@ -93,28 +99,28 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         super.onStop();
     }
 
-    private void enterSetProfile(){
+    private void enterSetProfile() {
         Intent intent = new Intent(getContext(), SetActivity.class);
         startActivity(intent);
     }
 
-    private void enterEditProfile(){
+    private void enterEditProfile() {
         Intent intent = new Intent(getContext(), EditProfileActivity.class);
         startActivity(intent);
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-        case R.id.profile_set:
-            enterSetProfile();
-            break;
-        case R.id.edit_profile:
-            enterEditProfile();
-            break;
-        case R.id.logout:
-            mLoginHeloper.imLogout();
-            break;
+        switch (view.getId()) {
+            case R.id.profile_set:
+                enterSetProfile();
+                break;
+            case R.id.edit_profile:
+                enterEditProfile();
+                break;
+            case R.id.logout:
+                mLoginHeloper.imLogout();
+                break;
         }
     }
 
@@ -132,22 +138,22 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
 
     @Override
     public void updateProfileInfo(TIMUserProfile profile) {
-        if (TextUtils.isEmpty(profile.getNickName())){
+        if (TextUtils.isEmpty(profile.getNickName())) {
             MySelfInfo.getInstance().setNickName(profile.getIdentifier());
-        }else{
+        } else {
             MySelfInfo.getInstance().setNickName(profile.getNickName());
         }
         mProfileName.setText(MySelfInfo.getInstance().getNickName());
-        mProfileId.setText("ID:"+MySelfInfo.getInstance().getId());
+        mProfileId.setText("ID:" + MySelfInfo.getInstance().getId());
         if (TextUtils.isEmpty(profile.getRemark())) {
             MySelfInfo.getInstance().setSign(profile.getSelfSignature());
             mProfileInfo.setText(profile.getSelfSignature());
         }
-        if (TextUtils.isEmpty(profile.getFaceUrl())){
+        if (TextUtils.isEmpty(profile.getFaceUrl())) {
             Bitmap bitmap = BitmapFactory.decodeResource(this.getContext().getResources(), R.drawable.default_avatar);
             Bitmap cirBitMap = UIUtils.createCircleImage(bitmap, 0);
             mAvatar.setImageBitmap(cirBitMap);
-        }else{
+        } else {
             SxbLog.d(TAG, "profile avator: " + profile.getFaceUrl());
             MySelfInfo.getInstance().setAvatar(profile.getFaceUrl());
             RequestManager req = Glide.with(getActivity());

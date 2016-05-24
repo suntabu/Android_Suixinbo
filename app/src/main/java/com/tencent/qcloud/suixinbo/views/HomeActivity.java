@@ -3,7 +3,6 @@ package com.tencent.qcloud.suixinbo.views;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 
 import com.tencent.TIMUserProfile;
-import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
@@ -97,6 +95,7 @@ public class HomeActivity extends BaseFragmentActivity implements ProfileView {
 
     @Override
     protected void onDestroy() {
+        mLoginHelper.onDestory();
         SxbLog.i(TAG, "HomeActivity onDestroy");
         QavsdkControl.getInstance().stopContext();
         super.onDestroy();

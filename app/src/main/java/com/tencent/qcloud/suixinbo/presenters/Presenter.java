@@ -5,4 +5,6 @@ package com.tencent.qcloud.suixinbo.presenters;
  */
 public abstract class Presenter {
 
+    //销去持有外部的mContext;
+    public abstract void onDestory();
 }

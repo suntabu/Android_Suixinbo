@@ -318,6 +318,12 @@ public class EnterLiveHelper extends Presenter {
         liveEndTask.execute(MySelfInfo.getInstance().getId());
     }
 
+    @Override
+    public void onDestory() {
+        mStepInOutView = null;
+        mContext = null;
+    }
+
     class NotifyServerLiveEnd extends AsyncTask<String, Integer, LiveInfoJson> {
 
         @Override
@@ -339,7 +345,7 @@ public class EnterLiveHelper extends Presenter {
         if (isInAVRoom == true) {
             AVContext avContext = QavsdkControl.getInstance().getAVContext();
             int result = avContext.exitRoom();
-        }else{
+        } else {
             quiteIMChatRoom();
             CurLiveInfo.setCurrentRequestCount(0);
             uninitAudioService();
@@ -391,6 +397,7 @@ public class EnterLiveHelper extends Presenter {
 
     /**
      * 进入AV房间
+     *
      * @param roomNum
      */
     private void EnterAVRoom(int roomNum) {
