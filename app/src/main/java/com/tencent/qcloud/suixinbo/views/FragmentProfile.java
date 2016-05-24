@@ -1,7 +1,10 @@
 package com.tencent.qcloud.suixinbo.views;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -16,7 +19,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.tencent.TIMManager;
 import com.tencent.TIMUserProfile;
+import com.tencent.av.sdk.AVContext;
+import com.tencent.qalsdk.QALSDKManager;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.presenters.LoginHelper;
@@ -45,6 +51,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
     private ProfileInfoHelper mProfileHelper;
     private LineControllerView mBtnLogout;
     private LineControllerView mBtnSet;
+    private LineControllerView mVersion;
 
     public FragmentProfile() {
     }
@@ -66,9 +73,11 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         mProfileInfo = (TextView) view.findViewById(R.id.profile_info);
         mBtnSet = (LineControllerView) view.findViewById(R.id.profile_set);
         mBtnLogout = (LineControllerView) view.findViewById(R.id.logout);
+        mVersion = (LineControllerView) view.findViewById(R.id.version);
         mBtnSet.setOnClickListener(this);
         mBtnLogout.setOnClickListener(this);
         mEditProfile.setOnClickListener(this);
+        mVersion.setOnClickListener(this);
 
         mLoginHeloper = new LoginHelper(getActivity().getApplicationContext(), this);
         mProfileHelper = new ProfileInfoHelper(this);
@@ -121,7 +130,35 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
             case R.id.logout:
                 mLoginHeloper.imLogout();
                 break;
+            case R.id.version:
+                showSDKVersion();
+                break;
         }
+    }
+
+
+    private void showSDKVersion() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("APP : " + getAppVersion() + "\r\n" + "IM SDK: " + TIMManager.getInstance().getVersion() + "\r\n"
+                + "QAL SDK: " + QALSDKManager.getInstance().getSdkVersion() + "\r\n"
+                + "AV SDK: " + AVContext.getVersion());
+        builder.show();
+    }
+
+    private String getAppVersion() {
+        PackageManager packageManager = getActivity().getPackageManager();
+        // getPackageName()是你当前类的包名，0代表是获取版本信息
+        PackageInfo packInfo = null;
+        String version = "";
+        try {
+            packInfo = packageManager.getPackageInfo(getActivity().getPackageName(), 0);
+            version = packInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        ;
+        return version;
     }
 
 
