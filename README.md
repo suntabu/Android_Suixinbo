@@ -1,5 +1,7 @@
 # 新版本Android随心播
 ##需Android studio SDKVersion23
+###最新版本App可从应用宝上下载安装（应用名：随心播）
+http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qcloud.suixinbo
 
 ![框架图](http://raw.github.com/zhaoyang21cn/Android_Suixinbo/master/app_cloud.png)
 
