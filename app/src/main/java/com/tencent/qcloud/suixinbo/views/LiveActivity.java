@@ -107,6 +107,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private long admireTime = 0;
     private int watchCount = 0;
 
+    private boolean bCleanMode = false;
 
     private String backGroundId;
 
@@ -779,7 +780,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     public void refreshThumbUp() {
         CurLiveInfo.setAdmires(CurLiveInfo.getAdmires() + 1);
-        mHeartLayout.addFavor();
+        if (!bCleanMode) {      // 纯净模式下不播放飘星动画
+            mHeartLayout.addFavor();
+        }
         tvAdmires.setText("" + CurLiveInfo.getAdmires());
     }
 
@@ -1034,10 +1037,12 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 break;
             case R.id.clean_screen:
             case R.id.fullscreen_btn:
+                bCleanMode = true;
                 mFullControllerUi.setVisibility(View.INVISIBLE);
                 BtnNormal.setVisibility(View.VISIBLE);
                 break;
             case R.id.normal_btn:
+                bCleanMode = false;
                 mFullControllerUi.setVisibility(View.VISIBLE);
                 BtnNormal.setVisibility(View.GONE);
                 break;
