@@ -19,6 +19,7 @@
     <string name="btn_refuse">拒绝</string>
     <string name="btn_agree">同意</string>
     <string name="btn_sure">确定</string>
+    <string name="btn_close">关闭</string>
 
 
     <string name="error_code_prefix">错误码：</string>
@@ -45,6 +46,10 @@
     <string name="live_report_virus">有害信息</string>
     <string name="live_report_illegal">违法信息</string>
     <string name="live_report_yellow">淫秽信息</string>
+
+    <!-- pushstream -->
+    <string name="clip_title">复制到黏贴版</string>
+    <string name="clip_tip">地址复制到黏贴版上了</string>
 
     <!-- msgadapter -->
     <item type="id" name="tag_first"></item>

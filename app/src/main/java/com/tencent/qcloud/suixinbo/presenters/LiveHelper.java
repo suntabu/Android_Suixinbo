@@ -644,7 +644,6 @@ public class LiveHelper extends Presenter {
     }
 
 
-
     public void sendC2CMessage(final int cmd, String Param, final String sendId) {
         JSONObject inviteCmd = new JSONObject();
         try {
@@ -677,6 +676,7 @@ public class LiveHelper extends Presenter {
 
     private TIMAvManager.RoomInfo roomInfo;
     private long streamChannelID;
+
     public void pushAction(TIMAvManager.StreamParam mStreamParam) {
         int roomid = (int) QavsdkControl.getInstance().getAVContext().getRoom().getRoomId();
         SxbLog.i(TAG, "Push roomid: " + roomid);
@@ -685,23 +685,25 @@ public class LiveHelper extends Presenter {
         roomInfo.setRoomId(roomid);
         roomInfo.setRelationId(CurLiveInfo.getRoomNum());
         //推流的接口
-        TIMAvManager.getInstance().requestMultiVideoStreamerStart(roomInfo, mStreamParam, new TIMValueCallBack<TIMAvManager.StreamRes>() {
-            @Override
-            public void onError(int i, String s) {
-                SxbLog.e(TAG, "url error " + i + " : " + s);
-                Toast.makeText(mContext, "start stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
-            }
+        if (TIMAvManager.getInstance() != null) {
+            TIMAvManager.getInstance().requestMultiVideoStreamerStart(roomInfo, mStreamParam, new TIMValueCallBack<TIMAvManager.StreamRes>() {
+                @Override
+                public void onError(int i, String s) {
+                    SxbLog.e(TAG, "url error " + i + " : " + s);
+                    Toast.makeText(mContext, "start stream error,try again " + i + " : " + s, Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onSuccess(TIMAvManager.StreamRes streamRes) {
-                List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
-                streamChannelID = streamRes.getChnlId();
-                mLiveView.pushStreamSucc(streamRes);
+                @Override
+                public void onSuccess(TIMAvManager.StreamRes streamRes) {
+                    List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
+                    streamChannelID = streamRes.getChnlId();
+                    mLiveView.pushStreamSucc(streamRes);
 
 //                ClipToBoard(url, url2);
 
-            }
-        });
+                }
+            });
+        }
     }
 
     public void stopPushAction() {
@@ -723,9 +725,6 @@ public class LiveHelper extends Presenter {
             }
         });
     }
-
-
-
 
 
     @Override
