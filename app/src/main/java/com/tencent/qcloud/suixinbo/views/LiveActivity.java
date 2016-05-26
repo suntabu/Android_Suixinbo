@@ -3,6 +3,7 @@ package com.tencent.qcloud.suixinbo.views;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -497,6 +498,8 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             paramTimer.cancel();
             paramTimer = null;
         }
+
+
         inviteViewCount = 0;
         thumbUp = 0;
         CurLiveInfo.setMembers(0);
@@ -527,6 +530,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             if (backDialog.isShowing() == false)
                 backDialog.show();
 
+
         } else {
             mLiveHelper.perpareQuitRoom(true);
 //            mEnterRoomHelper.quiteLive();
@@ -539,13 +543,16 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private void initBackDialog() {
         backDialog = new Dialog(this, R.style.dialog);
         backDialog.setContentView(R.layout.dialog_end_live);
-
         TextView tvSure = (TextView) backDialog.findViewById(R.id.btn_sure);
         tvSure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //如果是直播，发消息
                 mLiveHelper.perpareQuitRoom(true);
+                if (isPushed == true) {
+                    if (mLiveHelper != null)
+                        mLiveHelper.stopPushAction();
+                }
                 backDialog.dismiss();
             }
         });
@@ -1396,24 +1403,67 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     public void pushStreamSucc(TIMAvManager.StreamRes streamRes) {
         List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
         isPushed = true;
-        pushBtn.setText("stopStream");
-//        int length = liveUrls.size();
-//        String url = null;
-//        String url2 = null;
-//        if (length == 1) {
-//            TIMAvManager.LiveUrl avUrl = liveUrls.get(0);
-//            url = avUrl.getUrl();
-//        } else if (length == 2) {
-//            TIMAvManager.LiveUrl avUrl = liveUrls.get(0);
-//            url = avUrl.getUrl();
-//            TIMAvManager.LiveUrl avUrl2 = liveUrls.get(1);
-//            url2 = avUrl2.getUrl();
-//        }
+        pushBtn.setBackgroundResource(R.drawable.icon_stop_push);
+        int length = liveUrls.size();
+        String url = null;
+        String url2 = null;
+        if (length == 1) {
+            TIMAvManager.LiveUrl avUrl = liveUrls.get(0);
+            url = avUrl.getUrl();
+        } else if (length == 2) {
+            TIMAvManager.LiveUrl avUrl = liveUrls.get(0);
+            url = avUrl.getUrl();
+            TIMAvManager.LiveUrl avUrl2 = liveUrls.get(1);
+            url2 = avUrl2.getUrl();
+        }
+        ClipToBoard(url, url2);
+    }
+
+    private void ClipToBoard(final String url, final String url2) {
+        SxbLog.i(TAG, "ClipToBoard url " + url);
+        SxbLog.i(TAG, "ClipToBoard url2 " + url2);
+        if (url == null) return;
+        final Dialog dialog = new Dialog(this, R.style.dialog);
+        dialog.setContentView(R.layout.clip_dialog);
+        TextView urlText = ((TextView) dialog.findViewById(R.id.url1));
+        TextView urlText2 = ((TextView) dialog.findViewById(R.id.url2));
+        Button btnClose = ((Button) dialog.findViewById(R.id.close_dialog));
+        urlText.setText(url);
+        urlText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clip = (ClipboardManager) getApplicationContext().getSystemService(getApplicationContext().CLIPBOARD_SERVICE);
+                clip.setText(url);
+                Toast.makeText(LiveActivity.this, getResources().getString(R.string.clip_tip), Toast.LENGTH_SHORT).show();
+            }
+        });
+        if (url2 == null) {
+            urlText2.setVisibility(View.GONE);
+        } else {
+            urlText2.setText(url2);
+            urlText2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ClipboardManager clip = (ClipboardManager) getApplicationContext().getSystemService(getApplicationContext().CLIPBOARD_SERVICE);
+                    clip.setText(url2);
+                    Toast.makeText(LiveActivity.this, getResources().getString(R.string.clip_tip), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+
     }
 
     @Override
     public void stopStreamSucc() {
         isPushed = false;
-        pushBtn.setText("pushStream");
+        pushBtn.setBackgroundResource(R.drawable.icon_pust_stream);
     }
 }
