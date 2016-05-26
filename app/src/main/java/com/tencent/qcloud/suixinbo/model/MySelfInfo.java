@@ -136,7 +136,7 @@ public class MySelfInfo {
         sign = sharedata.getString(Constants.USER_SIGN, null);
         bLiveAnimator = sharedata.getBoolean(Constants.LIVE_ANIMATOR, false);
         int level = sharedata.getInt(Constants.LOG_LEVEL, SxbLog.SxbLogLevel.INFO.ordinal());
-        if (level < SxbLog.SxbLogLevel.ERROR.ordinal() || level > SxbLog.SxbLogLevel.INFO.ordinal()){
+        if (level < SxbLog.SxbLogLevel.OFF.ordinal() || level > SxbLog.SxbLogLevel.INFO.ordinal()){
             logLevel = SxbLog.SxbLogLevel.INFO;
         }else{
             logLevel = SxbLog.SxbLogLevel.values()[level];

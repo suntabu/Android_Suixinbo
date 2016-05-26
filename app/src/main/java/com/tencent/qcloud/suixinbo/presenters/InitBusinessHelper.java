@@ -7,11 +7,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.tencent.TIMLogLevel;
 import com.tencent.TIMManager;
 import com.tencent.TIMUserStatusListener;
 import com.tencent.qcloud.suixinbo.QavsdkApplication;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
+import com.tencent.qcloud.suixinbo.model.MySelfInfo;
 import com.tencent.qcloud.suixinbo.utils.Constants;
 import com.tencent.qcloud.suixinbo.utils.CrashHandler;
 import com.tencent.qcloud.suixinbo.utils.SxbLog;
@@ -51,6 +53,21 @@ public class InitBusinessHelper {
         //初始化avsdk imsdk
         QavsdkControl.initQavsdk(context);
         TIMManager.getInstance().disableBeaconReport();
+        MySelfInfo.getInstance().getCache(context);
+        switch(MySelfInfo.getInstance().getLogLevel()){
+        case OFF:
+            TIMManager.getInstance().setLogLevel(TIMLogLevel.OFF);
+            break;
+        case WARN:
+            TIMManager.getInstance().setLogLevel(TIMLogLevel.WARN);
+            break;
+        case DEBUG:
+            TIMManager.getInstance().setLogLevel(TIMLogLevel.DEBUG);
+            break;
+        case INFO:
+            TIMManager.getInstance().setLogLevel(TIMLogLevel.INFO);
+            break;
+        }
         TIMManager.getInstance().init(context);
 
         TIMManager.getInstance().setUserStatusListener(new TIMUserStatusListener() {
