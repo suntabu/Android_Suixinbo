@@ -30,7 +30,8 @@
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_toRightOf="@id/text1"
-            android:text="testChannel" />
+            android:background="@null"
+            android:text="ChanelName" />
 
         <!--<TextView-->
         <!--android:id="@+id/text2"-->
@@ -93,7 +94,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:text="cancel"
-            android:textColor="@color/colorGray1"
+            android:textColor="@color/black"
+            android:gravity="center"
             android:textSize="18sp" />
 
         <Button
@@ -102,8 +104,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="10dp"
-            android:text="push   "
-            android:textColor="@color/colorGray1"
+            android:textColor="@color/black"
+            android:text="push"
+            android:gravity="center"
             android:textSize="18sp" />
     </LinearLayout>
 </LinearLayout>

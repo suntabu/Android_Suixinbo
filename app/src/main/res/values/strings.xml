@@ -48,7 +48,7 @@
     <string name="live_report_yellow">淫秽信息</string>
 
     <!-- pushstream -->
-    <string name="clip_title">复制到黏贴版</string>
+    <string name="clip_title">点击地址复制到黏贴版</string>
     <string name="clip_tip">地址复制到黏贴版上了</string>
 
     <!-- msgadapter -->
