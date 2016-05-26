@@ -52,23 +52,23 @@
 
         <TextView
             android:id="@+id/param_video"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="30dp"
+            android:layout_height="20dp"
             android:layout_gravity="top|left"
             android:layout_marginLeft="200dp"
-            android:layout_marginTop="33dp"
-            android:background="@drawable/icon_param" />
+            android:layout_marginTop="30dp"
+            android:background="@drawable/btn_par" />
 
 
         <TextView
             android:id="@+id/push_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="25dp"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
             android:layout_gravity="top|left"
-            android:layout_marginLeft="240dp"
+            android:layout_marginLeft="250dp"
             android:visibility="invisible"
-            android:layout_marginTop="33dp"
-            android:text="pushStream"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/icon_pust_stream"
             />
 
 

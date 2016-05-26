@@ -498,6 +498,8 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             paramTimer.cancel();
             paramTimer = null;
         }
+
+
         inviteViewCount = 0;
         thumbUp = 0;
         CurLiveInfo.setMembers(0);
@@ -528,6 +530,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             if (backDialog.isShowing() == false)
                 backDialog.show();
 
+
         } else {
             mLiveHelper.perpareQuitRoom(true);
 //            mEnterRoomHelper.quiteLive();
@@ -540,13 +543,16 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private void initBackDialog() {
         backDialog = new Dialog(this, R.style.dialog);
         backDialog.setContentView(R.layout.dialog_end_live);
-
         TextView tvSure = (TextView) backDialog.findViewById(R.id.btn_sure);
         tvSure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //如果是直播，发消息
                 mLiveHelper.perpareQuitRoom(true);
+                if (isPushed == true) {
+                    if (mLiveHelper != null)
+                        mLiveHelper.stopPushAction();
+                }
                 backDialog.dismiss();
             }
         });
@@ -1397,7 +1403,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     public void pushStreamSucc(TIMAvManager.StreamRes streamRes) {
         List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
         isPushed = true;
-        pushBtn.setText("stopStream");
+        pushBtn.setBackgroundResource(R.drawable.icon_stop_push);
         int length = liveUrls.size();
         String url = null;
         String url2 = null;
@@ -1458,6 +1464,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     public void stopStreamSucc() {
         isPushed = false;
-        pushBtn.setText("pushStream");
+        pushBtn.setBackgroundResource(R.drawable.icon_pust_stream);
     }
 }

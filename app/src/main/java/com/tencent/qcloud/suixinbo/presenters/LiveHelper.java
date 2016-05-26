@@ -340,7 +340,8 @@ public class LiveHelper extends Presenter {
 
     private void notifyQuitReady() {
         TIMManager.getInstance().removeMessageListener(msgListener);
-        mLiveView.readyToQuit();
+        if (mLiveView != null)
+            mLiveView.readyToQuit();
     }
 
     public void perpareQuitRoom(boolean bPurpose) {
