@@ -99,8 +99,8 @@ public class EnterLiveHelper extends Presenter {
             uninitAudioService();
             //通知结束
             notifyServerLiveEnd();
-
-            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
+            if (mStepInOutView != null)
+                mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
             SxbLog.d(TAG, "WL_DEBUG mRoomDelegate.onExitRoomComplete result = " + result);
 
         }
