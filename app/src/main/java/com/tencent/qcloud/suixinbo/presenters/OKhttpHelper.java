@@ -1,7 +1,6 @@
 package com.tencent.qcloud.suixinbo.presenters;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -223,7 +222,7 @@ public class OKhttpHelper {
         try {
             String response = OKhttpHelper.getInstance().post(GET_COS_SIG, "");
 
-            SxbLog.i(TAG, "getCosSig " + response.toString());
+//            SxbLog.i(TAG, "getCosSig " + response.toString());
             JSONTokener jsonParser = new JSONTokener(response);
             JSONObject reg_response = (JSONObject) jsonParser.nextValue();
             int ret = reg_response.getInt("errorCode");
