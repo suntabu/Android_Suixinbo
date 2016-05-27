@@ -77,6 +77,11 @@ public class InitBusinessHelper {
                 Toast.makeText(context, context.getString(R.string.tip_force_offline), Toast.LENGTH_SHORT).show();
                 context.sendBroadcast(new Intent(Constants.BD_EXIT_APP));
             }
+
+            @Override
+            public void onUserSigExpired() {
+                SxbLog.w(TAG, "onUserSigExpired->entered!");
+            }
         });
 
         //QAL初始化
