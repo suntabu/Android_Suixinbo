@@ -421,7 +421,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             List<String> ids = new ArrayList<>();
             ids.add(CurLiveInfo.getHostID());
             showHeadIcon(mHeadIcon, CurLiveInfo.getHostAvator());
-            mHostNameTv.setText(CurLiveInfo.getHostName());
+            mHostNameTv.setText(UIUtils.getLimitString(CurLiveInfo.getHostName(), 10));
 
             mHostLayout = (LinearLayout) findViewById(R.id.head_up_layout);
             mHostLayout.setOnClickListener(this);
