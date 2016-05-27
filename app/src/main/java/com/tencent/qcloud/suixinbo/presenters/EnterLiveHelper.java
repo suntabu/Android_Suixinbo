@@ -79,7 +79,7 @@ public class EnterLiveHelper extends Presenter {
     private AVRoomMulti.Delegate mRoomDelegate = new AVRoomMulti.Delegate() {
         // 创建房间成功回调
         public void onEnterRoomComplete(int result) {
-            SxbLog.i(TAG, "createlive joinLiveRoom createAVRoom callback " + result);
+            SxbLog.i(TAG, "onEnterRoomComplete  PerformanceTest    " +  SxbLog.getTime());
             if (result == 0) {
                 //只有进入房间后才能初始化AvView
                 isInAVRoom = true;

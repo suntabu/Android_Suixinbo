@@ -26,7 +26,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -1336,6 +1335,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     //旁路直播
     private static boolean isPushed = false;
 
+    /**
+     * 旁路直播 退出房间时必须退出推流。否则会占用后台channel。
+     */
     public void pushStream() {
         if (!isPushed) {
             if (mPushDialog != null)
@@ -1354,13 +1356,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         final EditText pushfileNameInput = (EditText) mPushDialog.findViewById(R.id.push_filename);
         final RadioGroup radgroup = (RadioGroup) mPushDialog.findViewById(R.id.push_type);
 
-        radgroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton radbtn = (RadioButton) mPushDialog.findViewById(checkedId);
-                Toast.makeText(LiveActivity.this, "按钮组值发生改变,你选了 " + radbtn.getText(), Toast.LENGTH_LONG).show();
-            }
-        });
 
         Button recordOk = (Button) mPushDialog.findViewById(R.id.btn_record_ok);
         recordOk.setOnClickListener(new View.OnClickListener() {
@@ -1398,6 +1393,10 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     }
 
 
+    /**
+     * 推流成功
+     * @param streamRes
+     */
     @Override
     public void pushStreamSucc(TIMAvManager.StreamRes streamRes) {
         List<TIMAvManager.LiveUrl> liveUrls = streamRes.getUrls();
@@ -1418,6 +1417,11 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         ClipToBoard(url, url2);
     }
 
+    /**
+     * 将地址黏贴到黏贴版
+     * @param url
+     * @param url2
+     */
     private void ClipToBoard(final String url, final String url2) {
         SxbLog.i(TAG, "ClipToBoard url " + url);
         SxbLog.i(TAG, "ClipToBoard url2 " + url2);
@@ -1460,9 +1464,12 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     }
 
+    /**
+     * 停止推流成功
+     */
     @Override
     public void stopStreamSucc() {
         isPushed = false;
-        pushBtn.setBackgroundResource(R.drawable.icon_pust_stream);
+        pushBtn.setBackgroundResource(R.drawable.icon_push_stream);
     }
 }

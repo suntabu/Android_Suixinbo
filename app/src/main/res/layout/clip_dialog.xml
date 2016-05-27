@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:background="@drawable/dialog_style"
@@ -18,7 +18,7 @@
 
     <TextView
         android:id="@+id/url1"
-        android:layout_width="259dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center_horizontal"
@@ -30,7 +30,7 @@
 
     <TextView
         android:id="@+id/url2"
-        android:layout_width="259dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center_horizontal"
@@ -40,17 +40,13 @@
         android:textColor="@color/black"/>
 
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="19dp"
-        android:background="#d1d1d1"/>
     <Button
         android:id="@+id/close_dialog"
         android:layout_width="100dp"
         android:layout_height="51dp"
+        android:layout_marginTop="20dp"
         android:layout_gravity="center"
         android:text="@string/btn_close"
         android:textSize="18sp"
-        android:textColor="#dc3839"/>
+        />
 </LinearLayout>

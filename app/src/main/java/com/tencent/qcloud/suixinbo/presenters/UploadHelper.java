@@ -86,7 +86,7 @@ public class UploadHelper extends Presenter {
     private void doUpdateSig() {
         String sig = OKhttpHelper.getInstance().getCosSig();
         MySelfInfo.getInstance().setCosSig(sig);
-        SxbLog.d(TAG, "doUpdateSig->get sig: " + sig);
+//        SxbLog.d(TAG, "doUpdateSig->get sig: " + sig);
     }
 
     private void doUploadCover(final String path, boolean bRetry) {
