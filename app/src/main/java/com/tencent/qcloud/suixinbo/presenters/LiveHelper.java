@@ -182,7 +182,6 @@ public class LiveHelper extends Presenter {
                     } else {
                         mIsFrontCamera = false;
                     }
-                    QavsdkControl.getInstance().setMirror(mIsFrontCamera);
 
                     //如果是主播直接本地渲染
 //                    if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST)
@@ -195,11 +194,6 @@ public class LiveHelper extends Presenter {
         SxbLog.i(TAG, "enableCamera " + ret);
 
     }
-
-    public void fixCamera() {
-        QavsdkControl.getInstance().setMirror(mIsFrontCamera);
-    }
-
 
     /**
      * AVSDK 请求主播数据
@@ -562,7 +556,6 @@ public class LiveHelper extends Presenter {
 
             if (result == AVError.AV_OK) {
                 mIsFrontCamera = !mIsFrontCamera;
-                QavsdkControl.getInstance().setMirror(mIsFrontCamera);
             }
         }
     };
