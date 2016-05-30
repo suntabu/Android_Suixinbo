@@ -6,7 +6,7 @@ package com.tencent.qcloud.suixinbo.presenters.viewinface;
  */
 public interface LoginView extends MvpView{
 
-    void LoginSucc();
+    void loginSucc();
 
-    void LoginFail();
+    void loginFail();
 }

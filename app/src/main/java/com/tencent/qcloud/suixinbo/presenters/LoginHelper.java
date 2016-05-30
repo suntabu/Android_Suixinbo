@@ -194,7 +194,7 @@ public class LoginHelper extends Presenter {
         QavsdkControl.getInstance().setAvConfig(Constants.SDK_APPID, "" + Constants.ACCOUNT_TYPE, MySelfInfo.getInstance().getId(), MySelfInfo.getInstance().getUserSig());
         QavsdkControl.getInstance().startContext();
         if (mLoginView != null)
-            mLoginView.LoginSucc();
+            mLoginView.loginSucc();
     }
 
 
@@ -203,7 +203,7 @@ public class LoginHelper extends Presenter {
      */
     public void stopAVSDK() {
         QavsdkControl.getInstance().stopContext();
-        mLogoutView.LogoutSucc();
+        mLogoutView.logoutSucc();
     }
 
 

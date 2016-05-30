@@ -56,7 +56,7 @@ public class LiveHelper extends Presenter {
     private static final int CAMERA_NONE = -1;
     private static final int FRONT_CAMERA = 0;
     private static final int BACK_CAMERA = 1;
-    private static final int MAX_REQUEST_VIEW_COUNT = 4;//当前最大支持请求画面个数
+    private static final int MAX_REQUEST_VIEW_COUNT = 4; //当前最大支持请求画面个数
     private static final boolean LOCAL = true;
     private static final boolean REMOTE = false;
     private TIMConversation mGroupConversation;
@@ -200,16 +200,16 @@ public class LiveHelper extends Presenter {
      *
      * @param identifiers 主播ID
      */
-    public void RequestViewList(ArrayList<String> identifiers) {
-        SxbLog.i(TAG, "RequestViewList " + identifiers);
+    public void requestViewList(ArrayList<String> identifiers) {
+        SxbLog.i(TAG, "requestViewList " + identifiers);
         if (identifiers.size() == 0) return;
         AVEndpoint endpoint = ((AVRoomMulti) QavsdkControl.getInstance().getAVContext().getRoom()).getEndpointById(identifiers.get(0));
-        SxbLog.d(TAG, "RequestViewList hostIdentifier " + identifiers + " endpoint " + endpoint);
+        SxbLog.d(TAG, "requestViewList hostIdentifier " + identifiers + " endpoint " + endpoint);
         if (endpoint != null) {
             ArrayList<String> alreadyIds = QavsdkControl.getInstance().getRemoteVideoIds();//已经存在的IDs
 
-            SxbLog.i(TAG, "RequestViewList identifiers : " + identifiers.size());
-            SxbLog.i(TAG, "RequestViewList alreadyIds : " + alreadyIds.size());
+            SxbLog.i(TAG, "requestViewList identifiers : " + identifiers.size());
+            SxbLog.i(TAG, "requestViewList alreadyIds : " + alreadyIds.size());
             for (String id : identifiers) {//把新加入的添加到后面
                 alreadyIds.add(id);
             }
@@ -518,7 +518,8 @@ public class LiveHelper extends Presenter {
                 case Constants.AVIMCMD_MULTI_HOST_CONTROLL_MIC:
                     toggleMic();
                     break;
-
+                default:
+                    break;
             }
 
         } catch (UnsupportedEncodingException e) {

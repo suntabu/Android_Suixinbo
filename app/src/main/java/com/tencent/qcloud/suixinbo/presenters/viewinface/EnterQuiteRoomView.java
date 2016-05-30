@@ -9,9 +9,9 @@ import com.tencent.qcloud.suixinbo.model.LiveInfoJson;
 public interface EnterQuiteRoomView extends MvpView {
 
 
-    void EnterRoomComplete(int id_status, boolean succ);
+    void enterRoomComplete(int id_status, boolean succ);
 
-    void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo);
+    void quiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo);
 
     void memberQuiteLive(String[] list);
 

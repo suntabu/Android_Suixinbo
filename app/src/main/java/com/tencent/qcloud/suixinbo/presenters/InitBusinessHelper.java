@@ -73,6 +73,8 @@ public class InitBusinessHelper {
         case INFO:
             TIMManager.getInstance().setLogLevel(TIMLogLevel.INFO);
             break;
+        default:
+            break;
         }
         TIMManager.getInstance().init(context);
 

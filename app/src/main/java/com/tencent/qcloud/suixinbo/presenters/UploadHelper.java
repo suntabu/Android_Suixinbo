@@ -57,6 +57,8 @@ public class UploadHelper extends Presenter {
                         doUpdateSig();
                         doUploadCover((String) msg.obj, false);
                         break;
+                    default:
+                        break;
                 }
                 return false;
             }
@@ -72,6 +74,8 @@ public class UploadHelper extends Presenter {
                         break;
                     case MAIN_PROCESS:
                         mView.onUploadProcess(msg.arg1);
+                        break;
+                    default:
                         break;
                 }
                 return false;

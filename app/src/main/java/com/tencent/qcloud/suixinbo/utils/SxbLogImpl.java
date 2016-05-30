@@ -58,7 +58,7 @@ public class SxbLogImpl {
      */
     public static void init(Context context){
         sContext = context;
-        InitRunnable.run();
+        initRunnable.run();
     }
 
     /**
@@ -211,7 +211,7 @@ public class SxbLogImpl {
     /**
      * 日志初始化Runnable
      */
-    public static Runnable InitRunnable = new Runnable() {
+    public static Runnable initRunnable = new Runnable() {
         @Override
         public void run() {
             if (null == sContext){
@@ -230,12 +230,12 @@ public class SxbLogImpl {
                         initLogFile(System.currentTimeMillis());
                         takeThread.setName("logWriteThread");
                         takeThread.start();
-                        retryInitHandler.removeCallbacks(InitRunnable);
+                        retryInitHandler.removeCallbacks(initRunnable);
                     }catch (Exception e){
                         int times = retryInitTimes.get();
                         System.out.println("QLog init post retry " + times + " times, interval " + INTERVAL_RETRY_INIT[times]);
-                        retryInitHandler.removeCallbacks(InitRunnable);
-                        retryInitHandler.postDelayed(InitRunnable, INTERVAL_RETRY_INIT[times] * 60000);
+                        retryInitHandler.removeCallbacks(initRunnable);
+                        retryInitHandler.postDelayed(initRunnable, INTERVAL_RETRY_INIT[times] * 60000);
                         times++;
                         if(times >= INTERVAL_RETRY_INIT.length){
                             times = 0;

@@ -138,6 +138,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         mEnterRoomHelper.startEnterRoom();
 
         //QavsdkControl.getInstance().setCameraPreviewChangeCallback();
+        mLiveHelper.setCameraPreviewChangeCallback();
     }
 
 
@@ -226,7 +227,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 }
                 //其他人一并获取
                 int requestCount = CurLiveInfo.getCurrentRequestCount();
-                mLiveHelper.RequestViewList(ids);
+                mLiveHelper.requestViewList(ids);
                 requestCount = requestCount + ids.size();
                 CurLiveInfo.setCurrentRequestCount(requestCount);
 //                }
@@ -547,10 +548,11 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             @Override
             public void onClick(View v) {
                 //如果是直播，发消息
-                mLiveHelper.perpareQuitRoom(true);
-                if (isPushed == true) {
-                    if (mLiveHelper != null)
+                if (null != mLiveHelper){
+                    mLiveHelper.perpareQuitRoom(true);
+                    if (isPushed){
                         mLiveHelper.stopPushAction();
+                    }
                 }
                 backDialog.dismiss();
             }
@@ -585,7 +587,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
      * @param isSucc
      */
     @Override
-    public void EnterRoomComplete(int id_status, boolean isSucc) {
+    public void enterRoomComplete(int id_status, boolean isSucc) {
         Toast.makeText(LiveActivity.this, "EnterRoom  " + id_status + " isSucc " + isSucc, Toast.LENGTH_SHORT).show();
         //必须得进入房间之后才能初始化UI
         mEnterRoomHelper.initAvUILayer(avView);
@@ -598,7 +600,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
             if (id_status == Constants.HOST) {//主播方式加入房间成功
                 //开启摄像头渲染画面
-                SxbLog.i(TAG, "createlive EnterRoomComplete isSucc" + isSucc);
+                SxbLog.i(TAG, "createlive enterRoomComplete isSucc" + isSucc);
             } else {
                 //发消息通知上线
                 mLiveHelper.sendGroupMessage(Constants.AVIMCMD_EnterLive, "");
@@ -608,7 +610,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
 
     @Override
-    public void QuiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
+    public void quiteRoomComplete(int id_status, boolean succ, LiveInfoJson liveinfo) {
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
             if ((getBaseContext() != null) && (null != mDetailDialog) && (mDetailDialog.isShowing() == false)) {
                 mDetailTime.setText(formatTime);

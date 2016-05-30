@@ -88,12 +88,12 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
-    public void LoginSucc() {
+    public void loginSucc() {
         jumpIntoHomeActivity();
     }
 
     @Override
-    public void LoginFail() {
+    public void loginFail() {
 
     }
 

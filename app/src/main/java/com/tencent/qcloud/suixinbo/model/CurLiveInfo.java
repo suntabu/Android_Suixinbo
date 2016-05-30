@@ -13,7 +13,7 @@ public class CurLiveInfo {
     private static String address = "";
     private static String coverurl = "";
 
-    public static int RoomNum;
+    public static int roomNum;
 
     public static String hostID;
     public static String hostName;
@@ -112,11 +112,11 @@ public class CurLiveInfo {
     }
 
     public static int getRoomNum() {
-        return RoomNum;
+        return roomNum;
     }
 
     public static void setRoomNum(int roomNum) {
-        RoomNum = roomNum;
+        CurLiveInfo.roomNum = roomNum;
     }
 
     public static String getCoverurl() {
@@ -128,6 +128,6 @@ public class CurLiveInfo {
     }
 
     public static String getChatRoomId() {
-        return "" + RoomNum;
+        return "" + roomNum;
     }
 }

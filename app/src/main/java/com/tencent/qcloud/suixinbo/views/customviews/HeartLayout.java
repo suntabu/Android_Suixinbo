@@ -117,6 +117,8 @@ public class HeartLayout extends RelativeLayout implements View.OnClickListener 
                 case MSG_SHOW:
                     addFavor();
                     break;
+                default:
+                    break;
             }
         }
     }

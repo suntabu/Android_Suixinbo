@@ -163,13 +163,13 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
 
 
     @Override
-    public void LogoutSucc() {
+    public void logoutSucc() {
         Toast.makeText(getContext(), "Logout and quite", Toast.LENGTH_SHORT).show();
         getActivity().finish();
     }
 
     @Override
-    public void LogoutFail() {
+    public void logoutFail() {
 
     }
 

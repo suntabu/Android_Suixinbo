@@ -337,7 +337,7 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
         int totalHeight = 0;
         int start = 0, lineCount = 0;
 
-        if (listMessage.size() < 0) {
+        if (listMessage.size() <= 0) {
             return;
         }
 
@@ -452,6 +452,8 @@ public class ChatMsgListAdapter extends BaseAdapter implements AbsListView.OnScr
                     // 停止滚动时播放渐消动画
                     playDisappearAnimator();
                 }
+                break;
+            default:
                 break;
         }
 

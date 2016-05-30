@@ -84,9 +84,9 @@ public class EnterLiveHelper extends Presenter {
                 //只有进入房间后才能初始化AvView
                 isInAVRoom = true;
                 initAudioService();
-                mStepInOutView.EnterRoomComplete(MySelfInfo.getInstance().getIdStatus(), true);
+                mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), true);
             } else {
-                mStepInOutView.EnterRoomComplete(MySelfInfo.getInstance().getIdStatus(), false);
+                mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), false);
             }
 
         }
@@ -100,7 +100,7 @@ public class EnterLiveHelper extends Presenter {
             //通知结束
             notifyServerLiveEnd();
             if (mStepInOutView != null)
-                mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
+                mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
             SxbLog.d(TAG, "WL_DEBUG mRoomDelegate.onExitRoomComplete result = " + result);
 
         }
@@ -130,7 +130,9 @@ public class EnterLiveHelper extends Presenter {
 
                 case TYPE_MEMBER_CHANGE_OUT:
                     mStepInOutView.memberQuiteLive(updateList);
-
+                    break;
+                default:
+                    break;
             }
 
         }
@@ -352,7 +354,7 @@ public class EnterLiveHelper extends Presenter {
             //通知结束
 //            notifyServerLiveEnd();
 
-            mStepInOutView.QuiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
+            mStepInOutView.quiteRoomComplete(MySelfInfo.getInstance().getIdStatus(), true, null);
         }
     }
 
