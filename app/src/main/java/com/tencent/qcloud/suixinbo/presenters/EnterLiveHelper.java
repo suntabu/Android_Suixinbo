@@ -50,7 +50,6 @@ public class EnterLiveHelper extends Presenter {
     private static final int TYPE_MEMBER_CHANGE_NO_AUDIO = 6;//无发语音事件。
     private static final int TYPE_MEMBER_CHANGE_HAS_SCREEN_VIDEO = 7;//有发屏幕视频事件。
     private static final int TYPE_MEMBER_CHANGE_NO_SCREEN_VIDEO = 8;//无发屏幕视频事件。
-    private int audioCat = Constants.AUDIO_VOICE_CHAT_MODE;
 
 
     public EnterLiveHelper(Context context, EnterQuiteRoomView view) {
@@ -79,7 +78,7 @@ public class EnterLiveHelper extends Presenter {
     private AVRoomMulti.Delegate mRoomDelegate = new AVRoomMulti.Delegate() {
         // 创建房间成功回调
         public void onEnterRoomComplete(int result) {
-            SxbLog.i(TAG, "onEnterRoomComplete  PerformanceTest    " +  SxbLog.getTime());
+            SxbLog.i(TAG, "onEnterRoomComplete  PerformanceTest    " + SxbLog.getTime());
             if (result == 0) {
                 //只有进入房间后才能初始化AvView
                 isInAVRoom = true;
@@ -407,19 +406,25 @@ public class EnterLiveHelper extends Presenter {
         AVContext avContext = QavsdkControl.getInstance().getAVContext();
         byte[] authBuffer = null;//权限位加密串；TODO：请业务侧填上自己的加密串
 
-        long authBits = AVRoom.AUTH_BITS_DEFAULT;//权限位；默认值是拥有所有权限。TODO：请业务侧填根据自己的情况填上权限位。
+
         AVRoomMulti.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam();
-        enterRoomParam.appRoomId = roomNum;
-        enterRoomParam.authBits = authBits;
-        enterRoomParam.avControlRole = "";
-        enterRoomParam.authBuffer = authBuffer;
-        enterRoomParam.audioCategory = audioCat;
-        enterRoomParam.autoCreateRoom = true;
-        enterRoomParam.videoRecvMode = AVRoom.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO;
+
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            enterRoomParam.authBits =  Constants.HOST_AUTH;//；TODO：主播权限 所有权限
+            enterRoomParam.avControlRole = Constants.HOST_ROLE;//；TODO：主播角色
+            enterRoomParam.autoCreateRoom = true;//;TODO：主播自动创建房间
+        } else {
+            enterRoomParam.authBits = Constants.NORMAL_MEMBER_AUTH;//；TODO：普通成员权限
+            enterRoomParam.avControlRole = Constants.NORMAL_MEMBER_ROLE;//；TODO：普通成员角色
+            enterRoomParam.autoCreateRoom = false;//;TODO：
+        }
+
+        enterRoomParam.appRoomId = roomNum; //；TODO：房间号
+        enterRoomParam.authBuffer = authBuffer;//；TODO：密钥
+        enterRoomParam.audioCategory = Constants.AUDIO_VOICE_CHAT_MODE;//；TODO：音频场景策略
+        enterRoomParam.videoRecvMode = AVRoom.VIDEO_RECV_MODE_SEMI_AUTO_RECV_CAMERA_VIDEO;//；TODO：半自动模式，加速成员进房间获取视频速度
 
         if (avContext != null) {
-//          AVRoom.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam(roomNum, AvConstants.auth_bits, authBuffer, "", AvConstants.AUDIO_VOICE_CHAT_MODE, true);
-
             // create room
             int ret = avContext.enterRoom(AVRoom.AV_ROOM_MULTI, mRoomDelegate, enterRoomParam);
             SxbLog.i(TAG, "EnterAVRoom " + ret);

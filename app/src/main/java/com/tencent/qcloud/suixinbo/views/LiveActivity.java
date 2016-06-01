@@ -548,9 +548,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             @Override
             public void onClick(View v) {
                 //如果是直播，发消息
-                if (null != mLiveHelper){
+                if (null != mLiveHelper) {
                     mLiveHelper.perpareQuitRoom(true);
-                    if (isPushed){
+                    if (isPushed) {
                         mLiveHelper.stopPushAction();
                     }
                 }
@@ -916,7 +916,9 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     public void cancelMemberView(String id) {
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
         } else {
-            mLiveHelper.closeCameraAndMic();//是自己成员关闭
+            //TODO 主动下麦 下麦；
+            mLiveHelper.changeAuthandRole(false, Constants.NORMAL_MEMBER_AUTH, Constants.NORMAL_MEMBER_ROLE);
+//            mLiveHelper.closeCameraAndMic();//是自己成员关闭
         }
         mLiveHelper.sendGroupMessage(Constants.AVIMCMD_MULTI_CANCEL_INTERACT, id);
         QavsdkControl.getInstance().closeMemberView(id);
@@ -1215,9 +1217,10 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             public void onClick(View view) {
 //                mVideoMemberCtrlView.setVisibility(View.VISIBLE);
 //                mNomalMemberCtrView.setVisibility(View.INVISIBLE);
+
+                //上麦 ；TODO 上麦 上麦 上麦 ！！！！！；
                 backGroundId = MySelfInfo.getInstance().getId();
-                mLiveHelper.openCameraAndMic();
-                mLiveHelper.sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, "", CurLiveInfo.getHostID());
+                mLiveHelper.changeAuthandRole(true, Constants.VIDEO_MEMBER_AUTH, Constants.VIDEO_MEMBER_ROLE);
                 inviteDg.dismiss();
             }
         });
@@ -1397,6 +1400,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     /**
      * 推流成功
+     *
      * @param streamRes
      */
     @Override
@@ -1421,6 +1425,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     /**
      * 将地址黏贴到黏贴版
+     *
      * @param url
      * @param url2
      */

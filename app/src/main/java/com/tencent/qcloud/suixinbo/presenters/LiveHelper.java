@@ -24,6 +24,7 @@ import com.tencent.TIMUserProfile;
 import com.tencent.TIMValueCallBack;
 import com.tencent.av.TIMAvManager;
 import com.tencent.av.sdk.AVAudioCtrl;
+import com.tencent.av.sdk.AVContext;
 import com.tencent.av.sdk.AVEndpoint;
 import com.tencent.av.sdk.AVError;
 import com.tencent.av.sdk.AVRoomMulti;
@@ -502,8 +503,11 @@ public class LiveHelper extends Presenter {
                 case Constants.AVIMCMD_MULTI_CANCEL_INTERACT://主播关闭摄像头命令
                     //如果是自己关闭Camera和Mic
                     String closeId = json.getString(Constants.CMD_PARAM);
-                    if (closeId.equals(MySelfInfo.getInstance().getId()))//是自己
-                        closeCameraAndMic();
+                    if (closeId.equals(MySelfInfo.getInstance().getId())) {//是自己
+                        //TODO 被动下麦 下麦 下麦
+                        changeAuthandRole(false, Constants.NORMAL_MEMBER_AUTH, Constants.NORMAL_MEMBER_ROLE);
+
+                    }
                     //其他人关闭小窗口
                     QavsdkControl.getInstance().closeMemberView(closeId);
                     mLiveView.hideInviteDialog();
@@ -727,4 +731,73 @@ public class LiveHelper extends Presenter {
         mLiveView = null;
         mContext = null;
     }
+
+
+    /**
+     * 改变角色和权限 最终会控制自己Camera和MiC
+     *
+     * @param leverChange true代表上麦 false 代表下麦
+     * @param auth_bits   权限字段
+     * @param role        角色字段
+     */
+    public void changeAuthandRole(final boolean leverChange, long auth_bits, final String role) {
+        changeAuthority(auth_bits, null, new AVRoomMulti.ChangeAuthorityCallback() {
+            protected void onChangeAuthority(int retCode) {
+                SxbLog.i(TAG, "changeAuthority code " + retCode);
+                changeRole(role, leverChange);
+            }
+        });
+    }
+
+
+    /**
+     * 改变权限
+     *
+     * @param auth_bits   权限
+     * @param auth_buffer 密钥
+     * @param callback
+     * @return
+     */
+    private boolean changeAuthority(long auth_bits, byte[] auth_buffer, AVRoomMulti.ChangeAuthorityCallback callback) {
+        SxbLog.d(TAG, " changeAuthority");
+        QavsdkControl qavsdk = QavsdkControl.getInstance();
+        AVContext avContext = qavsdk.getAVContext();
+        AVRoomMulti room = (AVRoomMulti) avContext.getRoom();
+        if (auth_buffer != null) {
+            return room.changeAuthority(auth_bits, auth_buffer, auth_buffer.length, callback);
+        } else {
+            return room.changeAuthority(auth_bits, null, 0, callback);
+        }
+    }
+
+
+    /**
+     * 改变角色
+     *
+     * @param role 角色名
+     */
+    public void changeRole(String role, final boolean leverupper) {
+        ((AVRoomMulti) (QavsdkControl.getInstance().getRoom())).changeAVControlRole(role, new AVRoomMulti.ChangeAVControlRoleCompleteCallback() {
+                    @Override
+                    public void OnComplete(int arg0) {
+                        SxbLog.i(TAG, "changeRole code " + arg0);
+                        if (arg0 == AVError.AV_OK) {
+                            if (leverupper == true) {
+                                openCameraAndMic();//打开摄像头
+                                sendC2CMessage(Constants.AVIMCMD_MUlTI_JOIN, "", CurLiveInfo.getHostID());//发送回应消息
+                            } else {
+                                closeCameraAndMic();
+                            }
+
+                            Toast.makeText(mContext, "change to VideoMember succ !", Toast.LENGTH_SHORT);
+                        } else {
+                            Toast.makeText(mContext, "change to VideoMember failed", Toast.LENGTH_SHORT);
+                        }
+                    }
+                }
+
+        );
+    }
+
+
 }
