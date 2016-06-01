@@ -153,7 +153,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener, L
         String version = "";
         try {
             packInfo = packageManager.getPackageInfo(getActivity().getPackageName(), 0);
-            version = packInfo.versionName;
+            version = packInfo.versionName + "-" + packInfo.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
