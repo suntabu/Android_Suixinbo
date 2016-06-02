@@ -150,7 +150,7 @@ public class LoginHelper extends Presenter {
      * @param id
      * @param psw
      */
-    public void registerTLS(final String id, final String psw) {
+    public void tlsRegister(final String id, final String psw) {
         InitBusinessHelper.getmAccountHelper().TLSStrAccReg(id, psw, new TLSStrAccRegListener() {
             @Override
             public void OnStrAccRegSuccess(TLSUserInfo tlsUserInfo) {

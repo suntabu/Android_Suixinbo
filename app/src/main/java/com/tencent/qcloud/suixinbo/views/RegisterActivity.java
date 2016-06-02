@@ -78,7 +78,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
             }
 
             //注册一个账号
-            mLoginHeloper.registerTLS(userId, mPassword.getText().toString());
+            mLoginHeloper.tlsRegister(userId, mPassword.getText().toString());
         }
         if (view.getId() == R.id.back) {
             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
