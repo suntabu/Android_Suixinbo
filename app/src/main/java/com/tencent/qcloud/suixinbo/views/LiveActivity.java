@@ -1377,7 +1377,10 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             @Override
             public void onClick(View view) {
                 if (pushfileNameInput.getText().toString().equals("")) {
+                    Toast.makeText(LiveActivity.this, "name can't be empty", Toast.LENGTH_SHORT);
                     return;
+                } else {
+                    mStreamParam.setChannelName(pushfileNameInput.getText().toString());
                 }
 
                 if (radgroup.getCheckedRadioButtonId() == R.id.hls) {
