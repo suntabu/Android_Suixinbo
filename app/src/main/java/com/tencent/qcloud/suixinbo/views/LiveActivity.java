@@ -571,6 +571,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
      * 被动退出直播
      */
     private void quiteLivePassively() {
+        Toast.makeText(this, "Host leave Live ", Toast.LENGTH_SHORT);
         mLiveHelper.perpareQuitRoom(false);
 //        mEnterRoomHelper.quiteLive();
     }
@@ -682,7 +683,16 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
      */
     @Override
     public void memberQuiteLive(String[] list) {
+        if (list == null) return;
+        for (String id : list) {
+            SxbLog.i(TAG, "memberQuiteLive id " + id);
+            if (CurLiveInfo.getHostID().equals(id)) {
+                if (MySelfInfo.getInstance().getIdStatus() == Constants.MEMBER)
+                    quiteLivePassively();
+            }
+        }
     }
+
 
     /**
      * 有成员入群

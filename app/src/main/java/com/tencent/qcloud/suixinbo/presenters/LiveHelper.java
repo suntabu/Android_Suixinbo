@@ -494,11 +494,13 @@ public class LiveHelper extends Presenter {
                     break;
                 case Constants.AVIMCMD_EnterLive:
                     //mLiveView.refreshText("Step in live", sendId);
-                    mLiveView.memberJoin(identifier, nickname);
+                    if (mLiveView != null)
+                        mLiveView.memberJoin(identifier, nickname);
                     break;
                 case Constants.AVIMCMD_ExitLive:
                     //mLiveView.refreshText("quite live", sendId);
-                    mLiveView.memberQuit(identifier, nickname);
+                    if (mLiveView != null)
+                        mLiveView.memberQuit(identifier, nickname);
                     break;
                 case Constants.AVIMCMD_MULTI_CANCEL_INTERACT://主播关闭摄像头命令
                     //如果是自己关闭Camera和Mic
