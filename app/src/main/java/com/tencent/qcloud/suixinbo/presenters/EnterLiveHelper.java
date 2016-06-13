@@ -85,7 +85,8 @@ public class EnterLiveHelper extends Presenter {
                 initAudioService();
                 mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), true);
             } else {
-                mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), false);
+//                mStepInOutView.enterRoomComplete(MySelfInfo.getInstance().getIdStatus(), false);
+                quiteAVRoom();
             }
 
         }

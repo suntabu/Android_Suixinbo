@@ -333,6 +333,9 @@ public class LiveHelper extends Presenter {
         mC2CConversation = TIMManager.getInstance().getConversation(TIMConversationType.C2C, chatRoomId);
     }
 
+    /**
+     * 已经发完退出消息了
+     */
     private void notifyQuitReady() {
         TIMManager.getInstance().removeMessageListener(msgListener);
         if (mLiveView != null)
