@@ -41,7 +41,7 @@
     <color name="btn_text_hover">#CCFFFFFF</color>
     <!--蒙版-->
     <color name="colorMask">#66000000</color>
-
+    <color name="dialog_btn_pressed_color">#efefef</color>
 
 
     <!--app主色调，背景色-->

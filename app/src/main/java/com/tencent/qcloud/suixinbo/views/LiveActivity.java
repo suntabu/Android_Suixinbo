@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,10 +18,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -36,6 +39,7 @@ import com.bumptech.glide.RequestManager;
 import com.tencent.TIMUserProfile;
 import com.tencent.av.TIMAvManager;
 import com.tencent.av.sdk.AVView;
+import com.tencent.av.utils.PhoneStatusTools;
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.ChatMsgListAdapter;
 import com.tencent.qcloud.suixinbo.avcontrollers.QavsdkControl;
@@ -139,6 +143,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
         //QavsdkControl.getInstance().setCameraPreviewChangeCallback();
         mLiveHelper.setCameraPreviewChangeCallback();
+        registerOrientationListener();
     }
 
 
@@ -293,7 +298,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private FrameLayout mFullControllerUi, mBackgound;
     private SeekBar mBeautyBar;
     private int mBeautyRate;
-    private TextView pushBtn;
+    private TextView pushBtn, recordBtn;
 
     private void showHeadIcon(ImageView view, String avatar) {
         if (TextUtils.isEmpty(avatar)) {
@@ -368,9 +373,14 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             pushBtn.setVisibility(View.VISIBLE);
             pushBtn.setOnClickListener(this);
 
+            recordBtn = (TextView) findViewById(R.id.record_btn);
+            recordBtn.setVisibility(View.VISIBLE);
+            recordBtn.setOnClickListener(this);
+
             initBackDialog();
             initDetailDailog();
             initPushDialog();
+            initRecordDialog();
 
 
             mMemberDg = new MembersDialog(this, R.style.floag_dialog, this);
@@ -1122,6 +1132,15 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             case R.id.push_btn:
                 pushStream();
                 break;
+            case R.id.record_btn:
+                if (!mRecord) {
+                    if (recordDialog != null)
+                        recordDialog.show();
+                } else {
+                    mLiveHelper.stopRecord();
+                }
+                break;
+
         }
     }
 
@@ -1484,6 +1503,79 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
     }
 
+
+    private Dialog recordDialog;
+    private TIMAvManager.RecordParam mRecordParam;
+    private String filename = "";
+    private String tags = "";
+    private String classId = "";
+    private boolean mRecord = false;
+    private EditText filenameEditText, tagEditText, classEditText;
+    private CheckBox trancodeCheckBox, screenshotCheckBox, watermarkCheckBox;
+
+    private void initRecordDialog() {
+        recordDialog = new Dialog(this, R.style.dialog);
+        recordDialog.setContentView(R.layout.record_param);
+        mRecordParam = TIMAvManager.getInstance().new RecordParam();
+
+        filenameEditText = (EditText) recordDialog.findViewById(R.id.record_filename);
+        tagEditText = (EditText) recordDialog.findViewById(R.id.record_tag);
+        classEditText = (EditText) recordDialog.findViewById(R.id.record_class);
+        trancodeCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_tran_code);
+        screenshotCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_screen_shot);
+        watermarkCheckBox = (CheckBox) recordDialog.findViewById(R.id.record_water_mark);
+
+        if (filename.length() > 0) {
+            filenameEditText.setText(filename);
+        }
+        filenameEditText.setText(""+CurLiveInfo.getRoomNum());
+
+        if (tags.length() > 0) {
+            tagEditText.setText(tags);
+        }
+
+        if (classId.length() > 0) {
+            classEditText.setText(classId);
+        }
+        Button recordOk = (Button) recordDialog.findViewById(R.id.btn_record_ok);
+        recordOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                filename = filenameEditText.getText().toString();
+                mRecordParam.setFilename(filename);
+                tags = tagEditText.getText().toString();
+                classId = classEditText.getText().toString();
+                Log.d(TAG, "onClick classId " + classId);
+                if (classId.equals("")) {
+                    Toast.makeText(getApplicationContext(), "classID can not be empty", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                mRecordParam.setClassId(Integer.parseInt(classId));
+                mRecordParam.setTransCode(trancodeCheckBox.isChecked());
+                mRecordParam.setSreenShot(screenshotCheckBox.isChecked());
+                mRecordParam.setWaterMark(watermarkCheckBox.isChecked());
+                mLiveHelper.startRecord(mRecordParam);
+                startOrientationListener();
+                recordDialog.dismiss();
+            }
+        });
+        Button recordCancel = (Button) recordDialog.findViewById(R.id.btn_record_cancel);
+        recordCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startOrientationListener();
+                recordDialog.dismiss();
+            }
+        });
+        stopOrientationListener();
+        Window dialogWindow = recordDialog.getWindow();
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        dialogWindow.setGravity(Gravity.CENTER);
+        dialogWindow.setAttributes(lp);
+        recordDialog.setCanceledOnTouchOutside(false);
+    }
+
     /**
      * 停止推流成功
      */
@@ -1491,5 +1583,101 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     public void stopStreamSucc() {
         isPushed = false;
         pushBtn.setBackgroundResource(R.drawable.icon_push_stream);
+    }
+
+    @Override
+    public void startRecordCallback(boolean isSucc) {
+        mRecord = true;
+        recordBtn.setBackgroundResource(R.drawable.icon_stoprecord);
+
+    }
+
+    @Override
+    public void stopRecordCallback(boolean isSucc, List<String> files) {
+        if (isSucc == true) {
+            mRecord = false;
+            recordBtn.setBackgroundResource(R.drawable.icon_record);
+        }
+    }
+
+
+    private VideoOrientationEventListener mOrientationEventListener;
+
+    void registerOrientationListener() {
+        if (mOrientationEventListener == null) {
+            mOrientationEventListener = new VideoOrientationEventListener(super.getApplicationContext(), SensorManager.SENSOR_DELAY_UI);
+        }
+    }
+
+    void startOrientationListener() {
+        if (mOrientationEventListener != null) {
+            mOrientationEventListener.enable();
+        }
+    }
+
+    void stopOrientationListener() {
+        if (mOrientationEventListener != null) {
+            mOrientationEventListener.disable();
+        }
+    }
+
+
+    class VideoOrientationEventListener extends OrientationEventListener {
+        boolean mbIsTablet = false;
+        int mRotationAngle = 0;
+
+        public VideoOrientationEventListener(Context context, int rate) {
+            super(context, rate);
+            mbIsTablet = PhoneStatusTools.isTablet(context);
+        }
+
+        int mLastOrientation = -25;
+
+        @Override
+        public void onOrientationChanged(int orientation) {
+            if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN) {
+                mLastOrientation = orientation;
+                return;
+            }
+
+            if (mLastOrientation < 0) {
+                mLastOrientation = 0;
+            }
+
+            if (((orientation - mLastOrientation) < 20)
+                    && ((orientation - mLastOrientation) > -20)) {
+                return;
+            }
+
+            if (mbIsTablet) {
+                orientation -= 90;
+                if (orientation < 0) {
+                    orientation += 360;
+                }
+            }
+            mLastOrientation = orientation;
+
+            if (orientation > 314 || orientation < 45) {
+                if (QavsdkControl.getInstance() != null) {
+                    QavsdkControl.getInstance().setRotation(0);
+                }
+                mRotationAngle = 0;
+            } else if (orientation > 44 && orientation < 135) {
+                if (QavsdkControl.getInstance() != null) {
+                    QavsdkControl.getInstance().setRotation(90);
+                }
+                mRotationAngle = 90;
+            } else if (orientation > 134 && orientation < 225) {
+                if (QavsdkControl.getInstance() != null) {
+                    QavsdkControl.getInstance().setRotation(180);
+                }
+                mRotationAngle = 180;
+            } else {
+                if (QavsdkControl.getInstance() != null) {
+                    QavsdkControl.getInstance().setRotation(270);
+                }
+                mRotationAngle = 270;
+            }
+        }
     }
 }

@@ -3,6 +3,8 @@ package com.tencent.qcloud.suixinbo.presenters.viewinface;
 
 import com.tencent.av.TIMAvManager;
 
+import java.util.List;
+
 /**
  *  直播界面回调
  */
@@ -35,4 +37,8 @@ public interface LiveView extends MvpView {
     void pushStreamSucc(TIMAvManager.StreamRes streamRes);
 
     void stopStreamSucc();
+
+    void startRecordCallback(boolean isSucc);
+
+    void stopRecordCallback(boolean isSucc,List<String> files);
 }

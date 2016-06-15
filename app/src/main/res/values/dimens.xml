@@ -17,6 +17,7 @@
     <dimen name="tencent_tls_ui_titleFontSize">21dp</dimen>
 
     <dimen name="tencent_tls_ui_buttonFontSize">16dp</dimen>
+    <dimen name="text_size">16sp</dimen>
 
 
 

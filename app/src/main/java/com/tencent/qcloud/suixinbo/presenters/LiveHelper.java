@@ -731,6 +731,51 @@ public class LiveHelper extends Presenter {
     }
 
 
+    public void startRecord(TIMAvManager.RecordParam mRecordParam) {
+
+        TIMAvManager.RoomInfo roomInfo = TIMAvManager.getInstance().new RoomInfo();
+        roomInfo.setRelationId(CurLiveInfo.getRoomNum());
+        roomInfo.setRoomId(CurLiveInfo.getRoomNum());
+
+        TIMAvManager.getInstance().requestMultiVideoRecorderStart(roomInfo, mRecordParam, new TIMCallBack() {
+            @Override
+            public void onError(int i, String s) {
+                Log.e(TAG, "Record error" + i + " : " + s);
+                mLiveView.startRecordCallback(false);
+            }
+
+            @Override
+            public void onSuccess() {
+                mLiveView.startRecordCallback(true);
+            }
+        });
+
+    }
+
+
+    public void stopRecord() {
+        TIMAvManager.RoomInfo roomInfo = TIMAvManager.getInstance().new RoomInfo();
+        roomInfo.setRelationId(CurLiveInfo.getRoomNum());
+        roomInfo.setRoomId(CurLiveInfo.getRoomNum());
+        TIMAvManager.getInstance().requestMultiVideoRecorderStop(roomInfo, new TIMValueCallBack<List<String>>() {
+            @Override
+            public void onError(int i, String s) {
+                Log.e(TAG, "stop record error " + i + " : " + s);
+                mLiveView.stopRecordCallback(false,null);
+            }
+
+            @Override
+            public void onSuccess(List<String> files) {
+                mLiveView.stopRecordCallback(true, files);
+
+
+            }
+        });
+        Log.d(TAG, "success");
+    }
+
+
+
     @Override
     public void onDestory() {
         mLiveView = null;
