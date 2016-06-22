@@ -31,13 +31,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         //获取个人数据本地缓存
         MySelfInfo.getInstance().getCache(getApplicationContext());
         if (needLogin() == true) {//本地没有账户需要登录
-            setContentView(R.layout.activity_independent_login);
-            mBtnLogin = (TextView) findViewById(R.id.btn_login);
-            mUserName = (EditText) findViewById(R.id.username);
-            mPassWord = (EditText) findViewById(R.id.password);
-            mBtnRegister = (TextView) findViewById(R.id.registerNewUser);
-            mBtnRegister.setOnClickListener(this);
-            mBtnLogin.setOnClickListener(this);
+            initView();
         } else {
             //有账户登录直接IM登录
             SxbLog.i(TAG, "LoginActivity onCreate");
@@ -78,6 +72,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         }
     }
 
+    private void initView(){
+        setContentView(R.layout.activity_independent_login);
+        mBtnLogin = (TextView) findViewById(R.id.btn_login);
+        mUserName = (EditText) findViewById(R.id.username);
+        mPassWord = (EditText) findViewById(R.id.password);
+        mBtnRegister = (TextView) findViewById(R.id.registerNewUser);
+        mBtnRegister.setOnClickListener(this);
+        mBtnLogin.setOnClickListener(this);
+    }
+
 
     /**
      * 判断是否需要登录
@@ -112,6 +116,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
     @Override
     public void loginFail() {
-
+        initView();
     }
 }

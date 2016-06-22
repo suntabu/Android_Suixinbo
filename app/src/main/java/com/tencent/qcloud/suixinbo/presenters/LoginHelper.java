@@ -64,6 +64,9 @@ public class LoginHelper extends Presenter {
                     public void onError(int i, String s) {
                         SxbLog.e(TAG, "IMLogin fail ：" + i + " msg " + s);
                         Toast.makeText(mContext, "IMLogin fail ：" + i + " msg " + s, Toast.LENGTH_SHORT).show();
+                        if (mLoginView != null) {
+                            mLoginView.loginFail();
+                        }
                     }
 
                     @Override
