@@ -1,5 +1,6 @@
 package com.tencent.qcloud.suixinbo.views;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -7,10 +8,12 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -98,7 +101,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private ImageView mHeadIcon;
     private TextView mHostNameTv;
     private LinearLayout mHostLayout;
-
+    private final int REQUEST_PHONE_PERMISSIONS = 0;
     private long mSecond = 0;
     private String formatTime;
     private Timer mHearBeatTimer, mVideoTimer;
@@ -129,7 +132,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // 不锁屏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
         setContentView(R.layout.activity_live);
-
+        checkPermission();
         //进出房间的协助类
         mEnterRoomHelper = new EnterLiveHelper(this, this);
         //房间内的交互协助类
@@ -1708,6 +1711,26 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                     QavsdkControl.getInstance().setRotation(270);
                 }
                 mRotationAngle = 270;
+            }
+        }
+    }
+
+
+
+    void checkPermission() {
+        final List<String> permissionsList = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if ((checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED))
+                permissionsList.add(Manifest.permission.CAMERA);
+            if ((checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED))
+                permissionsList.add(Manifest.permission.RECORD_AUDIO);
+            if ((checkSelfPermission(Manifest.permission.WAKE_LOCK) != PackageManager.PERMISSION_GRANTED))
+                permissionsList.add(Manifest.permission.WAKE_LOCK);
+            if ((checkSelfPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS) != PackageManager.PERMISSION_GRANTED))
+                permissionsList.add(Manifest.permission.MODIFY_AUDIO_SETTINGS);
+            if (permissionsList.size() != 0) {
+                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                        REQUEST_PHONE_PERMISSIONS);
             }
         }
     }
