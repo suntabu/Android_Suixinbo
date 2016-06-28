@@ -109,8 +109,10 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private int thumbUp = 0;
     private long admireTime = 0;
     private int watchCount = 0;
-
+    private static boolean mBeatuy = false;
+    private static boolean mWhite = true;
     private boolean bCleanMode = false;
+    private boolean mProfile;
 
     private String backGroundId;
 
@@ -291,13 +293,13 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
      * 初始化UI
      */
     private View avView;
-    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat, BtnCtrlVideo, BtnCtrlMic, BtnHungup, mBeautyConfirm;
+    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnWhite, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat, BtnCtrlVideo, BtnCtrlMic, BtnHungup, mBeautyConfirm;
     private TextView inviteView1, inviteView2, inviteView3;
     private ListView mListViewMsgItems;
     private LinearLayout mHostCtrView, mNomalMemberCtrView, mVideoMemberCtrlView, mBeautySettings;
     private FrameLayout mFullControllerUi, mBackgound;
     private SeekBar mBeautyBar;
-    private int mBeautyRate;
+    private int mBeautyRate, mWhiteRate;
     private TextView pushBtn, recordBtn;
 
     private void showHeadIcon(ImageView view, String avatar) {
@@ -352,12 +354,14 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             Btnflash = (TextView) findViewById(R.id.flash_btn);
             BtnSwitch = (TextView) findViewById(R.id.switch_cam);
             BtnBeauty = (TextView) findViewById(R.id.beauty_btn);
+            BtnWhite = (TextView) findViewById(R.id.white_btn);
             BtnMic = (TextView) findViewById(R.id.mic_btn);
             BtnScreen = (TextView) findViewById(R.id.fullscreen_btn);
             mVideoChat.setVisibility(View.VISIBLE);
             Btnflash.setOnClickListener(this);
             BtnSwitch.setOnClickListener(this);
             BtnBeauty.setOnClickListener(this);
+            BtnWhite.setOnClickListener(this);
             BtnMic.setOnClickListener(this);
             BtnScreen.setOnClickListener(this);
             mVideoChat.setOnClickListener(this);
@@ -394,24 +398,30 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    // TODO Auto-generated method stub
                     SxbLog.d("SeekBar", "onStopTrackingTouch");
-                    Toast.makeText(LiveActivity.this, "beauty " + mBeautyRate + "%", Toast.LENGTH_SHORT).show();
+                    if (mProfile == mBeatuy) {
+                        Toast.makeText(LiveActivity.this, "beauty " + mBeautyRate + "%", Toast.LENGTH_SHORT).show();//美颜度
+                    } else {
+                        Toast.makeText(LiveActivity.this, "white " + mWhiteRate + "%", Toast.LENGTH_SHORT).show();//美白度
+                    }
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    // TODO Auto-generated method stub
                     SxbLog.d("SeekBar", "onStartTrackingTouch");
                 }
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress,
                                               boolean fromUser) {
-                    // TODO Auto-generated method stub
-                    mBeautyRate = progress;
-                    QavsdkControl.getInstance().getAVContext().getVideoCtrl().inputBeautyParam(getBeautyProgress(progress));
-
+                    Log.i(TAG, "onProgressChanged " + progress);
+                    if (mProfile == mBeatuy) {
+                        mBeautyRate = progress;
+                        QavsdkControl.getInstance().getAVContext().getVideoCtrl().inputBeautyParam(getBeautyProgress(progress));//美颜
+                    } else {
+                        mWhiteRate = progress;
+                        QavsdkControl.getInstance().getAVContext().getVideoCtrl().inputWhiteningParam(getBeautyProgress(progress));//美白
+                    }
                 }
             });
         } else {
@@ -1098,10 +1108,31 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 cancelMemberView(backGroundId);
                 break;
             case R.id.beauty_btn:
+                Log.i(TAG, "onClick " + mBeautyRate);
+
+                mProfile = mBeatuy;
                 if (mBeautySettings != null) {
                     if (mBeautySettings.getVisibility() == View.GONE) {
                         mBeautySettings.setVisibility(View.VISIBLE);
                         mFullControllerUi.setVisibility(View.INVISIBLE);
+                        mBeautyBar.setProgress(mBeautyRate);
+                    } else {
+                        mBeautySettings.setVisibility(View.GONE);
+                        mFullControllerUi.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    SxbLog.i(TAG, "beauty_btn mTopBar  is null ");
+                }
+                break;
+
+            case R.id.white_btn:
+                Log.i(TAG, "onClick " + mWhiteRate);
+                mProfile = mWhite;
+                if (mBeautySettings != null) {
+                    if (mBeautySettings.getVisibility() == View.GONE) {
+                        mBeautySettings.setVisibility(View.VISIBLE);
+                        mFullControllerUi.setVisibility(View.INVISIBLE);
+                        mBeautyBar.setProgress(mWhiteRate);
                     } else {
                         mBeautySettings.setVisibility(View.GONE);
                         mFullControllerUi.setVisibility(View.VISIBLE);
@@ -1528,7 +1559,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         if (filename.length() > 0) {
             filenameEditText.setText(filename);
         }
-        filenameEditText.setText(""+CurLiveInfo.getRoomNum());
+        filenameEditText.setText("" + CurLiveInfo.getRoomNum());
 
         if (tags.length() > 0) {
             tagEditText.setText(tags);
