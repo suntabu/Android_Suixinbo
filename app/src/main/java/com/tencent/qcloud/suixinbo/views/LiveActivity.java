@@ -1,5 +1,6 @@
 package com.tencent.qcloud.suixinbo.views;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -7,10 +8,12 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -98,7 +101,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private ImageView mHeadIcon;
     private TextView mHostNameTv;
     private LinearLayout mHostLayout;
-
+    private final int REQUEST_PHONE_PERMISSIONS = 0;
     private long mSecond = 0;
     private String formatTime;
     private Timer mHearBeatTimer, mVideoTimer;
@@ -109,8 +112,10 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private int thumbUp = 0;
     private long admireTime = 0;
     private int watchCount = 0;
-
+    private static boolean mBeatuy = false;
+    private static boolean mWhite = true;
     private boolean bCleanMode = false;
+    private boolean mProfile;
 
     private String backGroundId;
 
@@ -127,7 +132,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // 不锁屏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
         setContentView(R.layout.activity_live);
-
+        checkPermission();
         //进出房间的协助类
         mEnterRoomHelper = new EnterLiveHelper(this, this);
         //房间内的交互协助类
@@ -291,13 +296,13 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
      * 初始化UI
      */
     private View avView;
-    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat, BtnCtrlVideo, BtnCtrlMic, BtnHungup, mBeautyConfirm;
+    private TextView BtnBack, BtnInput, Btnflash, BtnSwitch, BtnBeauty, BtnWhite, BtnMic, BtnScreen, BtnHeart, BtnNormal, mVideoChat, BtnCtrlVideo, BtnCtrlMic, BtnHungup, mBeautyConfirm;
     private TextView inviteView1, inviteView2, inviteView3;
     private ListView mListViewMsgItems;
     private LinearLayout mHostCtrView, mNomalMemberCtrView, mVideoMemberCtrlView, mBeautySettings;
     private FrameLayout mFullControllerUi, mBackgound;
     private SeekBar mBeautyBar;
-    private int mBeautyRate;
+    private int mBeautyRate, mWhiteRate;
     private TextView pushBtn, recordBtn;
 
     private void showHeadIcon(ImageView view, String avatar) {
@@ -352,12 +357,14 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             Btnflash = (TextView) findViewById(R.id.flash_btn);
             BtnSwitch = (TextView) findViewById(R.id.switch_cam);
             BtnBeauty = (TextView) findViewById(R.id.beauty_btn);
+            BtnWhite = (TextView) findViewById(R.id.white_btn);
             BtnMic = (TextView) findViewById(R.id.mic_btn);
             BtnScreen = (TextView) findViewById(R.id.fullscreen_btn);
             mVideoChat.setVisibility(View.VISIBLE);
             Btnflash.setOnClickListener(this);
             BtnSwitch.setOnClickListener(this);
             BtnBeauty.setOnClickListener(this);
+            BtnWhite.setOnClickListener(this);
             BtnMic.setOnClickListener(this);
             BtnScreen.setOnClickListener(this);
             mVideoChat.setOnClickListener(this);
@@ -394,24 +401,30 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    // TODO Auto-generated method stub
                     SxbLog.d("SeekBar", "onStopTrackingTouch");
-                    Toast.makeText(LiveActivity.this, "beauty " + mBeautyRate + "%", Toast.LENGTH_SHORT).show();
+                    if (mProfile == mBeatuy) {
+                        Toast.makeText(LiveActivity.this, "beauty " + mBeautyRate + "%", Toast.LENGTH_SHORT).show();//美颜度
+                    } else {
+                        Toast.makeText(LiveActivity.this, "white " + mWhiteRate + "%", Toast.LENGTH_SHORT).show();//美白度
+                    }
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    // TODO Auto-generated method stub
                     SxbLog.d("SeekBar", "onStartTrackingTouch");
                 }
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress,
                                               boolean fromUser) {
-                    // TODO Auto-generated method stub
-                    mBeautyRate = progress;
-                    QavsdkControl.getInstance().getAVContext().getVideoCtrl().inputBeautyParam(getBeautyProgress(progress));
-
+                    Log.i(TAG, "onProgressChanged " + progress);
+                    if (mProfile == mBeatuy) {
+                        mBeautyRate = progress;
+                        QavsdkControl.getInstance().getAVContext().getVideoCtrl().inputBeautyParam(getBeautyProgress(progress));//美颜
+                    } else {
+                        mWhiteRate = progress;
+                        QavsdkControl.getInstance().getAVContext().getVideoCtrl().inputWhiteningParam(getBeautyProgress(progress));//美白
+                    }
                 }
             });
         } else {
@@ -1098,10 +1111,31 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 cancelMemberView(backGroundId);
                 break;
             case R.id.beauty_btn:
+                Log.i(TAG, "onClick " + mBeautyRate);
+
+                mProfile = mBeatuy;
                 if (mBeautySettings != null) {
                     if (mBeautySettings.getVisibility() == View.GONE) {
                         mBeautySettings.setVisibility(View.VISIBLE);
                         mFullControllerUi.setVisibility(View.INVISIBLE);
+                        mBeautyBar.setProgress(mBeautyRate);
+                    } else {
+                        mBeautySettings.setVisibility(View.GONE);
+                        mFullControllerUi.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    SxbLog.i(TAG, "beauty_btn mTopBar  is null ");
+                }
+                break;
+
+            case R.id.white_btn:
+                Log.i(TAG, "onClick " + mWhiteRate);
+                mProfile = mWhite;
+                if (mBeautySettings != null) {
+                    if (mBeautySettings.getVisibility() == View.GONE) {
+                        mBeautySettings.setVisibility(View.VISIBLE);
+                        mFullControllerUi.setVisibility(View.INVISIBLE);
+                        mBeautyBar.setProgress(mWhiteRate);
                     } else {
                         mBeautySettings.setVisibility(View.GONE);
                         mFullControllerUi.setVisibility(View.VISIBLE);
@@ -1528,7 +1562,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         if (filename.length() > 0) {
             filenameEditText.setText(filename);
         }
-        filenameEditText.setText(""+CurLiveInfo.getRoomNum());
+        filenameEditText.setText("" + CurLiveInfo.getRoomNum());
 
         if (tags.length() > 0) {
             tagEditText.setText(tags);
@@ -1677,6 +1711,26 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                     QavsdkControl.getInstance().setRotation(270);
                 }
                 mRotationAngle = 270;
+            }
+        }
+    }
+
+
+
+    void checkPermission() {
+        final List<String> permissionsList = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if ((checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED))
+                permissionsList.add(Manifest.permission.CAMERA);
+            if ((checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED))
+                permissionsList.add(Manifest.permission.RECORD_AUDIO);
+            if ((checkSelfPermission(Manifest.permission.WAKE_LOCK) != PackageManager.PERMISSION_GRANTED))
+                permissionsList.add(Manifest.permission.WAKE_LOCK);
+            if ((checkSelfPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS) != PackageManager.PERMISSION_GRANTED))
+                permissionsList.add(Manifest.permission.MODIFY_AUDIO_SETTINGS);
+            if (permissionsList.size() != 0) {
+                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                        REQUEST_PHONE_PERMISSIONS);
             }
         }
     }

@@ -86,7 +86,8 @@ public class LiveHelper extends Presenter {
 
     public void setCameraPreviewChangeCallback() {
         AVVideoCtrl avVideoCtrl = QavsdkControl.getInstance().getAVContext().getVideoCtrl();
-        avVideoCtrl.setCameraPreviewChangeCallback(mCameraPreviewChangeCallback);
+        if (avVideoCtrl != null)
+            avVideoCtrl.setCameraPreviewChangeCallback(mCameraPreviewChangeCallback);
     }
 
     /**
@@ -761,7 +762,7 @@ public class LiveHelper extends Presenter {
             @Override
             public void onError(int i, String s) {
                 Log.e(TAG, "stop record error " + i + " : " + s);
-                mLiveView.stopRecordCallback(false,null);
+                mLiveView.stopRecordCallback(false, null);
             }
 
             @Override
@@ -773,7 +774,6 @@ public class LiveHelper extends Presenter {
         });
         Log.d(TAG, "success");
     }
-
 
 
     @Override
