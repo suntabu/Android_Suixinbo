@@ -54,6 +54,8 @@ public class Constants {
     public static final int TEXT_TYPE = 0;
     public static final int MEMBER_ENTER = 1;
     public static final int MEMBER_EXIT = 2;
+    public static final int HOST_LEAVE = 3;
+    public static final int HOST_BACK = 4;
 
     public static final String ROOT_DIR = "/sdcard/Suixinbo/";
 
@@ -78,9 +80,11 @@ public class Constants {
     public static final int AVIMCMD_None = AVIMCMD_Text + 1;               // 无事件
 
     // 以下事件为TCAdapter内部处理的通用事件
-    public static final int AVIMCMD_EnterLive = AVIMCMD_None + 1;          // 用户加入直播, Group消息
-    public static final int AVIMCMD_ExitLive = AVIMCMD_EnterLive + 1;         // 用户退出直播, Group消息
-    public static final int AVIMCMD_Praise = AVIMCMD_ExitLive + 1;           // 点赞消息, Demo中使用Group消息
+    public static final int AVIMCMD_EnterLive = AVIMCMD_None + 1;          // 用户加入直播, Group消息  1
+    public static final int AVIMCMD_ExitLive = AVIMCMD_EnterLive + 1;         // 用户退出直播, Group消息  2
+    public static final int AVIMCMD_Praise = AVIMCMD_ExitLive + 1;           // 点赞消息, Demo中使用Group消息  3
+    public static final int AVIMCMD_Host_Leave = AVIMCMD_Praise + 1;         // 主播离开, Group消息 ： 4
+    public static final int AVIMCMD_Host_Back = AVIMCMD_Host_Leave + 1;         // 主播回来, Demo中使用Group消息 ： 5
 
     public static final String CMD_KEY = "userAction";
     public static final String CMD_PARAM = "actionParam";

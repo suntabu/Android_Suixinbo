@@ -361,6 +361,37 @@ public class LiveHelper extends Presenter {
         }
     }
 
+    public void pause(){
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            sendGroupMessage(Constants.AVIMCMD_Host_Leave, "", new TIMValueCallBack<TIMMessage>() {
+                @Override
+                public void onError(int i, String s) {
+                }
+
+                @Override
+                public void onSuccess(TIMMessage timMessage) {
+                }
+            });
+            closeCameraAndMic();
+        }
+    }
+
+    public void resume(){
+        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+            sendGroupMessage(Constants.AVIMCMD_Host_Back, "", new TIMValueCallBack<TIMMessage>() {
+                @Override
+                public void onError(int i, String s) {
+                }
+
+                @Override
+                public void onSuccess(TIMMessage timMessage) {
+
+                }
+            });
+            openCameraAndMic();
+        }
+    }
+
 
     /**
      * 群消息回调
@@ -528,6 +559,11 @@ public class LiveHelper extends Presenter {
                 case Constants.AVIMCMD_MULTI_HOST_CONTROLL_MIC:
                     toggleMic();
                     break;
+                case Constants.AVIMCMD_Host_Leave:
+                    mLiveView.hostLeave();
+                    break;
+                case Constants.AVIMCMD_Host_Back:
+                    mLiveView.hostBack();
                 default:
                     break;
             }

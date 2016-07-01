@@ -116,6 +116,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private static boolean mWhite = true;
     private boolean bCleanMode = false;
     private boolean mProfile;
+    private boolean bFirstRender = true;
 
     private String backGroundId;
 
@@ -470,12 +471,14 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     @Override
     protected void onResume() {
         super.onResume();
+        mLiveHelper.resume();
         QavsdkControl.getInstance().onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        mLiveHelper.pause();
         QavsdkControl.getInstance().onPause();
     }
 
@@ -699,6 +702,16 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         QavsdkControl.getInstance().closeMemberView(id);
     }
 
+    @Override
+    public void hostLeave() {
+        refreshTextListView(CurLiveInfo.getHostName(), "leave for a while", Constants.HOST_LEAVE);
+    }
+
+    @Override
+    public void hostBack() {
+        refreshTextListView(CurLiveInfo.getHostName(), "is back", Constants.HOST_BACK);
+    }
+
     /**
      * 有成员退群
      *
@@ -768,17 +781,20 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
             QavsdkControl.getInstance().setLocalHasVideo(true, MySelfInfo.getInstance().getId());
             //主播通知用户服务器
             if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-                mEnterRoomHelper.notifyServerCreateRoom();
+                if (bFirstRender) {
+                    mEnterRoomHelper.notifyServerCreateRoom();
 
-                //主播心跳
-                mHearBeatTimer = new Timer(true);
-                mHeartBeatTask = new HeartBeatTask();
-                mHearBeatTimer.schedule(mHeartBeatTask, 1000, 3 * 1000);
+                    //主播心跳
+                    mHearBeatTimer = new Timer(true);
+                    mHeartBeatTask = new HeartBeatTask();
+                    mHearBeatTimer.schedule(mHeartBeatTask, 1000, 3 * 1000);
 
-                //直播时间
-                mVideoTimer = new Timer(true);
-                mVideoTimerTask = new VideoTimerTask();
-                mVideoTimer.schedule(mVideoTimerTask, 1000, 1000);
+                    //直播时间
+                    mVideoTimer = new Timer(true);
+                    mVideoTimerTask = new VideoTimerTask();
+                    mVideoTimer.schedule(mVideoTimerTask, 1000, 1000);
+                    bFirstRender = false;
+                }
             }
         } else {
 //            QavsdkControl.getInstance().addRemoteVideoMembers(id);
