@@ -28,7 +28,7 @@
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_marginLeft="10dp"
-        android:background="@drawable/icon_beauty" />
+        android:background="@drawable/icon_beauty_drawable" />
 
     <TextView
         android:id="@+id/white_btn"
@@ -36,7 +36,7 @@
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_marginLeft="10dp"
-        android:background="@drawable/icon_breauty_pressed" />
+        android:background="@drawable/icon_white_drawable" />
 
     <TextView
         android:id="@+id/mic_btn"
