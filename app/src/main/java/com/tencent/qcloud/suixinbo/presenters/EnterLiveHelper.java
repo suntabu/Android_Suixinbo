@@ -125,6 +125,17 @@ public class EnterLiveHelper extends Presenter {
                     intent.putStringArrayListExtra("ids", video_ids);
                     mContext.sendBroadcast(intent);
                     break;
+                case TYPE_MEMBER_CHANGE_NO_CAMERA_VIDEO:
+                    {
+                        ArrayList<String> close_ids = new ArrayList<String>();
+                        for (String id : updateList) {
+                            close_ids.add(id);
+                        }
+                        Intent closeintent = new Intent(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
+                        closeintent.putStringArrayListExtra("ids", close_ids);
+                        mContext.sendBroadcast(closeintent);
+                    }
+                    break;
                 case TYPE_MEMBER_CHANGE_HAS_AUDIO:
                     break;
 

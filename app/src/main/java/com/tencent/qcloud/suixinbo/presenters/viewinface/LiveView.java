@@ -42,7 +42,7 @@ public interface LiveView extends MvpView {
 
     void stopRecordCallback(boolean isSucc,List<String> files);
 
-    void hostLeave();
+    void hostLeave(String id, String name);
 
-    void hostBack();
+    void hostBack(String id, String name);
 }

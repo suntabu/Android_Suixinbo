@@ -62,11 +62,12 @@ public class LiveHelper extends Presenter {
     private static final boolean REMOTE = false;
     private TIMConversation mGroupConversation;
     private TIMConversation mC2CConversation;
-    private boolean isMicOpen = true;
+    private boolean isMicOpen = false;
     private static final String UNREAD = "0";
     private AVView mRequestViewList[] = new AVView[MAX_REQUEST_VIEW_COUNT];
     private String mRequestIdentifierList[] = new String[MAX_REQUEST_VIEW_COUNT];
     private Boolean isOpenCamera = false;
+    private boolean isBakCameraOpen, isBakMicOpen;      // 切后时备份当前camera及mic状态
 
 
     public LiveHelper(Context context, LiveView liveview) {
@@ -362,7 +363,9 @@ public class LiveHelper extends Presenter {
     }
 
     public void pause(){
-        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+        isBakCameraOpen = isOpenCamera;
+        isBakMicOpen = isMicOpen;
+        if (isBakCameraOpen || isBakMicOpen) {    // 若摄像头或Mic打开
             sendGroupMessage(Constants.AVIMCMD_Host_Leave, "", new TIMValueCallBack<TIMMessage>() {
                 @Override
                 public void onError(int i, String s) {
@@ -377,7 +380,7 @@ public class LiveHelper extends Presenter {
     }
 
     public void resume(){
-        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+        if (isBakCameraOpen || isBakMicOpen) {
             sendGroupMessage(Constants.AVIMCMD_Host_Back, "", new TIMValueCallBack<TIMMessage>() {
                 @Override
                 public void onError(int i, String s) {
@@ -388,7 +391,13 @@ public class LiveHelper extends Presenter {
 
                 }
             });
-            openCameraAndMic();
+
+            if (isBakCameraOpen){
+                openCamera();
+            }
+            if (isBakMicOpen){
+                openMic();
+            }
         }
     }
 
@@ -560,10 +569,10 @@ public class LiveHelper extends Presenter {
                     toggleMic();
                     break;
                 case Constants.AVIMCMD_Host_Leave:
-                    mLiveView.hostLeave();
+                    mLiveView.hostLeave(identifier, nickname);
                     break;
                 case Constants.AVIMCMD_Host_Back:
-                    mLiveView.hostBack();
+                    mLiveView.hostBack(identifier, nickname);
                 default:
                     break;
             }

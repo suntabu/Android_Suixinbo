@@ -100,7 +100,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private HeartBeatTask mHeartBeatTask;//心跳
     private ImageView mHeadIcon;
     private TextView mHostNameTv;
-    private LinearLayout mHostLayout;
+    private LinearLayout mHostLayout, mHostLeaveLayout;
     private final int REQUEST_PHONE_PERMISSIONS = 0;
     private long mSecond = 0;
     private String formatTime;
@@ -124,6 +124,8 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private TextView tvAdmires;
 
     private Dialog mDetailDialog;
+
+    private ArrayList<String> mRenderUserList = new ArrayList<>();
 
 
     @Override
@@ -230,6 +232,13 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
                 ArrayList<String> ids = intent.getStringArrayListExtra("ids");
                 //如果是自己本地直接渲染
                 for (String id : ids) {
+                    if (id.equals(backGroundId)){
+                        mHostLeaveLayout.setVisibility(View.GONE);
+                    }
+                    if (!mRenderUserList.contains(id)) {
+                        mRenderUserList.add(id);
+                    }
+
                     if (id.equals(MySelfInfo.getInstance().getId())) {
                         showVideoView(true, id);
                         return;
@@ -244,8 +253,27 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 //                }
             }
 
+            if (action.equals(Constants.ACTION_CAMERA_CLOSE_IN_LIVE)) {//有人关闭摄像头
+                ArrayList<String> ids = intent.getStringArrayListExtra("ids");
+                //如果是自己本地直接渲染
+                for (String id : ids) {
+                    mRenderUserList.remove(id);
+                    if (id.equals(backGroundId)) {
+                        mHostLeaveLayout.setVisibility(View.VISIBLE);
+                        return;
+                    }
+                }
+            }
+
             if (action.equals(Constants.ACTION_SWITCH_VIDEO)) {//点击成员回调
                 backGroundId = intent.getStringExtra(Constants.EXTRA_IDENTIFIER);
+                SxbLog.v(TAG, "switch video enter with id:"+backGroundId);
+
+                if (mRenderUserList.contains(backGroundId)){
+                    mHostLeaveLayout.setVisibility(View.GONE);
+                }else{
+                    mHostLeaveLayout.setVisibility(View.VISIBLE);
+                }
 
                 if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {//自己是主播
                     if (backGroundId.equals(MySelfInfo.getInstance().getId())) {//背景是自己
@@ -283,6 +311,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         intentFilter.addAction(Constants.ACTION_SURFACE_CREATED);
         intentFilter.addAction(Constants.ACTION_HOST_ENTER);
         intentFilter.addAction(Constants.ACTION_CAMERA_OPEN_IN_LIVE);
+        intentFilter.addAction(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
         intentFilter.addAction(Constants.ACTION_SWITCH_VIDEO);
         intentFilter.addAction(Constants.ACTION_HOST_LEAVE);
         registerReceiver(mBroadcastReceiver, intentFilter);
@@ -325,6 +354,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         mHostCtrView = (LinearLayout) findViewById(R.id.host_bottom_layout);
         mNomalMemberCtrView = (LinearLayout) findViewById(R.id.member_bottom_layout);
         mVideoMemberCtrlView = (LinearLayout) findViewById(R.id.video_member_bottom_layout);
+        mHostLeaveLayout = (LinearLayout)findViewById(R.id.ll_host_leave);
         mVideoChat = (TextView) findViewById(R.id.video_interact);
         mHeartLayout = (HeartLayout) findViewById(R.id.heart_layout);
         mVideoTime = (TextView) findViewById(R.id.broadcasting_time);
@@ -703,13 +733,13 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     }
 
     @Override
-    public void hostLeave() {
-        refreshTextListView(CurLiveInfo.getHostName(), "leave for a while", Constants.HOST_LEAVE);
+    public void hostLeave(String id, String name) {
+        refreshTextListView(TextUtils.isEmpty(name) ? id : name, "leave for a while", Constants.HOST_LEAVE);
     }
 
     @Override
-    public void hostBack() {
-        refreshTextListView(CurLiveInfo.getHostName(), "is back", Constants.HOST_BACK);
+    public void hostBack(String id, String name) {
+        refreshTextListView(TextUtils.isEmpty(name) ? id : name, "is back", Constants.HOST_BACK);
     }
 
     /**
@@ -1298,7 +1328,6 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
 //                mNomalMemberCtrView.setVisibility(View.INVISIBLE);
 
                 //上麦 ；TODO 上麦 上麦 上麦 ！！！！！；
-                backGroundId = MySelfInfo.getInstance().getId();
                 mLiveHelper.changeAuthandRole(true, Constants.VIDEO_MEMBER_AUTH, Constants.VIDEO_MEMBER_ROLE);
                 inviteDg.dismiss();
             }

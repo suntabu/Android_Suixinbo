@@ -282,7 +282,6 @@ public class PublishLiveActivity extends BaseActivity implements View.OnClickLis
     public void startPhotoZoom(Uri uri) {
         cropUri = createCoverUri("_crop");
 
-        SxbLog.e("XIAO", "startPhotoZoom->url:" + uri);
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
