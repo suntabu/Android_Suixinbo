@@ -62,7 +62,7 @@ public class EnterLiveHelper extends Presenter {
      * 进入一个直播房间流程
      */
     public void startEnterRoom() {
-        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+        if (MySelfInfo.getInstance().isCreateRoom() == true) {
             createLive();
         } else {
             SxbLog.i(TAG, "joinLiveRoom startEnterRoom ");
@@ -422,7 +422,7 @@ public class EnterLiveHelper extends Presenter {
         AVRoomMulti.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam();
 
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-            enterRoomParam.authBits =  Constants.HOST_AUTH;//；TODO：主播权限 所有权限
+            enterRoomParam.authBits = Constants.HOST_AUTH;//；TODO：主播权限 所有权限
             enterRoomParam.avControlRole = Constants.HOST_ROLE;//；TODO：主播角色
             enterRoomParam.autoCreateRoom = true;//;TODO：主播自动创建房间
         } else {
