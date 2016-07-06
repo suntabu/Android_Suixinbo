@@ -62,7 +62,7 @@ public class EnterLiveHelper extends Presenter {
      * 进入一个直播房间流程
      */
     public void startEnterRoom() {
-        if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
+        if (MySelfInfo.getInstance().isCreateRoom() == true) {
             createLive();
         } else {
             SxbLog.i(TAG, "joinLiveRoom startEnterRoom ");
@@ -124,6 +124,17 @@ public class EnterLiveHelper extends Presenter {
                     Intent intent = new Intent(Constants.ACTION_CAMERA_OPEN_IN_LIVE);
                     intent.putStringArrayListExtra("ids", video_ids);
                     mContext.sendBroadcast(intent);
+                    break;
+                case TYPE_MEMBER_CHANGE_NO_CAMERA_VIDEO:
+                    {
+                        ArrayList<String> close_ids = new ArrayList<String>();
+                        for (String id : updateList) {
+                            close_ids.add(id);
+                        }
+                        Intent closeintent = new Intent(Constants.ACTION_CAMERA_CLOSE_IN_LIVE);
+                        closeintent.putStringArrayListExtra("ids", close_ids);
+                        mContext.sendBroadcast(closeintent);
+                    }
                     break;
                 case TYPE_MEMBER_CHANGE_HAS_AUDIO:
                     break;
@@ -411,7 +422,7 @@ public class EnterLiveHelper extends Presenter {
         AVRoomMulti.EnterRoomParam enterRoomParam = new AVRoomMulti.EnterRoomParam();
 
         if (MySelfInfo.getInstance().getIdStatus() == Constants.HOST) {
-            enterRoomParam.authBits =  Constants.HOST_AUTH;//；TODO：主播权限 所有权限
+            enterRoomParam.authBits = Constants.HOST_AUTH;//；TODO：主播权限 所有权限
             enterRoomParam.avControlRole = Constants.HOST_ROLE;//；TODO：主播角色
             enterRoomParam.autoCreateRoom = true;//;TODO：主播自动创建房间
         } else {

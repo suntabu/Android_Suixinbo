@@ -41,4 +41,8 @@ public interface LiveView extends MvpView {
     void startRecordCallback(boolean isSucc);
 
     void stopRecordCallback(boolean isSucc,List<String> files);
+
+    void hostLeave(String id, String name);
+
+    void hostBack(String id, String name);
 }

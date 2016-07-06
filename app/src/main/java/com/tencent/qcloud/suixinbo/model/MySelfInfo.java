@@ -17,6 +17,7 @@ public class MySelfInfo {
     private String avatar;      // 头像
     private String sign;      // 签名
     private String CosSig;
+    private static boolean isCreateRoom = false;
 
     private boolean bLiveAnimator;  // 渐隐动画
     private SxbLog.SxbLogLevel logLevel;           // 日志等级
@@ -136,9 +137,9 @@ public class MySelfInfo {
         sign = sharedata.getString(Constants.USER_SIGN, null);
         bLiveAnimator = sharedata.getBoolean(Constants.LIVE_ANIMATOR, false);
         int level = sharedata.getInt(Constants.LOG_LEVEL, SxbLog.SxbLogLevel.INFO.ordinal());
-        if (level < SxbLog.SxbLogLevel.OFF.ordinal() || level > SxbLog.SxbLogLevel.INFO.ordinal()){
+        if (level < SxbLog.SxbLogLevel.OFF.ordinal() || level > SxbLog.SxbLogLevel.INFO.ordinal()) {
             logLevel = SxbLog.SxbLogLevel.INFO;
-        }else{
+        } else {
             logLevel = SxbLog.SxbLogLevel.values()[level];
         }
         SxbLog.setLogLevel(logLevel);
@@ -151,5 +152,13 @@ public class MySelfInfo {
 
     public void setIdStatus(int id_status) {
         this.id_status = id_status;
+    }
+
+    public boolean isCreateRoom() {
+        return isCreateRoom;
+    }
+
+    public void setJoinRoomWay(boolean isCreateRoom) {
+        this.isCreateRoom = isCreateRoom;
     }
 }

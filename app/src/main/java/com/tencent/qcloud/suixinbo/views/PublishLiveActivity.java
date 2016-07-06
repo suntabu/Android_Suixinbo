@@ -107,11 +107,12 @@ public class PublishLiveActivity extends BaseActivity implements View.OnClickLis
                     Intent intent = new Intent(this, LiveActivity.class);
                     intent.putExtra(Constants.ID_STATUS, Constants.HOST);
                     MySelfInfo.getInstance().setIdStatus(Constants.HOST);
+                    MySelfInfo.getInstance().setJoinRoomWay(true);
                     CurLiveInfo.setTitle(tvTitle.getText().toString());
                     CurLiveInfo.setHostID(MySelfInfo.getInstance().getId());
                     CurLiveInfo.setRoomNum(MySelfInfo.getInstance().getMyRoomNum());
                     startActivity(intent);
-                    SxbLog.i(TAG, "PerformanceTest  publish Live     " +  SxbLog.getTime());
+                    SxbLog.i(TAG, "PerformanceTest  publish Live     " + SxbLog.getTime());
                     this.finish();
                 }
                 break;
@@ -282,7 +283,6 @@ public class PublishLiveActivity extends BaseActivity implements View.OnClickLis
     public void startPhotoZoom(Uri uri) {
         cropUri = createCoverUri("_crop");
 
-        SxbLog.e("XIAO", "startPhotoZoom->url:" + uri);
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");

@@ -56,7 +56,6 @@ public class InputTextMsgDialog extends Dialog {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SxbLog.d("XIAO", "onClick enter->");
                 if (messageTextView.getText().length() > 0) {
                     sendText("" + messageTextView.getText());
                     imm.showSoftInput(messageTextView, InputMethodManager.SHOW_FORCED);
@@ -70,7 +69,6 @@ public class InputTextMsgDialog extends Dialog {
         messageTextView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                SxbLog.d("XIAO", "onKey->" + v + "," + keyCode + "," + event);
                 if (event.getAction() != KeyEvent.ACTION_UP) {   // 忽略其它事件
                     return false;
                 }
@@ -108,7 +106,6 @@ public class InputTextMsgDialog extends Dialog {
                     imm.hideSoftInputFromWindow(messageTextView.getWindowToken(), 0);
                     dismiss();
                 }
-                SxbLog.d("XIAO", heightDifference+"/"+mLastDiff);
                 mLastDiff = heightDifference;
             }
         });

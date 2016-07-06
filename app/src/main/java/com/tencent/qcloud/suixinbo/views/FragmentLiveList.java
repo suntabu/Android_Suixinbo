@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.tencent.qcloud.suixinbo.R;
 import com.tencent.qcloud.suixinbo.adapters.LiveShowAdapter;
@@ -60,20 +59,33 @@ public class FragmentLiveList extends Fragment implements View.OnClickListener, 
                 LiveInfoJson item = liveList.get(i);
                 //如果是自己
                 if (item.getHost().getUid().equals(MySelfInfo.getInstance().getId())) {
-                    Toast.makeText(getActivity(), "this room don't exist", Toast.LENGTH_SHORT).show();
-                    return;
+                    Intent intent = new Intent(getActivity(), LiveActivity.class);
+                    intent.putExtra(Constants.ID_STATUS, Constants.HOST);
+                    MySelfInfo.getInstance().setIdStatus(Constants.HOST);
+                    MySelfInfo.getInstance().setJoinRoomWay(false);
+                    CurLiveInfo.setHostID(item.getHost().getUid());
+                    CurLiveInfo.setHostName(item.getHost().getUsername());
+                    CurLiveInfo.setHostAvator(item.getHost().getAvatar());
+                    CurLiveInfo.setRoomNum(item.getAvRoomId());
+                    CurLiveInfo.setMembers(item.getWatchCount() + 1); // 添加自己
+                    CurLiveInfo.setAdmires(item.getAdmireCount());
+                    CurLiveInfo.setAddress(item.getLbs().getAddress());
+                    startActivity(intent);
+                }else{
+                    Intent intent = new Intent(getActivity(), LiveActivity.class);
+                    intent.putExtra(Constants.ID_STATUS, Constants.MEMBER);
+                    MySelfInfo.getInstance().setIdStatus(Constants.MEMBER);
+                    MySelfInfo.getInstance().setJoinRoomWay(false);
+                    CurLiveInfo.setHostID(item.getHost().getUid());
+                    CurLiveInfo.setHostName(item.getHost().getUsername());
+                    CurLiveInfo.setHostAvator(item.getHost().getAvatar());
+                    CurLiveInfo.setRoomNum(item.getAvRoomId());
+                    CurLiveInfo.setMembers(item.getWatchCount() + 1); // 添加自己
+                    CurLiveInfo.setAdmires(item.getAdmireCount());
+                    CurLiveInfo.setAddress(item.getLbs().getAddress());
+                    startActivity(intent);
                 }
-                Intent intent = new Intent(getActivity(), LiveActivity.class);
-                intent.putExtra(Constants.ID_STATUS, Constants.MEMBER);
-                MySelfInfo.getInstance().setIdStatus(Constants.MEMBER);
-                CurLiveInfo.setHostID(item.getHost().getUid());
-                CurLiveInfo.setHostName(item.getHost().getUsername());
-                CurLiveInfo.setHostAvator(item.getHost().getAvatar());
-                CurLiveInfo.setRoomNum(item.getAvRoomId());
-                CurLiveInfo.setMembers(item.getWatchCount() + 1); // 添加自己
-                CurLiveInfo.setAdmires(item.getAdmireCount());
-                CurLiveInfo.setAddress(item.getLbs().getAddress());
-                startActivity(intent);
+
                 SxbLog.i(TAG, "PerformanceTest  join Live     " + SxbLog.getTime());
             }
         });

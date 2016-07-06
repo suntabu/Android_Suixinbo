@@ -11,15 +11,16 @@
 
 
 ###如果你的项目中使用proguard等工具做了代码混淆，请保留以下选项。
-  -keep class com.tencent.**{*;}
-  -dontwarn com.tencent.**
+<pre>
+-keep class com.tencent.**{*;}
+-dontwarn com.tencent.**
 
-  -keep class tencent.**{*;}
-  -dontwarn tencent.**
+-keep class tencent.**{*;}
+-dontwarn tencent.**
 
-  -keep class qalsdk.**{*;}
-  -dontwarn qalsdk.**
-
+-keep class qalsdk.**{*;}
+-dontwarn qalsdk.**
+</pre>
 
 
 ##最新版本App可从应用宝上下载安装（应用名：随心播）

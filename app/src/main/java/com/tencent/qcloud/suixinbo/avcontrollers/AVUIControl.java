@@ -665,6 +665,9 @@ public class AVUIControl extends GLViewGroup {
                 //先交换,再关闭
                 int hostIndex = getViewIndexById(CurLiveInfo.getHostID(), AVView.VIDEO_SRC_TYPE_CAMERA);
                 switchVideo(index, hostIndex);
+                mContext.sendBroadcast(new Intent(
+                        Constants.ACTION_SWITCH_VIDEO).putExtra(
+                        Constants.EXTRA_IDENTIFIER, CurLiveInfo.getHostID()));
                 closeVideoView(hostIndex);
             } else {
                 //不在主界面上
