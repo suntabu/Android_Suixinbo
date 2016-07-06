@@ -20,6 +20,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.OrientationEventListener;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -30,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +64,7 @@ import com.tencent.qcloud.suixinbo.views.customviews.BaseActivity;
 import com.tencent.qcloud.suixinbo.views.customviews.HeartLayout;
 import com.tencent.qcloud.suixinbo.views.customviews.InputTextMsgDialog;
 import com.tencent.qcloud.suixinbo.views.customviews.MembersDialog;
+import com.unity3d.player.UnityPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +121,7 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
     private TextView tvAdmires;
 
     private Dialog mDetailDialog;
-
+    private static UnityPlayer mUnityPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +147,21 @@ public class LiveActivity extends BaseActivity implements EnterQuiteRoomView, Li
         //QavsdkControl.getInstance().setCameraPreviewChangeCallback();
         mLiveHelper.setCameraPreviewChangeCallback();
         registerOrientationListener();
+
+        mUnityPlayer = new UnityPlayer(this);
+        int glesMode = mUnityPlayer.getSettings().getInt("gles_mode", 1);
+        boolean trueColor8888 = false;
+        mUnityPlayer.init(glesMode, trueColor8888);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//            RelativeLayout av_screen_layout = (RelativeLayout) avActivityInstance.findViewById(R.id.av_screen_layout);
+        mUnityPlayer.getView().setBackgroundColor(Color.RED);
+        lp.alignWithParent = true;
+        lp.addRule(RelativeLayout.ALIGN_BOTTOM,1);
+
+        RelativeLayout game_container = (RelativeLayout)findViewById(R.id.game_container);
+        game_container.removeView(mUnityPlayer.getView());
+        game_container.addView(mUnityPlayer.getView(), lp);
+        mUnityPlayer.resume();
     }
 
 

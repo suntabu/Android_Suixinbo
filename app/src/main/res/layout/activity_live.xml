@@ -188,4 +188,12 @@
         android:background="@drawable/icon_nomal"
         android:onClick="onClick"
         android:visibility="gone" />
+    <RelativeLayout
+        android:id="@+id/game_container"
+        android:layout_gravity="bottom"
+        android:background="@color/btn_red"
+        android:layout_width="match_parent"
+        android:layout_height="300dp">
+
+    </RelativeLayout>
 </FrameLayout>
